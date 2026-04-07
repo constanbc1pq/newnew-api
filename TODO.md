@@ -1,74 +1,66 @@
 # Market Router 品牌重构 TODO
 
-## Phase 1: 品牌基础
+## Phase 1-5: 已完成（品牌基础/初版 Landing/多语言/主题/收尾）
 
-- [x] 移除 CLAUDE.md 中 Rule 5 对原始品牌的保护规则
-- [x] 设计 Market Router Logo（SVG + PNG + ICO）
-- [x] 替换 `web/public/logo.png` 和 `web/public/favicon.ico`
-- [x] 替换 `web/index.html` 中的 title、meta description、favicon 引用
-- [x] 替换 `web/src/helpers/utils.jsx` 中 `getSystemName()` 默认值为 "Market Router"
-- [x] 替换 `web/src/index.jsx` 中控制台欢迎信息
-- [x] 替换 `web/src/pages/About/index.jsx` 中仓库链接为动态品牌信息
-- [x] 替换 `web/src/components/layout/Footer.jsx` 中硬编码链接为 `getServerAddress()` 动态获取
-- [x] 更新 7 个 i18n JSON 文件中所有 "New API" 相关 key 的翻译
-- [x] 检查并替换后端 Go 代码中 API 错误信息里的 `new_api_error` 字段
-- [x] 添加 apple-touch-icon
-- [x] 更新 PWA manifest（不存在，无需处理）
+## Phase 6: Landing Page 视觉增强（已完成）
 
-## Phase 2: Landing Page 初版
+## Phase 7: ctxdc 风格全面重设计
 
-- [x] 重构 `web/src/pages/Home/index.jsx` 整体结构
-- [x] Hero Section：品牌 slogan + 副标题 + 双 CTA
-- [x] 信任背书区：AI 提供商 Logo 墙
-- [x] 6 个场景卡片（Agents/Vibe Coding/工作流/Vibe Design/企业/开发者）
-- [x] 核心优势区（智能路由/成本优化/高可用/安全合规）
-- [x] 快速开始区（3 步流程）
-- [x] Footer 重构
+### 7.1 CSS 基础与字体
+- [x] 引入 JetBrains Mono + Inter 字体（Google Fonts preload）
+- [x] 定义 Landing Page 专属 CSS 变量（foreground/10, foreground/20, foreground/40, primary/5, primary/10）
+- [x] 深色背景改为 #09090b，亮色保持 #ffffff
+- [x] 添加 diagonal-pattern 对角线装饰 CSS
+- [x] 添加 radial-glow 径向光晕 CSS
+- [x] 添加滚动入场动画工具类（Intersection Observer + reveal class）
 
-## Phase 3: 多语言
+### 7.2 SectionHeader 组件
+- [x] 创建 `SectionHeader` 组件（12 列 grid，编号标签 + 代码化标题 + 右侧操作）
+- [x] 编号格式：`01 // providers`，text-[10px] tracking-[0.3em] foreground/40
+- [x] 标题格式：`import { providers } from "./ecosystem"`，primary 高亮关键词
 
-- [x] Landing Page 三语文案（zh-CN/en/ja）
-- [x] 7 个语言文件品牌名批量替换
+### 7.3 ScenarioCard 组件
+- [x] 创建 `ScenarioCard` 组件替代 GlowCard
+- [x] 黄金比例上部区域（aspect-[1.618/1]）+ 径向光晕 + 旋转方形装饰
+- [x] 索引行：`use[0]`，text-[9px] tracking-widest
+- [x] 标题行：text-sm font-light font-heading
+- [x] 标签行：`["agent", "langchain"]`，text-[8px]，右侧显示节省信息
 
-## Phase 4: 主题优化初版
+### 7.4 背景动画升级
+- [x] 创建 GameOfLifeBackground 组件替代 NetworkBackground
+- [x] 网格颜色用 primary/8，半透明网格线 foreground/3
+- [x] 添加 prefers-reduced-motion 媒体查询
 
-- [x] 定义品牌色并覆盖 Semi Design CSS 变量
-- [x] 更新 `web/tailwind.config.js` 扩展品牌色
+### 7.5 Hero 重构
+- [x] 标题改为 font-light（纤细字重），去掉 shine-text
+- [x] 关键词用 primary 色高亮（Smart）
+- [x] 副标题改为 `const router = connect(...)` 代码格式
+- [x] 统计条改为 grid 分隔样式，border-r border-foreground/10 分隔
+- [x] 顶部微标签 `// market-router`
 
-## Phase 5: 细节收尾
+### 7.6 场景区重构
+- [x] 用 SectionHeader（`02 // use-cases`）替代普通标题
+- [x] 6 张 ScenarioCard，3 列网格，border 分隔
+- [x] hover 时卡片高亮（bg-primary/5，索引和标题变为 primary 色）
 
-- [x] Open Graph + Twitter Card 标签
-- [x] 后端 SystemName / error type / OpenRouter 请求头品牌名替换
-- [x] 全局残留品牌名清理
+### 7.7 优势区重构
+- [x] 用 SectionHeader（`03 // advantages`）替代普通标题
+- [x] 4 列 grid，用 border-r border-foreground/10 分隔
+- [x] 每项带 feature[i] 索引标签
 
-## Phase 6: Landing Page 视觉增强
+### 7.8 快速开始区调整
+- [x] TerminalBlock 去掉红黄绿圆点，改为 `// terminal` 微标签
+- [x] 边框改为 border-foreground/10 风格
+- [x] 用 SectionHeader（`04 // quickstart`）
 
-### 6.1 Hero Section 增强
-- [ ] 创建 `NetworkBackground` 组件（Canvas 网络节点连线动画）
-- [ ] 替换 Hero 的 blur-ball 背景为 NetworkBackground
-- [ ] 标题改用等宽字体，副标题改为代码注释风格
-- [ ] 添加数据信任条（40+ 提供商 / 99.9% 可用性 / <50ms 延迟 / 节省 40-60%）
+### 7.9 CTA + Footer
+- [x] CTA 区域添加代码化标题 `router.start()`
+- [x] Footer 保持简化单行
 
-### 6.2 场景卡片增强
-- [ ] 创建 `GlowCard` 组件（hover 发光边框效果）
-- [ ] 每张卡片顶部添加代码片段（mono 字体伪代码）
-- [ ] 卡片布局改为不等高 masonry 风格（前两张 2:1 分布）
+### 7.10 亮色模式适配
+- [x] Landing Page CSS 变量区分 html.dark .landing 和 .landing
+- [x] 背景动画在亮色模式下降低颜色透明度
 
-### 6.3 快速开始区增强
-- [ ] 创建 `TerminalBlock` 组件（终端窗口样式）
-- [ ] 3 个步骤改为终端命令行格式展示
-
-### 6.4 优势区增强
-- [ ] 去掉 emoji，改用 SVG 线条图标
-- [ ] 添加 `CountUp` 数字滚动动画组件
-
-### 6.5 全局主题增强
-- [ ] 深色模式背景改为 #0a0a12（微蓝色调）+ CSS 噪声纹理
-- [ ] 亮色模式卡片添加极浅紫色边框
-- [ ] Hero 背景动画在亮色模式下降低不透明度
-
-### 6.6 Footer 简化
-- [ ] 简化为单行（品牌名 + 版权 + 语言切换 + 主题切换）
-
-### 6.7 多语言更新
-- [ ] 更新三语 i18n 文件中新增/修改的文案 key
+### 7.11 性能优化
+- [x] prefers-reduced-motion 关闭动画和隐藏 canvas
+- [x] Landing Page CSS 类名 `.landing` 隔离，不影响控制台内页

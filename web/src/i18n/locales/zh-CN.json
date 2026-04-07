@@ -3016,6 +3016,16 @@
         "landing_step2_title": "获取 API Key",
         "landing_step2_desc": "在控制台创建令牌，设定模型和额度。",
         "landing_step3_title": "开始调用",
-        "landing_step3_desc": "将 Base URL 替换为 Market Router 地址，兼容所有 OpenAI SDK。"
+        "landing_step3_desc": "将 Base URL 替换为 Market Router 地址，兼容所有 OpenAI SDK。",
+        "terminal_line_1": "signup --free",
+        "terminal_line_2": "Account created. Credits: $5.00",
+        "terminal_line_3": "curl /v1/tokens --create --name my-app",
+        "terminal_line_4": "sk-mkt-xxxxxxxxxxxxxxxxxxxx",
+        "terminal_line_5": "curl /v1/chat/completions -d '{\"model\":\"gpt-4o\"}'",
+        "terminal_line_6": "{\"choices\":[{\"message\":{\"content\":\"Hello!\"}}]}",
+        "landing_stat_providers": "AI 提供商",
+        "landing_stat_uptime": "服务可用性",
+        "landing_stat_latency": "路由延迟",
+        "landing_stat_savings": "成本节省"
     }
 }

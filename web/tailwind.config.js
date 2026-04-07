@@ -142,6 +142,9 @@ export default {
           light: 'rgba(124, 58, 237, 0.08)',
         },
       },
+      fontFamily: {
+        mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace'],
+      },
       borderRadius: {
         'semi-border-radius-extra-small':
           'var(--semi-border-radius-extra-small)',

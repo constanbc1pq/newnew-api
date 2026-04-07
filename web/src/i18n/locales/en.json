@@ -3412,6 +3412,16 @@
         "landing_step2_title": "Get API Key",
         "landing_step2_desc": "Create a token in the console with your model and quota preferences.",
         "landing_step3_title": "Start Calling",
-        "landing_step3_desc": "Replace the base URL with Market Router. Compatible with all OpenAI SDKs."
+        "landing_step3_desc": "Replace the base URL with Market Router. Compatible with all OpenAI SDKs.",
+        "terminal_line_1": "signup --free",
+        "terminal_line_2": "Account created. Credits: $5.00",
+        "terminal_line_3": "curl /v1/tokens --create --name my-app",
+        "terminal_line_4": "sk-mkt-xxxxxxxxxxxxxxxxxxxx",
+        "terminal_line_5": "curl /v1/chat/completions -d '{\"model\":\"gpt-4o\"}'",
+        "terminal_line_6": "{\"choices\":[{\"message\":{\"content\":\"Hello!\"}}]}",
+        "landing_stat_providers": "AI Providers",
+        "landing_stat_uptime": "Uptime",
+        "landing_stat_latency": "Routing Latency",
+        "landing_stat_savings": "Cost Savings"
     }
 }

@@ -1,15 +1,18 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, { useContext, useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { Button, Typography } from '@douyinfe/semi-ui';
 import { API, showError } from '../../helpers';
-import { getServerAddress } from '../../helpers/token';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
 import { StatusContext } from '../../context/Status';
 import { useActualTheme } from '../../context/Theme';
 import { marked } from 'marked';
 import { useTranslation } from 'react-i18next';
-import { IconPlay } from '@douyinfe/semi-icons';
 import { Link } from 'react-router-dom';
 import NoticeModal from '../../components/layout/NoticeModal';
+import GameOfLifeBackground from './GameOfLifeBackground';
+import SectionHeader from './SectionHeader';
+import ScenarioCard from './ScenarioCard';
+import TerminalBlock from './TerminalBlock';
+import CountUp from './CountUp';
 import {
   Moonshot, OpenAI, XAI, Zhipu, Volcengine, Cohere,
   Claude, Gemini, Suno, Minimax, Wenxin, Spark,
@@ -18,139 +21,97 @@ import {
 } from '@lobehub/icons';
 
 const { Text } = Typography;
-
 const ICON_CLS = 'w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center';
 
-const PROVIDER_ICONS = [
-  { key: 'openai', Icon: OpenAI },
-  { key: 'claude', Icon: Claude, color: true },
-  { key: 'gemini', Icon: Gemini, color: true },
-  { key: 'deepseek', Icon: DeepSeek, color: true },
-  { key: 'grok', Icon: Grok },
-  { key: 'qwen', Icon: Qwen, color: true },
-  { key: 'moonshot', Icon: Moonshot },
-  { key: 'xai', Icon: XAI },
-  { key: 'zhipu', Icon: Zhipu, color: true },
-  { key: 'volcengine', Icon: Volcengine, color: true },
-  { key: 'cohere', Icon: Cohere, color: true },
-  { key: 'minimax', Icon: Minimax, color: true },
-  { key: 'wenxin', Icon: Wenxin, color: true },
-  { key: 'spark', Icon: Spark, color: true },
-  { key: 'qingyan', Icon: Qingyan, color: true },
-  { key: 'midjourney', Icon: Midjourney },
-  { key: 'suno', Icon: Suno },
-  { key: 'azure', Icon: AzureAI, color: true },
-  { key: 'hunyuan', Icon: Hunyuan, color: true },
-  { key: 'xinference', Icon: Xinference, color: true },
+const PROVIDERS = [
+  { key: 'openai', I: OpenAI }, { key: 'claude', I: Claude, c: 1 },
+  { key: 'gemini', I: Gemini, c: 1 }, { key: 'deepseek', I: DeepSeek, c: 1 },
+  { key: 'grok', I: Grok }, { key: 'qwen', I: Qwen, c: 1 },
+  { key: 'moonshot', I: Moonshot }, { key: 'xai', I: XAI },
+  { key: 'zhipu', I: Zhipu, c: 1 }, { key: 'volcengine', I: Volcengine, c: 1 },
+  { key: 'cohere', I: Cohere, c: 1 }, { key: 'minimax', I: Minimax, c: 1 },
+  { key: 'wenxin', I: Wenxin, c: 1 }, { key: 'spark', I: Spark, c: 1 },
+  { key: 'qingyan', I: Qingyan, c: 1 }, { key: 'midjourney', I: Midjourney },
+  { key: 'suno', I: Suno }, { key: 'azure', I: AzureAI, c: 1 },
+  { key: 'hunyuan', I: Hunyuan, c: 1 }, { key: 'xinference', I: Xinference, c: 1 },
 ];
 
 const SCENARIOS = [
-  {
-    key: 'agents',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="m2 14 4-4 4 4"/><path d="m14 14 4-4 4 4"/></svg>
-    ),
-  },
-  {
-    key: 'vibe_coding',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
-    ),
-  },
-  {
-    key: 'workflow',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="9" y="15" width="6" height="6" rx="1"/><path d="M6 9v3a1 1 0 0 0 1 1h4"/><path d="M18 9v3a1 1 0 0 1-1 1h-4"/><path d="M12 13v2"/></svg>
-    ),
-  },
-  {
-    key: 'vibe_design',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-    ),
-  },
-  {
-    key: 'enterprise',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-    ),
-  },
-  {
-    key: 'developer',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m7 11 2-2-2-2"/><path d="M11 13h4"/><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/></svg>
-    ),
-  },
+  { title: 'AI Agents', tags: ['agent', 'langchain'], savings: '-60% tokens', code: 'const agent = router.create({\n  model: "auto",\n  budget: "$10"\n})' },
+  { title: 'Vibe Coding', tags: ['ide', 'cursor'], savings: '1 API key', code: '{\n  "base_url":\n  "https://api.marketrouter.ai/v1"\n}' },
+  { title: 'Workflow', tags: ['n8n', 'automation'], savings: '24/7 uptime', code: 'n8n.addNode("AI", {\n  provider: "market-router"\n})' },
+  { title: 'Vibe Design', tags: ['image', 'midjourney'], savings: '1 interface', code: 'router.images.generate({\n  model: "dall-e-3",\n  prompt: "..."\n})' },
+  { title: 'Enterprise', tags: ['compliance', 'rbac'], savings: 'audit log', code: 'router.config({\n  region: "asia",\n  audit: true\n})' },
+  { title: 'Developer API', tags: ['openai-sdk', 'rest'], savings: '0 migration', code: 'curl /v1/chat/completions \\\n  -H "Authorization: Bearer sk-..."' },
 ];
 
 const ADVANTAGES = [
-  { key: 'routing', icon: '⚡' },
-  { key: 'cost', icon: '💰' },
-  { key: 'reliability', icon: '🛡️' },
-  { key: 'security', icon: '🔒' },
+  { key: 'routing' }, { key: 'cost' }, { key: 'reliability' }, { key: 'security' },
 ];
 
-const STEPS = [
-  { key: 'step1', num: '1' },
-  { key: 'step2', num: '2' },
-  { key: 'step3', num: '3' },
+const STATS = [
+  { value: 40, suffix: '+', key: 'providers' },
+  { value: 99.9, suffix: '%', key: 'uptime' },
+  { value: 50, suffix: 'ms', key: 'latency', prefix: '<' },
+  { value: 60, suffix: '%', key: 'savings' },
 ];
+
+function useReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { el.classList.add('visible'); obs.unobserve(el); }
+    }, { threshold: 0.15 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+function Reveal({ children, className = '' }) {
+  const ref = useReveal();
+  return <div ref={ref} className={`reveal ${className}`}>{children}</div>;
+}
 
 const Home = () => {
   const { t } = useTranslation();
   const [statusState] = useContext(StatusContext);
   const actualTheme = useActualTheme();
-  const [homePageContentLoaded, setHomePageContentLoaded] = useState(false);
-  const [homePageContent, setHomePageContent] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const [content, setContent] = useState('');
   const [noticeVisible, setNoticeVisible] = useState(false);
   const isMobile = useIsMobile();
 
-  const displayHomePageContent = async () => {
-    setHomePageContent(localStorage.getItem('home_page_content') || '');
+  const loadContent = useCallback(async () => {
+    setContent(localStorage.getItem('home_page_content') || '');
     const res = await API.get('/api/home_page_content');
-    const { success, message, data } = res.data;
+    const { success, data } = res.data;
     if (success) {
-      let content = data;
-      if (!data.startsWith('https://')) {
-        content = marked.parse(data);
-      }
-      setHomePageContent(content);
-      localStorage.setItem('home_page_content', content);
-      if (data.startsWith('https://')) {
-        const iframe = document.querySelector('iframe');
-        if (iframe) {
-          iframe.onload = () => {
-            iframe.contentWindow.postMessage({ themeMode: actualTheme }, '*');
-          };
-        }
-      }
-    } else {
-      showError(message);
+      const c = data.startsWith('https://') ? data : marked.parse(data);
+      setContent(c);
+      localStorage.setItem('home_page_content', c);
     }
-    setHomePageContentLoaded(true);
-  };
-
-  useEffect(() => {
-    const checkNotice = async () => {
-      const lastClose = localStorage.getItem('notice_close_date');
-      if (lastClose === new Date().toDateString()) return;
-      try {
-        const res = await API.get('/api/notice');
-        const { success, data } = res.data;
-        if (success && data && data.trim() !== '') setNoticeVisible(true);
-      } catch (_) { /* ignore */ }
-    };
-    checkNotice();
+    setLoaded(true);
   }, []);
 
-  useEffect(() => { displayHomePageContent(); }, []);
+  useEffect(() => { loadContent(); }, [loadContent]);
+
+  useEffect(() => {
+    (async () => {
+      if (localStorage.getItem('notice_close_date') === new Date().toDateString()) return;
+      try {
+        const res = await API.get('/api/notice');
+        if (res.data.success && res.data.data?.trim()) setNoticeVisible(true);
+      } catch (_) {}
+    })();
+  }, []);
 
   const providerIcons = useMemo(() => (
     <div className='flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto px-4'>
-      {PROVIDER_ICONS.map(({ key, Icon, color }) => (
-        <div key={key} className={ICON_CLS}>
-          {color ? <Icon.Color size={40} /> : <Icon size={40} />}
-        </div>
+      {PROVIDERS.map(({ key, I, c }) => (
+        <div key={key} className={ICON_CLS}>{c ? <I.Color size={40} /> : <I size={40} />}</div>
       ))}
       <div className={ICON_CLS}>
         <Text className='!text-lg sm:!text-xl md:!text-2xl lg:!text-3xl font-bold'>40+</Text>
@@ -158,146 +119,150 @@ const Home = () => {
     </div>
   ), []);
 
-  if (!homePageContentLoaded) return null;
+  if (!loaded) return null;
 
-  if (homePageContent !== '') {
+  if (content) {
     return (
       <div className='w-full overflow-x-hidden'>
         <NoticeModal visible={noticeVisible} onClose={() => setNoticeVisible(false)} isMobile={isMobile} />
-        {homePageContent.startsWith('https://') ? (
-          <iframe src={homePageContent} className='w-full h-screen border-none' />
+        {content.startsWith('https://') ? (
+          <iframe src={content} className='w-full h-screen border-none' />
         ) : (
-          <div className='mt-[60px]' dangerouslySetInnerHTML={{ __html: homePageContent }} />
+          <div className='mt-[60px]' dangerouslySetInnerHTML={{ __html: content }} />
         )}
       </div>
     );
   }
 
   return (
-    <div className='w-full overflow-x-hidden'>
+    <div className='landing w-full overflow-x-hidden' style={{ background: 'var(--lr-bg)', color: 'var(--lr-fg)' }}>
       <NoticeModal visible={noticeVisible} onClose={() => setNoticeVisible(false)} isMobile={isMobile} />
 
-      {/* Hero Section */}
-      <section className='w-full min-h-[560px] md:min-h-[640px] lg:min-h-[720px] relative overflow-hidden border-b border-semi-color-border'>
-        <div className='blur-ball blur-ball-indigo' />
-        <div className='blur-ball blur-ball-teal' />
-        <div className='flex items-center justify-center h-full px-4 py-20 md:py-28 lg:py-36 mt-10'>
-          <div className='flex flex-col items-center text-center max-w-4xl mx-auto'>
-            <h1 className='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-semi-color-text-0 leading-tight'>
-              {t('landing_hero_title_1')}
-              <br />
-              <span className='shine-text'>{t('landing_hero_title_2')}</span>
-            </h1>
-            <p className='text-base md:text-lg lg:text-xl text-semi-color-text-1 mt-4 md:mt-6 max-w-2xl'>
-              {t('landing_hero_subtitle')}
-            </p>
-            <div className='flex flex-row gap-4 mt-8 md:mt-10'>
-              <Link to='/console'>
-                <Button theme='solid' type='primary' size={isMobile ? 'default' : 'large'} className='!rounded-3xl px-8 py-2' icon={<IconPlay />}>
-                  {t('landing_cta_start')}
-                </Button>
-              </Link>
-              <Link to='/pricing'>
-                <Button size={isMobile ? 'default' : 'large'} className='!rounded-3xl px-8 py-2'>
-                  {t('landing_cta_pricing')}
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust - Provider Logos */}
-      <section className='w-full py-12 md:py-16 lg:py-20 px-4'>
-        <div className='max-w-5xl mx-auto text-center'>
-          <Text type='tertiary' className='text-lg md:text-xl lg:text-2xl font-light'>
-            {t('landing_providers_title')}
-          </Text>
-          <div className='mt-8 md:mt-10'>
-            {providerIcons}
-          </div>
-        </div>
-      </section>
-
-      {/* Scenarios */}
-      <section className='w-full py-12 md:py-16 lg:py-20 px-4 bg-semi-color-fill-0'>
-        <div className='max-w-6xl mx-auto'>
-          <h2 className='text-2xl md:text-3xl lg:text-4xl font-bold text-semi-color-text-0 text-center mb-4'>
-            {t('landing_scenarios_title')}
-          </h2>
-          <p className='text-semi-color-text-1 text-center mb-10 md:mb-14 max-w-2xl mx-auto'>
-            {t('landing_scenarios_subtitle')}
+      {/* ===== HERO ===== */}
+      <section className='w-full min-h-[100vh] relative overflow-hidden border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+        <GameOfLifeBackground />
+        <div className='relative z-10 flex flex-col items-center justify-center min-h-[100vh] px-4 py-20'>
+          <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
+            // market-router
+          </span>
+          <h1 className='font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-center leading-tight'>
+            <span style={{ color: 'var(--lr-primary)' }}>Smart</span> AI<br />
+            API Routing<br />
+            Marketplace
+          </h1>
+          <p className='font-heading text-sm md:text-base mt-6 text-center max-w-lg' style={{ color: 'var(--lr-fg-40)' }}>
+            const router = connect({'{'} providers: 40, routing: "smart" {'}'})
           </p>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8'>
-            {SCENARIOS.map(({ key, icon }) => (
-              <div key={key} className='p-6 md:p-8 rounded-2xl bg-semi-color-bg-0 border border-semi-color-border hover:shadow-lg transition-shadow duration-200'>
-                <div className='w-14 h-14 rounded-xl bg-semi-color-fill-0 flex items-center justify-center text-semi-color-primary mb-4'>
-                  {icon}
-                </div>
-                <h3 className='text-lg md:text-xl font-semibold text-semi-color-text-0 mb-2'>
-                  {t(`landing_scenario_${key}_title`)}
-                </h3>
-                <p className='text-semi-color-text-2 text-sm md:text-base leading-relaxed'>
-                  {t(`landing_scenario_${key}_desc`)}
-                </p>
-              </div>
+          <div className='flex flex-row gap-4 mt-10'>
+            <Link to='/console'>
+              <Button theme='solid' type='primary' size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2'>
+                {t('landing_cta_start')}
+              </Button>
+            </Link>
+            <Link to='/pricing'>
+              <Button size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2' style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}>
+                {t('landing_cta_pricing')}
+              </Button>
+            </Link>
+          </div>
+        </div>
+        {/* Stats bar */}
+        <div className='absolute bottom-0 left-0 right-0 z-10 grid grid-cols-2 md:grid-cols-4 border-t' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          {STATS.map(({ value, suffix, key, prefix }, i) => (
+            <div key={key} className='flex flex-col items-center py-4 border-r' style={{ borderColor: i < (isMobile ? 1 : 3) ? 'var(--lr-fg-10)' : 'transparent' }}>
+              <span className='font-heading text-xl md:text-2xl font-light'>
+                {prefix}<CountUp end={value} suffix={suffix} />
+              </span>
+              <span className='font-heading text-[9px] tracking-widest mt-1' style={{ color: 'var(--lr-fg-40)' }}>
+                {t(`landing_stat_${key}`)}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== PROVIDERS ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <SectionHeader
+            number='01'
+            slug='providers'
+            importLine={<><span style={{ color: 'var(--lr-primary)' }}>import</span>{' { providers } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-primary)' }}>"./ecosystem"</span></>}
+          />
+          <div className='py-12 md:py-16'>{providerIcons}</div>
+        </section>
+      </Reveal>
+
+      {/* ===== SCENARIOS ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <SectionHeader
+            number='02'
+            slug='use-cases'
+            importLine={<><span style={{ color: 'var(--lr-primary)' }}>import</span>{' { scenarios } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-primary)' }}>"./market-router"</span></>}
+            actionLabel='scenarios.list()'
+          />
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
+            {SCENARIOS.map((s, i) => (
+              <ScenarioCard key={i} index={i} title={s.title} tags={s.tags} savings={s.savings} code={s.code} />
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
 
-      {/* Advantages */}
-      <section className='w-full py-12 md:py-16 lg:py-20 px-4'>
-        <div className='max-w-6xl mx-auto'>
-          <h2 className='text-2xl md:text-3xl lg:text-4xl font-bold text-semi-color-text-0 text-center mb-10 md:mb-14'>
-            {t('landing_advantages_title')}
-          </h2>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8'>
-            {ADVANTAGES.map(({ key, icon }) => (
-              <div key={key} className='text-center p-6'>
-                <div className='text-4xl mb-4'>{icon}</div>
-                <h3 className='text-lg font-semibold text-semi-color-text-0 mb-2'>
+      {/* ===== ADVANTAGES ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <SectionHeader
+            number='03'
+            slug='advantages'
+            importLine={<><span style={{ color: 'var(--lr-primary)' }}>export</span>{' { features }'}</>}
+          />
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
+            {ADVANTAGES.map(({ key }, i) => (
+              <div key={key} className='px-6 py-8 border-r border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+                <span className='font-heading text-[9px] tracking-widest' style={{ color: 'var(--lr-fg-20)' }}>
+                  feature[{i}]
+                </span>
+                <h3 className='text-base font-light font-heading mt-3 mb-2'>
                   {t(`landing_advantage_${key}_title`)}
                 </h3>
-                <p className='text-semi-color-text-2 text-sm'>
+                <p className='text-sm leading-relaxed' style={{ color: 'var(--lr-fg-40)' }}>
                   {t(`landing_advantage_${key}_desc`)}
                 </p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
 
-      {/* Quick Start */}
-      <section className='w-full py-12 md:py-16 lg:py-20 px-4 bg-semi-color-fill-0'>
-        <div className='max-w-4xl mx-auto text-center'>
-          <h2 className='text-2xl md:text-3xl lg:text-4xl font-bold text-semi-color-text-0 mb-10 md:mb-14'>
-            {t('landing_quickstart_title')}
+      {/* ===== QUICK START ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <SectionHeader
+            number='04'
+            slug='quickstart'
+            importLine={<><span style={{ color: 'var(--lr-primary)' }}>await</span>{' router.start()'}</>}
+          />
+          <div className='py-12 md:py-16 px-4'>
+            <TerminalBlock />
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ===== CTA ===== */}
+      <Reveal>
+        <section className='py-20 md:py-28 text-center px-4'>
+          <h2 className='font-heading text-2xl md:text-3xl font-light mb-8'>
+            <span style={{ color: 'var(--lr-primary)' }}>router</span>.start()
           </h2>
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            {STEPS.map(({ key, num }) => (
-              <div key={key} className='flex flex-col items-center'>
-                <div className='w-12 h-12 rounded-full bg-semi-color-primary text-white flex items-center justify-center text-xl font-bold mb-4'>
-                  {num}
-                </div>
-                <h3 className='text-lg font-semibold text-semi-color-text-0 mb-2'>
-                  {t(`landing_${key}_title`)}
-                </h3>
-                <p className='text-semi-color-text-2 text-sm'>
-                  {t(`landing_${key}_desc`)}
-                </p>
-              </div>
-            ))}
-          </div>
-          <div className='mt-10'>
-            <Link to='/register'>
-              <Button theme='solid' type='primary' size='large' className='!rounded-3xl px-10 py-2'>
-                {t('landing_cta_start')}
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+          <Link to='/register'>
+            <Button theme='solid' type='primary' size='large' className='!rounded-none px-10 py-3'>
+              {t('landing_cta_start')}
+            </Button>
+          </Link>
+        </section>
+      </Reveal>
     </div>
   );
 };

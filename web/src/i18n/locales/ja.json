@@ -3349,6 +3349,16 @@
         "landing_step2_title": "APIキー取得",
         "landing_step2_desc": "コンソールでトークンを作成し、モデルと割り当てを設定。",
         "landing_step3_title": "API呼び出し開始",
-        "landing_step3_desc": "ベースURLをMarket Routerに置き換えるだけ。すべてのOpenAI SDKと互換。"
+        "landing_step3_desc": "ベースURLをMarket Routerに置き換えるだけ。すべてのOpenAI SDKと互換。",
+        "terminal_line_1": "signup --free",
+        "terminal_line_2": "Account created. Credits: $5.00",
+        "terminal_line_3": "curl /v1/tokens --create --name my-app",
+        "terminal_line_4": "sk-mkt-xxxxxxxxxxxxxxxxxxxx",
+        "terminal_line_5": "curl /v1/chat/completions -d '{\"model\":\"gpt-4o\"}'",
+        "terminal_line_6": "{\"choices\":[{\"message\":{\"content\":\"Hello!\"}}]}",
+        "landing_stat_providers": "AIプロバイダー",
+        "landing_stat_uptime": "サービス稼働率",
+        "landing_stat_latency": "ルーティング遅延",
+        "landing_stat_savings": "コスト削減"
     }
 }
