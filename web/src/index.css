@@ -20,6 +20,23 @@
   --sidebar-current-width: var(--sidebar-width);
 }
 
+/* Market Router brand colors - use high specificity to override Semi defaults */
+body,
+body[theme-mode="light"],
+body[theme-mode="dark"] {
+  --semi-color-primary: #7c3aed !important;
+  --semi-color-primary-hover: #6d28d9 !important;
+  --semi-color-primary-active: #5b21b6 !important;
+  --semi-color-primary-disabled: rgba(124, 58, 237, 0.4) !important;
+  --semi-color-primary-light-default: rgba(124, 58, 237, 0.08) !important;
+  --semi-color-primary-light-hover: rgba(124, 58, 237, 0.15) !important;
+  --semi-color-primary-light-active: rgba(124, 58, 237, 0.22) !important;
+  --semi-color-link: #7c3aed !important;
+  --semi-color-link-hover: #6d28d9 !important;
+  --semi-color-link-active: #5b21b6 !important;
+  --semi-color-focus-border: rgba(124, 58, 237, 0.5) !important;
+}
+
 body.sidebar-collapsed {
   --sidebar-current-width: var(--sidebar-width-collapsed);
 }
