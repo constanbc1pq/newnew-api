@@ -3026,6 +3026,15 @@
         "landing_stat_providers": "AI 提供商",
         "landing_stat_uptime": "服务可用性",
         "landing_stat_latency": "路由延迟",
-        "landing_stat_savings": "成本节省"
+        "landing_stat_savings": "成本节省",
+        "landing_hero_line1": "你的 AI，",
+        "landing_hero_line2": "智能",
+        "landing_hero_line3": "路由",
+        "landing_scenario_agents_savings": "节省 60% Token",
+        "landing_scenario_vibe_coding_savings": "1 个 API Key",
+        "landing_scenario_workflow_savings": "7x24 在线",
+        "landing_scenario_vibe_design_savings": "统一接口",
+        "landing_scenario_enterprise_savings": "审计日志",
+        "landing_scenario_developer_savings": "零迁移成本"
     }
 }

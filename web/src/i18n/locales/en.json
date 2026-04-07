@@ -3422,6 +3422,15 @@
         "landing_stat_providers": "AI Providers",
         "landing_stat_uptime": "Uptime",
         "landing_stat_latency": "Routing Latency",
-        "landing_stat_savings": "Cost Savings"
+        "landing_stat_savings": "Cost Savings",
+        "landing_hero_line1": "Your AI,",
+        "landing_hero_line2": "Intelligently",
+        "landing_hero_line3": "Routed",
+        "landing_scenario_agents_savings": "-60% tokens",
+        "landing_scenario_vibe_coding_savings": "1 API key",
+        "landing_scenario_workflow_savings": "24/7 uptime",
+        "landing_scenario_vibe_design_savings": "1 interface",
+        "landing_scenario_enterprise_savings": "audit log",
+        "landing_scenario_developer_savings": "0 migration"
     }
 }

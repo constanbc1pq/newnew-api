@@ -37,12 +37,12 @@ const PROVIDERS = [
 ];
 
 const SCENARIOS = [
-  { title: 'AI Agents', tags: ['agent', 'langchain'], savings: '-60% tokens', code: 'const agent = router.create({\n  model: "auto",\n  budget: "$10"\n})' },
-  { title: 'Vibe Coding', tags: ['ide', 'cursor'], savings: '1 API key', code: '{\n  "base_url":\n  "https://api.marketrouter.ai/v1"\n}' },
-  { title: 'Workflow', tags: ['n8n', 'automation'], savings: '24/7 uptime', code: 'n8n.addNode("AI", {\n  provider: "market-router"\n})' },
-  { title: 'Vibe Design', tags: ['image', 'midjourney'], savings: '1 interface', code: 'router.images.generate({\n  model: "dall-e-3",\n  prompt: "..."\n})' },
-  { title: 'Enterprise', tags: ['compliance', 'rbac'], savings: 'audit log', code: 'router.config({\n  region: "asia",\n  audit: true\n})' },
-  { title: 'Developer API', tags: ['openai-sdk', 'rest'], savings: '0 migration', code: 'curl /v1/chat/completions \\\n  -H "Authorization: Bearer sk-..."' },
+  { key: 'agents', tags: ['agent', 'langchain'], code: 'const agent = router.create({\n  model: "auto",\n  budget: "$10"\n})' },
+  { key: 'vibe_coding', tags: ['ide', 'cursor'], code: '{\n  "base_url":\n  "https://api.marketrouter.ai/v1"\n}' },
+  { key: 'workflow', tags: ['n8n', 'automation'], code: 'n8n.addNode("AI", {\n  provider: "market-router"\n})' },
+  { key: 'vibe_design', tags: ['image', 'midjourney'], code: 'router.images.generate({\n  model: "dall-e-3",\n  prompt: "..."\n})' },
+  { key: 'enterprise', tags: ['compliance', 'rbac'], code: 'router.config({\n  region: "asia",\n  audit: true\n})' },
+  { key: 'developer', tags: ['openai-sdk', 'rest'], code: 'curl /v1/chat/completions \\\n  -H "Authorization: Bearer sk-..."' },
 ];
 
 const ADVANTAGES = [
@@ -146,9 +146,9 @@ const Home = () => {
             // market-router
           </span>
           <h1 className='font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-center leading-tight'>
-            <span style={{ color: 'var(--lr-primary)' }}>Smart</span> AI<br />
-            API Routing<br />
-            Marketplace
+            {t('landing_hero_line1')}<br />
+            <span style={{ color: 'var(--lr-primary)' }}>{t('landing_hero_line2')}</span><br />
+            {t('landing_hero_line3')}
           </h1>
           <p className='font-heading text-sm md:text-base mt-6 text-center max-w-lg' style={{ color: 'var(--lr-fg-40)' }}>
             const router = connect({'{'} providers: 40, routing: "smart" {'}'})
@@ -204,7 +204,7 @@ const Home = () => {
           />
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
             {SCENARIOS.map((s, i) => (
-              <ScenarioCard key={i} index={i} title={s.title} tags={s.tags} savings={s.savings} code={s.code} />
+              <ScenarioCard key={i} index={i} title={t(`landing_scenario_${s.key}_title`)} tags={s.tags} savings={t(`landing_scenario_${s.key}_savings`)} code={s.code} />
             ))}
           </div>
         </section>

@@ -3340,9 +3340,9 @@
         "landing_advantage_cost_title": "コスト最適化",
         "landing_advantage_cost_desc": "スマートルーティング + キャッシュ戦略で、直接API呼び出しと比較して40-60%のコスト削減。",
         "landing_advantage_reliability_title": "高可用性",
-        "landing_advantage_reliability_desc": "マルチプロバイダー自動フェイルオーバーとサーキットブレーカー内蔵。99.9%のサービス稼働率。",
+        "landing_advantage_reliability_desc": "マルチプロバイダー自動フェイルオーバーとサーキットブレーカー内蔵。99.9%の稼働率。",
         "landing_advantage_security_title": "セキュリティとコンプライアンス",
-        "landing_advantage_security_desc": "きめ細かなデータポリシー、IPホワイトリスト、完全なリクエストログでエンタープライズグレードのセキュリティ。",
+        "landing_advantage_security_desc": "きめ細かなデータポリシー、IPホワイトリスト、完全なリクエストログ。",
         "landing_quickstart_title": "3ステップで開始",
         "landing_step1_title": "アカウント作成",
         "landing_step1_desc": "30秒で登録完了。すぐに無料クレジットを取得。",
@@ -3359,6 +3359,15 @@
         "landing_stat_providers": "AIプロバイダー",
         "landing_stat_uptime": "サービス稼働率",
         "landing_stat_latency": "ルーティング遅延",
-        "landing_stat_savings": "コスト削減"
+        "landing_stat_savings": "コスト削減",
+        "landing_hero_line1": "あなたの AI を、",
+        "landing_hero_line2": "インテリジェント",
+        "landing_hero_line3": "にルーティング",
+        "landing_scenario_agents_savings": "トークン 60% 削減",
+        "landing_scenario_vibe_coding_savings": "APIキー 1つ",
+        "landing_scenario_workflow_savings": "24時間稼働",
+        "landing_scenario_vibe_design_savings": "統一インターフェース",
+        "landing_scenario_enterprise_savings": "監査ログ",
+        "landing_scenario_developer_savings": "移行不要"
     }
 }
