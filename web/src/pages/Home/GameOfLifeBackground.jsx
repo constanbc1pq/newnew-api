@@ -116,7 +116,8 @@ export default function GameOfLifeBackground() {
       ref={canvasRef}
       role='img'
       aria-label='Background animation'
-      className='absolute inset-0 w-full h-full pointer-events-none'
+      className='absolute inset-0 w-full h-full'
+      style={{ pointerEvents: 'none', touchAction: 'auto', userSelect: 'none' }}
     />
   );
 }

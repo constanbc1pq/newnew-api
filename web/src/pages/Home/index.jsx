@@ -140,7 +140,7 @@ const Home = () => {
 
       {/* ===== HERO ===== */}
       <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
-        <div className='relative overflow-hidden' style={{ height: 'calc(100vh - 60px)' }}>
+        <div className='relative overflow-hidden' style={{ height: 'calc(100vh - 60px)', touchAction: 'pan-y' }}>
           <GameOfLifeBackground />
           <div className='relative z-10 flex flex-col items-center justify-center h-full px-4 pb-20'>
             <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
