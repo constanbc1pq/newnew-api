@@ -28,9 +28,9 @@ body[theme-mode="dark"] {
   --semi-color-primary-hover: #6d28d9 !important;
   --semi-color-primary-active: #5b21b6 !important;
   --semi-color-primary-disabled: rgba(124, 58, 237, 0.4) !important;
-  --semi-color-primary-light-default: rgba(124, 58, 237, 0.08) !important;
-  --semi-color-primary-light-hover: rgba(124, 58, 237, 0.15) !important;
-  --semi-color-primary-light-active: rgba(124, 58, 237, 0.22) !important;
+  --semi-color-primary-light-default: rgba(124, 58, 237, 0.12) !important;
+  --semi-color-primary-light-hover: rgba(124, 58, 237, 0.2) !important;
+  --semi-color-primary-light-active: rgba(124, 58, 237, 0.35) !important;
   --semi-color-link: #7c3aed !important;
   --semi-color-link-hover: #6d28d9 !important;
   --semi-color-link-active: #5b21b6 !important;

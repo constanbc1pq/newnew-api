@@ -395,25 +395,18 @@ const RegisterForm = () => {
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
-          <div className='flex items-center justify-center mb-6 gap-2'>
-            <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3} className='!text-gray-800'>
-              {systemName}
-            </Title>
-          </div>
-
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('注 册')}
-              </Title>
+              </span>
             </div>
-            <div className='px-2 py-8'>
+            <div>
               <div className='space-y-3'>
                 {status.wechat_login && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={
                       <Icon svg={<WeChatIcon />} style={{ color: '#07C160' }} />
@@ -428,7 +421,7 @@ const RegisterForm = () => {
                 {status.github_oauth && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={<IconGithubLogo size='large' />}
                     onClick={handleGitHubClick}
@@ -442,7 +435,7 @@ const RegisterForm = () => {
                 {status.discord_oauth && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={
                       <SiDiscord
@@ -463,7 +456,7 @@ const RegisterForm = () => {
                 {status.oidc_enabled && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={<OIDCIcon style={{ color: '#1877F2' }} />}
                     onClick={handleOIDCClick}
@@ -476,7 +469,7 @@ const RegisterForm = () => {
                 {status.linuxdo_oauth && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={
                       <LinuxDoIcon
@@ -499,7 +492,7 @@ const RegisterForm = () => {
                     <Button
                       key={provider.slug}
                       theme='outline'
-                      className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                      className='w-full h-12 flex items-center justify-center !rounded-none'
                       type='tertiary'
                       icon={getOAuthProviderIcon(provider.icon || '', 20)}
                       onClick={() => handleCustomOAuthClick(provider)}
@@ -527,7 +520,7 @@ const RegisterForm = () => {
                 <Button
                   theme='solid'
                   type='primary'
-                  className='w-full h-12 flex items-center justify-center bg-black text-white !rounded-full hover:bg-gray-800 transition-colors'
+                  className='w-full h-12 flex items-center justify-center bg-black text-white !rounded-none hover:bg-gray-800 transition-colors'
                   icon={<IconMail size='large' />}
                   onClick={handleEmailRegisterClick}
                   loading={emailRegisterLoading}
@@ -541,14 +534,14 @@ const RegisterForm = () => {
                   {t('已有账户？')}{' '}
                   <Link
                     to='/login'
-                    className='text-blue-600 hover:text-blue-800 font-medium'
+                    className='font-medium'
                   >
                     {t('登录')}
                   </Link>
                 </Text>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -558,20 +551,13 @@ const RegisterForm = () => {
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
-          <div className='flex items-center justify-center mb-6 gap-2'>
-            <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3} className='!text-gray-800'>
-              {systemName}
-            </Title>
-          </div>
-
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('注 册')}
-              </Title>
+              </span>
             </div>
-            <div className='px-2 py-8'>
+            <div>
               <Form className='space-y-3'>
                 <Form.Input
                   field='username'
@@ -675,10 +661,11 @@ const RegisterForm = () => {
                   </div>
                 )}
 
-                <div className='space-y-2 pt-2'>
+                <div className='space-y-3 pt-4'>
                   <Button
                     theme='solid'
-                    className='w-full !rounded-full'
+                    className='w-full !rounded-none'
+                    style={{ border: '1px solid var(--lr-fg-10)' }}
                     type='primary'
                     htmlType='submit'
                     onClick={handleSubmit}
@@ -702,7 +689,7 @@ const RegisterForm = () => {
                     <Button
                       theme='outline'
                       type='tertiary'
-                      className='w-full !rounded-full'
+                      className='w-full !rounded-none'
                       onClick={handleOtherRegisterOptionsClick}
                       loading={otherRegisterOptionsLoading}
                     >
@@ -717,14 +704,14 @@ const RegisterForm = () => {
                   {t('已有账户？')}{' '}
                   <Link
                     to='/login'
-                    className='text-blue-600 hover:text-blue-800 font-medium'
+                    className='font-medium'
                   >
                     {t('登录')}
                   </Link>
                 </Text>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -770,17 +757,12 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className='relative overflow-hidden bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-      {/* 背景模糊晕染球 */}
-      <div
-        className='blur-ball blur-ball-indigo'
-        style={{ top: '-80px', right: '-80px', transform: 'none' }}
-      />
-      <div
-        className='blur-ball blur-ball-teal'
-        style={{ top: '50%', left: '-120px' }}
-      />
-      <div className='w-full max-w-sm mt-[60px]'>
+    <div className='landing flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg)', minHeight: 'calc(100vh - 64px - 80px)' }}>
+      <div className='absolute inset-0 pointer-events-none' style={{
+        backgroundImage: `linear-gradient(var(--lr-fg-10) 1px, transparent 1px), linear-gradient(90deg, var(--lr-fg-10) 1px, transparent 1px)`,
+        backgroundSize: '48px 48px',
+      }} />
+      <div className='relative z-10 w-full max-w-sm mt-[60px]'>
         {showEmailRegister ||
         !hasOAuthRegisterOptions
           ? renderEmailRegisterForm()

@@ -69,7 +69,7 @@ const PageLayout = () => {
     location.pathname !== '/console/playground';
 
   const isConsoleRoute = location.pathname.startsWith('/console');
-  const isLandingPage = location.pathname === '/';
+  const isLandingPage = ['/', '/login', '/register'].includes(location.pathname);
   const showSider = isConsoleRoute && (!isMobile || drawerOpen);
 
   useEffect(() => {

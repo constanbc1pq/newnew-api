@@ -816,9 +816,10 @@ const LoginForm = () => {
                   </Button>
 
                   <Button
-                    theme='borderless'
-                    type='tertiary'
+                    theme='light'
+                    type='primary'
                     className='w-full !rounded-none'
+                    style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}
                     onClick={handleResetPasswordClick}
                     loading={resetPasswordLoading}
                   >
@@ -835,10 +836,10 @@ const LoginForm = () => {
 
                   <div className='mt-4 text-center'>
                     <Button
-                      theme='outline'
-                      type='tertiary'
+                      theme='light'
+                      type='primary'
                       className='w-full !rounded-none'
-                      style={{ borderColor: 'var(--lr-fg-10)' }}
+                      style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}
                       onClick={handleOtherLoginOptionsClick}
                       loading={otherLoginOptionsLoading}
                     >
@@ -947,7 +948,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='landing min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg)' }}>
+    <div className='landing flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg)', minHeight: 'calc(100vh - 64px - 80px)' }}>
       <div className='absolute inset-0 pointer-events-none' style={{
         backgroundImage: `linear-gradient(var(--lr-fg-10) 1px, transparent 1px), linear-gradient(90deg, var(--lr-fg-10) 1px, transparent 1px)`,
         backgroundSize: '48px 48px',
