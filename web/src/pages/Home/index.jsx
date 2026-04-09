@@ -139,35 +139,37 @@ const Home = () => {
       <NoticeModal visible={noticeVisible} onClose={() => setNoticeVisible(false)} isMobile={isMobile} />
 
       {/* ===== HERO ===== */}
-      <section className='w-full min-h-[100vh] relative overflow-hidden border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
-        <GameOfLifeBackground />
-        <div className='relative z-10 flex flex-col items-center justify-center min-h-[100vh] px-4 py-20'>
-          <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
-            // market-router
-          </span>
-          <h1 className='font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-center leading-tight'>
-            {t('landing_hero_line1')}<br />
-            <span style={{ color: 'var(--lr-primary)' }}>{t('landing_hero_line2')}</span><br />
-            {t('landing_hero_line3')}
-          </h1>
-          <p className='font-heading text-sm md:text-base mt-6 text-center max-w-lg' style={{ color: 'var(--lr-fg-40)' }}>
-            const router = connect({'{'} providers: 40, routing: "smart" {'}'})
-          </p>
-          <div className='flex flex-row gap-4 mt-10'>
-            <Link to='/console'>
-              <Button theme='solid' type='primary' size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2'>
-                {t('landing_cta_start')}
-              </Button>
-            </Link>
-            <Link to='/pricing'>
-              <Button size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2' style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}>
-                {t('landing_cta_pricing')}
-              </Button>
-            </Link>
+      <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+        <div className='relative overflow-hidden' style={{ height: 'calc(100vh - 60px)' }}>
+          <GameOfLifeBackground />
+          <div className='relative z-10 flex flex-col items-center justify-center h-full px-4 pb-20'>
+            <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
+              // market-router
+            </span>
+            <h1 className='font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-center leading-tight'>
+              {t('landing_hero_line1')}<br />
+              <span style={{ color: 'var(--lr-primary)' }}>{t('landing_hero_line2')}</span><br />
+              {t('landing_hero_line3')}
+            </h1>
+            <p className='font-heading text-sm md:text-base mt-6 text-center max-w-lg' style={{ color: 'var(--lr-fg-40)' }}>
+              const router = connect({'{'} providers: 40, routing: "smart" {'}'})
+            </p>
+            <div className='flex flex-row gap-4 mt-10'>
+              <Link to='/console'>
+                <Button theme='solid' type='primary' size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2'>
+                  {t('landing_cta_start')}
+                </Button>
+              </Link>
+              <Link to='/pricing'>
+                <Button size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2' style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}>
+                  {t('landing_cta_pricing')}
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
         {/* Stats bar */}
-        <div className='absolute bottom-0 left-0 right-0 z-10 grid grid-cols-2 md:grid-cols-4 border-t' style={{ borderColor: 'var(--lr-fg-10)' }}>
+        <div className='grid grid-cols-2 md:grid-cols-4 border-t' style={{ borderColor: 'var(--lr-fg-10)' }}>
           {STATS.map(({ value, suffix, key, prefix }, i) => (
             <div key={key} className='flex flex-col items-center py-4 border-r' style={{ borderColor: i < (isMobile ? 1 : 3) ? 'var(--lr-fg-10)' : 'transparent' }}>
               <span className='font-heading text-xl md:text-2xl font-light'>
