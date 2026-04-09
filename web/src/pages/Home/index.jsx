@@ -140,8 +140,10 @@ const Home = () => {
 
       {/* ===== HERO ===== */}
       <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
-        <div className='relative overflow-hidden' style={{ height: 'calc(100vh - 60px)', touchAction: 'pan-y' }}>
-          <GameOfLifeBackground />
+        <div className='relative' style={{ height: 'calc(100vh - 60px)' }}>
+          <div className='absolute inset-0' style={{ clipPath: 'inset(0)' }}>
+            <GameOfLifeBackground />
+          </div>
           <div className='relative z-10 flex flex-col items-center justify-center h-full px-4 pb-20'>
             <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
               // market-router
