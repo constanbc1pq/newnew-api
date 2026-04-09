@@ -66,6 +66,26 @@ html.dark .landing {
   --lr-primary-10: rgba(167,139,250,0.1);
 }
 
+/* Global button styles: square corners, border, padding */
+.semi-button {
+  padding: 6px 16px !important;
+}
+
+button.semi-button,
+button.semi-button[class*="semi-button"] {
+  border-radius: 0 !important;
+  --semi-border-radius-small: 0;
+  --semi-border-radius-medium: 0;
+}
+
+.semi-button-light {
+  border: 1px solid var(--semi-color-primary-light-active) !important;
+}
+
+.semi-button-solid {
+  border: 1px solid rgba(124, 58, 237, 0.5) !important;
+}
+
 .font-heading {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
