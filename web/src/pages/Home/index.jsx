@@ -82,6 +82,7 @@ const Home = () => {
   const [loaded, setLoaded] = useState(false);
   const [content, setContent] = useState('');
   const [noticeVisible, setNoticeVisible] = useState(false);
+  const [activeScenario, setActiveScenario] = useState(0);
   const isMobile = useIsMobile();
 
   const loadContent = useCallback(async () => {
@@ -99,8 +100,19 @@ const Home = () => {
   useEffect(() => { loadContent(); }, [loadContent]);
 
   useEffect(() => {
+    document.documentElement.classList.add('landing-page');
     document.body.classList.add('landing-page');
-    return () => document.body.classList.remove('landing-page');
+    return () => {
+      document.documentElement.classList.remove('landing-page');
+      document.body.classList.remove('landing-page');
+    };
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveScenario(prev => (prev + 1) % SCENARIOS.length);
+    }, 2500);
+    return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -140,7 +152,7 @@ const Home = () => {
   }
 
   return (
-    <div className='landing w-full overflow-x-hidden' style={{ background: 'var(--lr-bg)', color: 'var(--lr-fg)' }}>
+    <div className='landing w-full' style={{ background: 'var(--lr-bg)', color: 'var(--lr-fg)', overflowX: 'clip' }}>
       <NoticeModal visible={noticeVisible} onClose={() => setNoticeVisible(false)} isMobile={isMobile} />
 
       {/* ===== HERO ===== */}
@@ -209,7 +221,7 @@ const Home = () => {
           />
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
             {SCENARIOS.map((s, i) => (
-              <ScenarioCard key={i} index={i} title={t(`landing_scenario_${s.key}_title`)} tags={s.tags} savings={t(`landing_scenario_${s.key}_savings`)} code={s.code} />
+              <ScenarioCard key={i} index={i} title={t(`landing_scenario_${s.key}_title`)} tags={s.tags} savings={t(`landing_scenario_${s.key}_savings`)} code={s.code} active={activeScenario === i} />
             ))}
           </div>
         </section>

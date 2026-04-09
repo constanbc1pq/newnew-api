@@ -511,11 +511,11 @@ const LoginForm = () => {
             </Title>
           </div>
 
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('登 录')}
-              </Title>
+              </span>
             </div>
             <div className='px-2 py-8'>
               <div className='space-y-3'>
@@ -699,10 +699,11 @@ const LoginForm = () => {
               {!status.self_use_mode_enabled && (
                 <div className='mt-6 text-center text-sm'>
                   <Text>
-                    {t('没有账户？')}{' '}
+                    <span style={{ color: 'var(--lr-fg-40)' }}>{t('没有账户？')}</span>{' '}
                     <Link
                       to='/register'
-                      className='text-blue-600 hover:text-blue-800 font-medium'
+                      className='font-medium'
+                      style={{ color: 'var(--lr-primary)' }}
                     >
                       {t('注册')}
                     </Link>
@@ -710,7 +711,7 @@ const LoginForm = () => {
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -720,23 +721,19 @@ const LoginForm = () => {
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
-          <div className='flex items-center justify-center mb-6 gap-2'>
-            <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3}>{systemName}</Title>
-          </div>
-
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('登 录')}
-              </Title>
+              </span>
             </div>
-            <div className='px-2 py-8'>
+            <div>
               {status.passkey_login && passkeySupported && (
                 <Button
                   theme='outline'
                   type='tertiary'
-                  className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors mb-4'
+                  className='w-full h-12 flex items-center justify-center !rounded-none mb-4'
+                  style={{ borderColor: 'var(--lr-fg-10)' }}
                   icon={<IconKey size='large' />}
                   onClick={handlePasskeyLogin}
                   loading={passkeyLoading}
@@ -802,10 +799,11 @@ const LoginForm = () => {
                   </div>
                 )}
 
-                <div className='space-y-2 pt-2'>
+                <div className='space-y-3 pt-4'>
                   <Button
                     theme='solid'
-                    className='w-full !rounded-full'
+                    className='w-full !rounded-none'
+                    style={{ border: '1px solid var(--lr-fg-10)' }}
                     type='primary'
                     htmlType='submit'
                     onClick={handleSubmit}
@@ -820,7 +818,7 @@ const LoginForm = () => {
                   <Button
                     theme='borderless'
                     type='tertiary'
-                    className='w-full !rounded-full'
+                    className='w-full !rounded-none'
                     onClick={handleResetPasswordClick}
                     loading={resetPasswordLoading}
                   >
@@ -839,7 +837,8 @@ const LoginForm = () => {
                     <Button
                       theme='outline'
                       type='tertiary'
-                      className='w-full !rounded-full'
+                      className='w-full !rounded-none'
+                      style={{ borderColor: 'var(--lr-fg-10)' }}
                       onClick={handleOtherLoginOptionsClick}
                       loading={otherLoginOptionsLoading}
                     >
@@ -852,10 +851,11 @@ const LoginForm = () => {
               {!status.self_use_mode_enabled && (
                 <div className='mt-6 text-center text-sm'>
                   <Text>
-                    {t('没有账户？')}{' '}
+                    <span style={{ color: 'var(--lr-fg-40)' }}>{t('没有账户？')}</span>{' '}
                     <Link
                       to='/register'
-                      className='text-blue-600 hover:text-blue-800 font-medium'
+                      className='font-medium'
+                      style={{ color: 'var(--lr-primary)' }}
                     >
                       {t('注册')}
                     </Link>
@@ -863,7 +863,7 @@ const LoginForm = () => {
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -947,17 +947,12 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='relative overflow-hidden bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-      {/* 背景模糊晕染球 */}
-      <div
-        className='blur-ball blur-ball-indigo'
-        style={{ top: '-80px', right: '-80px', transform: 'none' }}
-      />
-      <div
-        className='blur-ball blur-ball-teal'
-        style={{ top: '50%', left: '-120px' }}
-      />
-      <div className='w-full max-w-sm mt-[60px]'>
+    <div className='landing min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg)' }}>
+      <div className='absolute inset-0 pointer-events-none' style={{
+        backgroundImage: `linear-gradient(var(--lr-fg-10) 1px, transparent 1px), linear-gradient(90deg, var(--lr-fg-10) 1px, transparent 1px)`,
+        backgroundSize: '48px 48px',
+      }} />
+      <div className='relative z-10 w-full max-w-sm mt-[60px]'>
         {showEmailLogin ||
         !hasOAuthLoginOptions
           ? renderEmailLoginForm()

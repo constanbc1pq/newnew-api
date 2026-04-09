@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-export default function ScenarioCard({ index, title, tags, savings, code }) {
+export default function ScenarioCard({ index, title, tags, savings, code, active: autoActive = false }) {
   const [hovered, setHovered] = useState(false);
-  const active = hovered;
+  const active = hovered || autoActive;
 
   return (
     <div
