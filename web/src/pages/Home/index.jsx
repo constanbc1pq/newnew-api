@@ -140,11 +140,11 @@ const Home = () => {
 
       {/* ===== HERO ===== */}
       <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
-        <div className='relative overflow-hidden' style={{ height: 'calc(100svh - 60px)', overscrollBehavior: 'none' }}>
-          <div className='absolute inset-0'>
+        <div className='relative' style={{ minHeight: 'min(600px, 70vh)' }}>
+          <div className='absolute inset-0 pointer-events-none' style={{ zIndex: 0 }}>
             <GameOfLifeBackground />
           </div>
-          <div className='relative z-10 flex flex-col items-center justify-center h-full px-4 pb-16'>
+          <div className='relative z-10 flex flex-col items-center justify-center px-4 py-20 md:py-28 lg:py-32'>
             <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
               // market-router
             </span>
