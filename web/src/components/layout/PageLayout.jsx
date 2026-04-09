@@ -69,6 +69,7 @@ const PageLayout = () => {
     location.pathname !== '/console/playground';
 
   const isConsoleRoute = location.pathname.startsWith('/console');
+  const isLandingPage = location.pathname === '/';
   const showSider = isConsoleRoute && (!isMobile || drawerOpen);
 
   useEffect(() => {
@@ -143,6 +144,34 @@ const PageLayout = () => {
     }
   }, [i18n, userState?.user?.setting]);
 
+  if (isLandingPage) {
+    return (
+      <div>
+        <Header
+          style={{
+            padding: 0,
+            height: 'auto',
+            lineHeight: 'normal',
+            position: 'fixed',
+            width: '100%',
+            top: 0,
+            zIndex: 100,
+          }}
+        >
+          <HeaderBar
+            onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
+            drawerOpen={drawerOpen}
+          />
+        </Header>
+        <div style={{ paddingTop: '64px' }}>
+          <App />
+          <FooterBar />
+        </div>
+        <ToastContainer />
+      </div>
+    );
+  }
+
   return (
     <Layout
       className='app-layout'
@@ -170,7 +199,7 @@ const PageLayout = () => {
       </Header>
       <Layout
         style={{
-          overflow: isMobile ? 'visible' : 'auto',
+          overflow: isMobile ? 'visible' : 'hidden',
           display: 'flex',
           flexDirection: 'column',
         }}

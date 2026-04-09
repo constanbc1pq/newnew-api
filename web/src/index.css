@@ -122,9 +122,13 @@ body {
 }
 
 /* 桌面端禁止 body 纵向滚动 - 防止 VChart tooltip 触发页面滚动条 */
+/* Landing Page 通过 body.landing-page 类恢复滚动 */
 @media (min-width: 768px) {
   body {
     overflow-y: hidden;
+  }
+  body.landing-page {
+    overflow-y: auto;
   }
 }
 

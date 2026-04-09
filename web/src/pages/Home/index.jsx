@@ -99,6 +99,11 @@ const Home = () => {
   useEffect(() => { loadContent(); }, [loadContent]);
 
   useEffect(() => {
+    document.body.classList.add('landing-page');
+    return () => document.body.classList.remove('landing-page');
+  }, []);
+
+  useEffect(() => {
     (async () => {
       if (localStorage.getItem('notice_close_date') === new Date().toDateString()) return;
       try {
@@ -139,12 +144,9 @@ const Home = () => {
       <NoticeModal visible={noticeVisible} onClose={() => setNoticeVisible(false)} isMobile={isMobile} />
 
       {/* ===== HERO ===== */}
-      <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
-        <div className='relative' style={{ minHeight: 'min(600px, 70vh)' }}>
-          <div className='absolute inset-0 pointer-events-none' style={{ zIndex: 0 }}>
-            <GameOfLifeBackground />
-          </div>
-          <div className='relative z-10 flex flex-col items-center justify-center px-4 py-20 md:py-28 lg:py-32'>
+      <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)', minHeight: 'min(600px, 70vh)' }}>
+        <GameOfLifeBackground />
+        <div className='relative z-10 flex flex-col items-center justify-center px-4 py-20 md:py-28 lg:py-32'>
             <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
               // market-router
             </span>
@@ -168,7 +170,6 @@ const Home = () => {
                 </Button>
               </Link>
             </div>
-          </div>
         </div>
         {/* Stats bar */}
         <div className='grid grid-cols-2 md:grid-cols-4 border-t' style={{ borderColor: 'var(--lr-fg-10)' }}>
