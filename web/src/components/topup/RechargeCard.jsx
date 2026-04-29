@@ -35,7 +35,7 @@ import {
   Tabs,
   TabPane,
 } from '@douyinfe/semi-ui';
-import { SiAlipay, SiWechat, SiStripe } from 'react-icons/si';
+import { SiAlipay, SiWechat, SiStripe, SiBitcoin } from 'react-icons/si';
 import {
   CreditCard,
   Coins,
@@ -90,6 +90,12 @@ const RechargeCard = ({
   enableWaffoTopUp,
   waffoTopUp,
   waffoPayMethods,
+  enableCoinbaseTopUp = false,
+  coinbaseTopUp,
+  enableNowPaymentsTopUp = false,
+  nowPaymentsTopUp,
+  isNewUserPromo = false,
+  promoInfo = { limit_usd: 10, multiplier: 2.0 },
   subscriptionLoading = false,
   subscriptionPlans = [],
   billingPreference,
@@ -223,11 +229,25 @@ const RechargeCard = ({
         }
       >
         {/* 在线充值表单 */}
+        {/* 新人首充折扣提示条 */}
+        {isNewUserPromo && (
+          <Banner
+            type='success'
+            description={
+              <span>
+                🎉 {t('新人专属优惠')}：{t('首充前')} ${promoInfo.limit_usd} {t('享')} {promoInfo.multiplier}x {t('额度（即五折优惠）')}
+              </span>
+            }
+            className='!rounded-xl mb-4'
+            closeIcon={null}
+          />
+        )}
+
         {statusLoading ? (
           <div className='py-8 flex justify-center'>
             <Spin size='large' />
           </div>
-        ) : enableOnlineTopUp || enableStripeTopUp || enableCreemTopUp || enableWaffoTopUp ? (
+        ) : enableOnlineTopUp || enableStripeTopUp || enableCreemTopUp || enableWaffoTopUp || enableCoinbaseTopUp || enableNowPaymentsTopUp ? (
           <Form
             getFormApi={(api) => (onlineFormApiRef.current = api)}
             initValues={{ topUpCount: topUpCount }}
@@ -521,6 +541,38 @@ const RechargeCard = ({
                     </Space>
                   </Form.Slot>
                 )}
+
+              {/* 加密货币充值区域 */}
+              {(enableCoinbaseTopUp || enableNowPaymentsTopUp) && (
+                <Form.Slot label={t('加密货币充值')}>
+                  <Space wrap>
+                    {enableCoinbaseTopUp && (
+                      <Button
+                        theme='outline'
+                        type='tertiary'
+                        onClick={coinbaseTopUp}
+                        loading={paymentLoading}
+                        icon={<SiBitcoin size={18} color='#F7931A' />}
+                        className='!rounded-lg !px-4 !py-2'
+                      >
+                        Coinbase (BTC/ETH/USDC)
+                      </Button>
+                    )}
+                    {enableNowPaymentsTopUp && (
+                      <Button
+                        theme='outline'
+                        type='tertiary'
+                        onClick={nowPaymentsTopUp}
+                        loading={paymentLoading}
+                        icon={<SiBitcoin size={18} color='#00B67A' />}
+                        className='!rounded-lg !px-4 !py-2'
+                      >
+                        NowPayments (USDT/多币种)
+                      </Button>
+                    )}
+                  </Space>
+                </Form.Slot>
+              )}
 
               {/* Creem 充值区域 */}
               {enableCreemTopUp && creemProducts.length > 0 && (

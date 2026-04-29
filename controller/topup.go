@@ -78,24 +78,38 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	enableCoinbase := setting.CoinbaseAPIKey != "" && setting.CoinbaseWebhookSecret != ""
+	enableNowPayments := setting.NowPaymentsAPIKey != "" && setting.NowPaymentsIPNSecret != ""
+
+	promoSetting := operation_setting.GetPaymentSetting()
+	userID := c.GetInt("id")
+	isNewUser := promoSetting.NewUserPromoEnabled && !model.HasCompletedTopup(userID)
+
 	data := gin.H{
-		"enable_online_topup": operation_setting.PayAddress != "" && operation_setting.EpayId != "" && operation_setting.EpayKey != "",
-		"enable_stripe_topup": setting.StripeApiSecret != "" && setting.StripeWebhookSecret != "" && setting.StripePriceId != "",
-		"enable_creem_topup":  setting.CreemApiKey != "" && setting.CreemProducts != "[]",
-		"enable_waffo_topup": enableWaffo,
+		"enable_online_topup":    operation_setting.PayAddress != "" && operation_setting.EpayId != "" && operation_setting.EpayKey != "",
+		"enable_stripe_topup":    setting.StripeApiSecret != "" && setting.StripeWebhookSecret != "" && setting.StripePriceId != "",
+		"enable_creem_topup":     setting.CreemApiKey != "" && setting.CreemProducts != "[]",
+		"enable_waffo_topup":     enableWaffo,
+		"enable_coinbase_topup":  enableCoinbase,
+		"enable_nowpayments_topup": enableNowPayments,
 		"waffo_pay_methods": func() interface{} {
 			if enableWaffo {
 				return setting.GetWaffoPayMethods()
 			}
 			return nil
 		}(),
-		"creem_products": setting.CreemProducts,
-		"pay_methods":         payMethods,
-		"min_topup":           operation_setting.MinTopUp,
-		"stripe_min_topup":    setting.StripeMinTopUp,
-		"waffo_min_topup":     setting.WaffoMinTopUp,
-		"amount_options":      operation_setting.GetPaymentSetting().AmountOptions,
-		"discount":            operation_setting.GetPaymentSetting().AmountDiscount,
+		"creem_products":       setting.CreemProducts,
+		"pay_methods":          payMethods,
+		"min_topup":            operation_setting.MinTopUp,
+		"stripe_min_topup":     setting.StripeMinTopUp,
+		"waffo_min_topup":      setting.WaffoMinTopUp,
+		"amount_options":       promoSetting.AmountOptions,
+		"discount":             promoSetting.AmountDiscount,
+		// New-user promo fields
+		"new_user_promo_enabled":    promoSetting.NewUserPromoEnabled,
+		"new_user_promo_limit_usd":  promoSetting.NewUserPromoLimitUSD,
+		"new_user_promo_multiplier": promoSetting.NewUserPromoMultiplier,
+		"is_new_user_promo":         isNewUser,
 	}
 	common.ApiSuccess(c, data)
 }

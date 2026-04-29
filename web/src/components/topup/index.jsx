@@ -76,6 +76,16 @@ const TopUp = () => {
   const [waffoPayMethods, setWaffoPayMethods] = useState([]);
   const [waffoMinTopUp, setWaffoMinTopUp] = useState(1);
 
+  // Coinbase Commerce 相关状态
+  const [enableCoinbaseTopUp, setEnableCoinbaseTopUp] = useState(false);
+
+  // NowPayments 相关状态
+  const [enableNowPaymentsTopUp, setEnableNowPaymentsTopUp] = useState(false);
+
+  // 新人首充折扣
+  const [isNewUserPromo, setIsNewUserPromo] = useState(false);
+  const [promoInfo, setPromoInfo] = useState({ limit_usd: 10, multiplier: 2.0 });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const [payWay, setPayWay] = useState('');
@@ -495,6 +505,15 @@ const TopUp = () => {
           setEnableWaffoTopUp(enableWaffoTopUp);
           setWaffoPayMethods(data.waffo_pay_methods || []);
           setWaffoMinTopUp(data.waffo_min_topup || 1);
+          setEnableCoinbaseTopUp(data.enable_coinbase_topup || false);
+          setEnableNowPaymentsTopUp(data.enable_nowpayments_topup || false);
+          setIsNewUserPromo(data.is_new_user_promo || false);
+          if (data.new_user_promo_enabled) {
+            setPromoInfo({
+              limit_usd: data.new_user_promo_limit_usd || 10,
+              multiplier: data.new_user_promo_multiplier || 2.0,
+            });
+          }
           setMinTopUp(minTopUpValue);
           setTopUpCount(minTopUpValue);
 
@@ -667,6 +686,64 @@ const TopUp = () => {
     }
   };
 
+  const coinbaseTopUp = async () => {
+    if (!enableCoinbaseTopUp) {
+      showError(t('管理员未开启 Coinbase 充值！'));
+      return;
+    }
+    if (topUpCount < minTopUp) {
+      showError(t('充值数量不能小于') + minTopUp);
+      return;
+    }
+    setPaymentLoading(true);
+    try {
+      const res = await API.post('/api/user/coinbase/pay', {
+        amount: parseInt(topUpCount),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          window.open(data.pay_link, '_blank');
+        } else {
+          showError(typeof data === 'string' ? data : message || t('支付失败'));
+        }
+      }
+    } catch (err) {
+      showError(t('支付请求失败'));
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const nowPaymentsTopUp = async () => {
+    if (!enableNowPaymentsTopUp) {
+      showError(t('管理员未开启 NowPayments 充值！'));
+      return;
+    }
+    if (topUpCount < minTopUp) {
+      showError(t('充值数量不能小于') + minTopUp);
+      return;
+    }
+    setPaymentLoading(true);
+    try {
+      const res = await API.post('/api/user/nowpayments/pay', {
+        amount: parseInt(topUpCount),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          window.open(data.pay_link, '_blank');
+        } else {
+          showError(typeof data === 'string' ? data : message || t('支付失败'));
+        }
+      }
+    } catch (err) {
+      showError(t('支付请求失败'));
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setOpen(false);
   };
@@ -791,6 +868,12 @@ const TopUp = () => {
           enableWaffoTopUp={enableWaffoTopUp}
           waffoTopUp={waffoTopUp}
           waffoPayMethods={waffoPayMethods}
+          enableCoinbaseTopUp={enableCoinbaseTopUp}
+          coinbaseTopUp={coinbaseTopUp}
+          enableNowPaymentsTopUp={enableNowPaymentsTopUp}
+          nowPaymentsTopUp={nowPaymentsTopUp}
+          isNewUserPromo={isNewUserPromo}
+          promoInfo={promoInfo}
           presetAmounts={presetAmounts}
           selectedPreset={selectedPreset}
           selectPresetAmount={selectPresetAmount}

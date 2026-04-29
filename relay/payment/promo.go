@@ -1,0 +1,41 @@
+package payment
+
+import (
+	"github.com/QuantumNous/new-api/model"
+	"github.com/QuantumNous/new-api/setting/operation_setting"
+)
+
+// CalcTopupQuota converts a USD amount to quota units, applying the new-user
+// first-topup promo when applicable.
+//
+// Formula: quota = amountUSD × QuotaPerUnit × groupRatio × promoMultiplier
+func CalcTopupQuota(userID int, amountUSD float64, quotaPerUnit float64, groupRatio float64) int64 {
+	multiplier := newUserPromoMultiplier(userID, amountUSD)
+	return int64(amountUSD * quotaPerUnit * groupRatio * multiplier)
+}
+
+// newUserPromoMultiplier returns the effective quota multiplier for amountUSD.
+// Returns 1.0 for returning users or when promo is disabled.
+func newUserPromoMultiplier(userID int, amountUSD float64) float64 {
+	s := operation_setting.GetPaymentSetting()
+	if !s.NewUserPromoEnabled {
+		return 1.0
+	}
+	if model.HasCompletedTopup(userID) {
+		return 1.0
+	}
+
+	limit := s.NewUserPromoLimitUSD
+	mult := s.NewUserPromoMultiplier
+	if limit <= 0 || mult <= 1.0 {
+		return 1.0
+	}
+
+	if amountUSD <= limit {
+		return mult
+	}
+	// Weighted average: promo portion gets mult, remainder gets 1×.
+	promoQuota := limit * mult
+	normalQuota := amountUSD - limit
+	return (promoQuota + normalQuota) / amountUSD
+}

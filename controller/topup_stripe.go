@@ -297,6 +297,21 @@ func genStripeLink(referenceId string, customerId string, email string, amount i
 		AllowPromotionCodes: stripe.Bool(setting.StripePromotionCodesEnabled),
 	}
 
+	// Apply configured payment methods (card, alipay, wechat_pay, etc.)
+	if setting.StripePaymentMethods != "" {
+		methods := strings.Split(setting.StripePaymentMethods, ",")
+		var pmTypes []*string
+		for _, m := range methods {
+			m = strings.TrimSpace(m)
+			if m != "" {
+				pmTypes = append(pmTypes, stripe.String(m))
+			}
+		}
+		if len(pmTypes) > 0 {
+			params.PaymentMethodTypes = pmTypes
+		}
+	}
+
 	if "" == customerId {
 		if "" != email {
 			params.CustomerEmail = stripe.String(email)
