@@ -599,6 +599,29 @@ const TopUp = () => {
       searchParams.delete('show_history');
       setSearchParams(searchParams, { replace: true });
     }
+    // 支付成功回跳：刷新余额 + 提示用户
+    const payStatus = searchParams.get('pay');
+    if (payStatus === 'success') {
+      getUserQuota().then(() => {
+        Modal.success({
+          title: t('支付成功！'),
+          content: (
+            <div>
+              <p>{t('额度已到账，现在可以创建 API Key 开始调用了。')}</p>
+            </div>
+          ),
+          okText: t('去创建 API Key'),
+          onOk: () => { window.location.href = '/console/token'; },
+          cancelText: t('留在这里'),
+          centered: true,
+        });
+      });
+      searchParams.delete('pay');
+      setSearchParams(searchParams, { replace: true });
+    } else if (payStatus === 'cancel') {
+      searchParams.delete('pay');
+      setSearchParams(searchParams, { replace: true });
+    }
   }, []);
 
   useEffect(() => {
