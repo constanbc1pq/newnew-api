@@ -16,9 +16,8 @@ import (
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/relay/payment"
+	svc "github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/QuantumNous/new-api/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/thanhpk/randstr"
@@ -78,13 +77,10 @@ func RequestNowPaymentsPay(c *gin.Context) {
 		return
 	}
 
-	amountUSD := calcNowPaymentsUSD(req.Amount, user.Group)
-	quotaPerUnit := common.QuotaPerUnit
-	groupRatio := common.GetTopupGroupRatio(user.Group)
-	if groupRatio == 0 {
-		groupRatio = 1
-	}
-	quotaAmount := payment.CalcTopupQuota(userID, amountUSD, quotaPerUnit, groupRatio)
+	// Unified pricing: live FX rates + spread + new-user promo
+	quote := svc.QuoteForUser(userID, req.Amount, user.Group)
+	amountUSD := quote.FinalAmountUSD
+	quotaAmount := quote.QuotaAmount
 
 	tradeRef := fmt.Sprintf("new-api-np-%d-%d-%s", userID, time.Now().UnixMilli(), randstr.String(4))
 	tradeNo := "np_" + common.Sha1([]byte(tradeRef))
@@ -246,14 +242,3 @@ func sortedJSONString(data map[string]interface{}) string {
 	return sb.String()
 }
 
-func calcNowPaymentsUSD(quotaAmount int64, group string) float64 {
-	amount := float64(quotaAmount)
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = amount / common.QuotaPerUnit
-	}
-	topupGroupRatio := common.GetTopupGroupRatio(group)
-	if topupGroupRatio == 0 {
-		topupGroupRatio = 1
-	}
-	return amount * setting.StripeUnitPrice * topupGroupRatio
-}

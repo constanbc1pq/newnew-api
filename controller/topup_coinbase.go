@@ -14,9 +14,8 @@ import (
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/relay/payment"
+	svc "github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/QuantumNous/new-api/setting/system_setting"
 	"github.com/gin-gonic/gin"
 	"github.com/thanhpk/randstr"
@@ -89,16 +88,10 @@ func RequestCoinbasePay(c *gin.Context) {
 		return
 	}
 
-	// Calculate actual USD price with group ratio
-	amountUSD := calcCoinbaseUSD(req.Amount, user.Group)
-
-	// Apply new-user promo to determine final quota
-	quotaPerUnit := common.QuotaPerUnit
-	groupRatio := common.GetTopupGroupRatio(user.Group)
-	if groupRatio == 0 {
-		groupRatio = 1
-	}
-	quotaAmount := payment.CalcTopupQuota(userID, amountUSD, quotaPerUnit, groupRatio)
+	// Unified pricing: live FX rates + spread + new-user promo
+	quote := svc.QuoteForUser(userID, req.Amount, user.Group)
+	amountUSD := quote.FinalAmountUSD
+	quotaAmount := quote.QuotaAmount
 
 	tradeRef := fmt.Sprintf("new-api-cb-%d-%d-%s", userID, time.Now().UnixMilli(), randstr.String(4))
 	tradeNo := "cb_" + common.Sha1([]byte(tradeRef))
