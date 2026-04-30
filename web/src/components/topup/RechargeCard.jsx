@@ -96,6 +96,7 @@ const RechargeCard = ({
   nowPaymentsTopUp,
   isNewUserPromo = false,
   promoInfo = { limit_usd: 10, multiplier: 2.0 },
+  priceQuote = null,
   subscriptionLoading = false,
   subscriptionPlans = [],
   billingPreference,
@@ -243,6 +244,45 @@ const RechargeCard = ({
           />
         )}
 
+        {/* 多货币实时价格预览 */}
+        {priceQuote && priceQuote.local_prices && (
+          <div
+            className='flex flex-wrap gap-2 mb-4 px-3 py-2 rounded-xl'
+            style={{
+              background: 'var(--semi-color-fill-0)',
+              fontSize: '12px',
+              color: 'var(--semi-color-text-2)',
+            }}
+          >
+            {[
+              { cur: 'USD', sym: '$' },
+              { cur: 'CNY', sym: '¥' },
+              { cur: 'AUD', sym: 'A$' },
+              { cur: 'THB', sym: '฿' },
+              { cur: 'EUR', sym: '€' },
+              { cur: 'JPY', sym: '¥' },
+            ].map(({ cur, sym }) => {
+              const val = cur === 'USD' ? priceQuote.final_amount_usd : priceQuote.local_prices[cur];
+              if (!val) return null;
+              return (
+                <span key={cur} className='whitespace-nowrap'>
+                  <Text type='secondary' style={{ fontSize: '12px' }}>
+                    {cur}:&nbsp;
+                  </Text>
+                  <Text strong style={{ fontSize: '12px' }}>
+                    {sym}{typeof val === 'number' ? (cur === 'JPY' ? Math.round(val) : val.toFixed(2)) : val}
+                  </Text>
+                </span>
+              );
+            })}
+            {priceQuote.is_new_user_promo && priceQuote.promo_saving_usd > 0 && (
+              <Tag color='green' size='small'>
+                {t('省')} ${priceQuote.promo_saving_usd.toFixed(2)}
+              </Tag>
+            )}
+          </div>
+        )}
+
         {statusLoading ? (
           <div className='py-8 flex justify-center'>
             <Spin size='large' />
@@ -253,13 +293,13 @@ const RechargeCard = ({
             initValues={{ topUpCount: topUpCount }}
           >
             <div className='space-y-6'>
-              {(enableOnlineTopUp || enableStripeTopUp || enableWaffoTopUp) && (
+              {(enableOnlineTopUp || enableStripeTopUp || enableWaffoTopUp || enableCoinbaseTopUp || enableNowPaymentsTopUp) && (
                 <Row gutter={12}>
                   <Col xs={24} sm={24} md={24} lg={10} xl={10}>
                     <Form.InputNumber
                       field='topUpCount'
                       label={t('充值数量')}
-                      disabled={!enableOnlineTopUp && !enableStripeTopUp && !enableWaffoTopUp}
+                      disabled={false}
                       placeholder={
                         t('充值数量，最低 ') + renderQuotaWithAmount(minTopUp)
                       }

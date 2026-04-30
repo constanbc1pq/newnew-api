@@ -26,8 +26,9 @@ func GetTopUpInfo(c *gin.Context) {
 	// 获取支付方式
 	payMethods := operation_setting.PayMethods
 
-	// 如果启用了 Stripe 支付，添加到支付方法列表
-	if setting.StripeApiSecret != "" && setting.StripeWebhookSecret != "" && setting.StripePriceId != "" {
+	// 如果启用了 Stripe 支付，添加到支付方法列表（one-time topup 不依赖 StripePriceId，只需 API Key + Webhook Secret）
+	enableStripe := setting.StripeApiSecret != "" && setting.StripeWebhookSecret != ""
+	if enableStripe {
 		// 检查是否已经包含 Stripe
 		hasStripe := false
 		for _, method := range payMethods {
@@ -87,7 +88,7 @@ func GetTopUpInfo(c *gin.Context) {
 
 	data := gin.H{
 		"enable_online_topup":    operation_setting.PayAddress != "" && operation_setting.EpayId != "" && operation_setting.EpayKey != "",
-		"enable_stripe_topup":    setting.StripeApiSecret != "" && setting.StripeWebhookSecret != "" && setting.StripePriceId != "",
+		"enable_stripe_topup":    enableStripe,
 		"enable_creem_topup":     setting.CreemApiKey != "" && setting.CreemProducts != "[]",
 		"enable_waffo_topup":     enableWaffo,
 		"enable_coinbase_topup":  enableCoinbase,
@@ -110,6 +111,9 @@ func GetTopUpInfo(c *gin.Context) {
 		"new_user_promo_limit_usd":  promoSetting.NewUserPromoLimitUSD,
 		"new_user_promo_multiplier": promoSetting.NewUserPromoMultiplier,
 		"is_new_user_promo":         isNewUser,
+		// Live FX rates (spread-adjusted) for frontend price display
+		"exchange_rates":    service.GetAllRatesWithSpread(),
+		"pricing_config":    setting.GetPricingConfig(),
 	}
 	common.ApiSuccess(c, data)
 }

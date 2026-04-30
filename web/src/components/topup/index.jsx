@@ -86,6 +86,9 @@ const TopUp = () => {
   const [isNewUserPromo, setIsNewUserPromo] = useState(false);
   const [promoInfo, setPromoInfo] = useState({ limit_usd: 10, multiplier: 2.0 });
 
+  // 实时报价（多货币）
+  const [priceQuote, setPriceQuote] = useState(null);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const [payWay, setPayWay] = useState('');
@@ -630,6 +633,20 @@ const TopUp = () => {
   }, [statusState?.status]);
 
   const renderAmount = () => {
+    if (priceQuote) {
+      const usd = priceQuote.final_amount_usd;
+      const localPrices = priceQuote.local_prices || {};
+      // Show USD + a couple of relevant local currencies inline
+      const extras = ['CNY', 'AUD', 'THB'].map((cur) => {
+        const val = localPrices[cur];
+        if (!val) return null;
+        const symbols = { CNY: '¥', AUD: 'A$', THB: '฿', EUR: '€', JPY: '¥' };
+        return `${symbols[cur] || cur}${val.toFixed(2)}`;
+      }).filter(Boolean);
+      const extrasStr = extras.length > 0 ? ` (≈ ${extras.join(' / ')})` : '';
+      return `$${usd.toFixed(2)}${extrasStr}`;
+    }
+    if (amount > 0) return `$${amount.toFixed(4)}`;
     return amount + ' ' + t('元');
   };
 
@@ -669,11 +686,13 @@ const TopUp = () => {
         amount: parseFloat(value),
       });
       if (res !== undefined) {
-        const { message, data } = res.data;
+        const { message, data, quote } = res.data;
         if (message === 'success') {
           setAmount(parseFloat(data));
+          if (quote) setPriceQuote(quote);
         } else {
           setAmount(0);
+          setPriceQuote(null);
           Toast.error({ content: '错误：' + data, id: 'getAmount' });
         }
       } else {
@@ -874,6 +893,7 @@ const TopUp = () => {
           nowPaymentsTopUp={nowPaymentsTopUp}
           isNewUserPromo={isNewUserPromo}
           promoInfo={promoInfo}
+          priceQuote={priceQuote}
           presetAmounts={presetAmounts}
           selectedPreset={selectedPreset}
           selectPresetAmount={selectPresetAmount}
