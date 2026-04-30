@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import { Button, Typography } from '@douyinfe/semi-ui';
+import { Button, Typography, Tag } from '@douyinfe/semi-ui';
 import { API, showError } from '../../helpers';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
 import { StatusContext } from '../../context/Status';
@@ -13,6 +13,8 @@ import SectionHeader from './SectionHeader';
 import ScenarioCard from './ScenarioCard';
 import TerminalBlock from './TerminalBlock';
 import CountUp from './CountUp';
+import { SiAlipay, SiWechat, SiStripe, SiBitcoin, SiTether } from 'react-icons/si';
+import { CreditCard, Zap, Globe } from 'lucide-react';
 import {
   Moonshot, OpenAI, XAI, Zhipu, Volcengine, Cohere,
   Claude, Gemini, Suno, Minimax, Wenxin, Spark,
@@ -167,11 +169,19 @@ const Home = () => {
               <span style={{ color: 'var(--lr-primary)' }}>{t('landing_hero_line2')}</span><br />
               {t('landing_hero_line3')}
             </h1>
-            <p className='font-heading text-sm md:text-base mt-6 text-center max-w-lg' style={{ color: 'var(--lr-fg-40)' }}>
-              const router = connect({'{'} providers: 40, routing: "smart" {'}'})
+            {/* Direct tagline for non-tech users */}
+            <p className='font-heading text-sm md:text-base mt-6 text-center max-w-xl' style={{ color: 'var(--lr-fg-60, var(--lr-fg-40))' }}>
+              {t('landing_hero_tagline')}
             </p>
-            <div className='flex flex-row gap-4 mt-10'>
-              <Link to='/console'>
+            {/* Payment methods mini-strip in hero */}
+            <div className='flex items-center gap-3 mt-4 opacity-60'>
+              <SiStripe size={18} /><SiAlipay size={18} color='#1677FF' /><SiWechat size={18} color='#07C160' /><SiBitcoin size={18} color='#F7931A' /><SiTether size={18} color='#26A17B' />
+              <span className='font-heading text-[10px] tracking-wider' style={{ color: 'var(--lr-fg-40)' }}>
+                {t('landing_payment_card')} · {t('landing_payment_alipay')} · {t('landing_payment_wechat')} · Crypto
+              </span>
+            </div>
+            <div className='flex flex-row gap-4 mt-8'>
+              <Link to='/register'>
                 <Button theme='solid' type='primary' size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2'>
                   {t('landing_cta_start')}
                 </Button>
@@ -253,11 +263,96 @@ const Home = () => {
         </section>
       </Reveal>
 
-      {/* ===== QUICK START ===== */}
+      {/* ===== GLOBAL PAYMENT ===== */}
       <Reveal>
         <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
           <SectionHeader
             number='04'
+            slug='payment'
+            importLine={<><span style={{ color: 'var(--lr-primary)' }}>import</span>{' { pay } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-primary)' }}>"./global-checkout"</span></>}
+          />
+          <div className='py-12 md:py-16 px-4 md:px-12'>
+            <div className='max-w-4xl mx-auto'>
+              <div className='text-center mb-10'>
+                <h2 className='font-heading text-xl md:text-2xl font-light mb-2'>
+                  {t('landing_payment_title')}
+                </h2>
+                <p className='font-heading text-sm' style={{ color: 'var(--lr-fg-40)' }}>
+                  {t('landing_payment_subtitle')}
+                </p>
+              </div>
+              {/* Payment method grid */}
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-8'>
+                {[
+                  {
+                    icon: <div className='flex gap-1'><SiStripe size={20} /><CreditCard size={20} /></div>,
+                    label: t('landing_payment_card'),
+                    tags: ['Visa', 'MC', 'Amex'],
+                    color: 'rgba(99,91,255,0.1)',
+                    border: 'rgba(99,91,255,0.2)',
+                  },
+                  {
+                    icon: <SiAlipay size={28} color='#1677FF' />,
+                    label: t('landing_payment_alipay'),
+                    tags: ['CNY', 'HKD'],
+                    color: 'rgba(22,119,255,0.08)',
+                    border: 'rgba(22,119,255,0.2)',
+                  },
+                  {
+                    icon: <SiWechat size={28} color='#07C160' />,
+                    label: t('landing_payment_wechat'),
+                    tags: ['CNY'],
+                    color: 'rgba(7,193,96,0.08)',
+                    border: 'rgba(7,193,96,0.2)',
+                  },
+                  {
+                    icon: <div className='flex gap-1'><SiBitcoin size={22} color='#F7931A' /><SiTether size={22} color='#26A17B' /></div>,
+                    label: t('landing_payment_crypto'),
+                    tags: ['BTC', 'ETH', 'USDC', 'USDT'],
+                    color: 'rgba(247,147,26,0.08)',
+                    border: 'rgba(247,147,26,0.2)',
+                  },
+                ].map((method, i) => (
+                  <div
+                    key={i}
+                    className='flex flex-col items-center gap-2 p-4 rounded-xl text-center'
+                    style={{ background: method.color, border: `1px solid ${method.border}` }}
+                  >
+                    <div className='flex items-center justify-center h-8'>{method.icon}</div>
+                    <span className='font-heading text-xs font-light' style={{ color: 'var(--lr-fg)' }}>
+                      {method.label}
+                    </span>
+                    <div className='flex flex-wrap gap-1 justify-center'>
+                      {method.tags.map(tag => (
+                        <span key={tag} className='font-heading text-[10px] px-1.5 py-0.5 rounded' style={{ background: 'var(--lr-fg-10)', color: 'var(--lr-fg-40)' }}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Highlights */}
+              <div className='flex flex-wrap justify-center gap-6'>
+                {[
+                  { icon: <Zap size={14} />, text: t('landing_payment_instant') },
+                  { icon: <Globe size={14} />, text: t('landing_payment_nocache') },
+                ].map(({ icon, text }, i) => (
+                  <div key={i} className='flex items-center gap-2 font-heading text-xs' style={{ color: 'var(--lr-fg-40)' }}>
+                    {icon}<span>{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ===== QUICK START ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <SectionHeader
+            number='05'
             slug='quickstart'
             importLine={<><span style={{ color: 'var(--lr-primary)' }}>await</span>{' router.start()'}</>}
           />

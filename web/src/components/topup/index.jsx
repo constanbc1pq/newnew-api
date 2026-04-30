@@ -35,6 +35,7 @@ import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 
 import RechargeCard from './RechargeCard';
+import UsageEstimator from './UsageEstimator';
 import InvitationCard from './InvitationCard';
 import TransferModal from './modals/TransferModal';
 import PaymentConfirmModal from './modals/PaymentConfirmModal';
@@ -88,6 +89,9 @@ const TopUp = () => {
 
   // 实时报价（多货币）
   const [priceQuote, setPriceQuote] = useState(null);
+
+  // 用量估算器选中的场景
+  const [selectedTier, setSelectedTier] = useState(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
@@ -897,6 +901,19 @@ const TopUp = () => {
           </>
         )}
       </Modal>
+
+      {/* 用量估算器 */}
+      <UsageEstimator
+        quotaPerUnit={getQuotaPerUnit()}
+        t={t}
+        isNewUserPromo={isNewUserPromo}
+        onSelectTier={({ amount, label, discountRate }) => {
+          setSelectedTier({ label, discountRate });
+          setTopUpCount(amount);
+          setSelectedPreset(null);
+          getStripeAmount(amount);
+        }}
+      />
 
       {/* 主布局区域 */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>

@@ -164,6 +164,20 @@ func SetApiRouter(router *gin.Engine) {
 			subscriptionAdminRoute.DELETE("/user_subscriptions/:id", controller.AdminDeleteUserSubscription)
 		}
 
+		// Key pool admin routes
+		keyPoolRoute := apiRouter.Group("/admin/key_pools")
+		keyPoolRoute.Use(middleware.AdminAuth())
+		{
+			keyPoolRoute.GET("/", controller.GetKeyPools)
+			keyPoolRoute.POST("/", controller.CreateKeyPool)
+			keyPoolRoute.PUT("/:id", controller.UpdateKeyPool)
+			keyPoolRoute.DELETE("/:id", controller.DeleteKeyPool)
+			keyPoolRoute.GET("/:id/entries", controller.GetKeyPoolEntries)
+			keyPoolRoute.POST("/:id/entries", controller.AddKeyPoolEntry)
+			keyPoolRoute.PUT("/:id/entries/:entry_id", controller.UpdateKeyPoolEntry)
+			keyPoolRoute.DELETE("/:id/entries/:entry_id", controller.DeleteKeyPoolEntry)
+		}
+
 		// Subscription payment callbacks (no auth)
 		apiRouter.POST("/subscription/epay/notify", controller.SubscriptionEpayNotify)
 		apiRouter.GET("/subscription/epay/notify", controller.SubscriptionEpayNotify)

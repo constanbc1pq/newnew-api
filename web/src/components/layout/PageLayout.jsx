@@ -38,6 +38,7 @@ import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 import { useLocation } from 'react-router-dom';
 import { normalizeLanguage } from '../../i18n/language';
+import LanguageSuggestionBanner from '../common/LanguageSuggestionBanner';
 const { Sider, Content, Header } = Layout;
 
 const PageLayout = () => {
@@ -147,6 +148,10 @@ const PageLayout = () => {
   if (isLandingPage) {
     return (
       <div>
+        {/* Language suggestion banner — shown above everything */}
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200 }}>
+          <LanguageSuggestionBanner />
+        </div>
         <Header
           style={{
             padding: 0,
@@ -156,7 +161,9 @@ const PageLayout = () => {
             width: '100%',
             top: 0,
             zIndex: 100,
+            // will be pushed down if banner is visible via CSS
           }}
+          id='main-header'
         >
           <HeaderBar
             onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
@@ -192,6 +199,7 @@ const PageLayout = () => {
           zIndex: 100,
         }}
       >
+        <LanguageSuggestionBanner />
         <HeaderBar
           onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
           drawerOpen={drawerOpen}
