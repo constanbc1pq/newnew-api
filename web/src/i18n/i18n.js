@@ -23,7 +23,19 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import enTranslation from './locales/en.json';
 import zhCNTranslation from './locales/zh-CN.json';
+import zhTWTranslation from './locales/zh-TW.json';
 import jaTranslation from './locales/ja.json';
+import frTranslation from './locales/fr.json';
+import ruTranslation from './locales/ru.json';
+import viTranslation from './locales/vi.json';
+import koTranslation from './locales/ko.json';
+import esTranslation from './locales/es.json';
+import deTranslation from './locales/de.json';
+import ptBRTranslation from './locales/pt-BR.json';
+import arTranslation from './locales/ar.json';
+import idTranslation from './locales/id.json';
+import trTranslation from './locales/tr.json';
+import hiTranslation from './locales/hi.json';
 import { supportedLanguages } from './language';
 
 i18n
@@ -33,11 +45,24 @@ i18n
     load: 'currentOnly',
     supportedLngs: supportedLanguages,
     resources: {
-      en: enTranslation,
+      'en':    enTranslation,
       'zh-CN': zhCNTranslation,
-      ja: jaTranslation,
+      'zh-TW': zhTWTranslation,
+      'ja':    jaTranslation,
+      'fr':    frTranslation,
+      'ru':    ruTranslation,
+      'vi':    viTranslation,
+      'ko':    koTranslation,
+      'es':    esTranslation,
+      'de':    deTranslation,
+      'pt-BR': ptBRTranslation,
+      'ar':    arTranslation,
+      'id':    idTranslation,
+      'tr':    trTranslation,
+      'hi':    hiTranslation,
     },
-    fallbackLng: 'zh-CN',
+    // Fall back to English for any missing keys in non-zh-CN locales
+    fallbackLng: 'en',
     nsSeparator: false,
     interpolation: {
       escapeValue: false,

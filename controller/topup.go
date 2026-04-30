@@ -482,3 +482,18 @@ func AdminCompleteTopUp(c *gin.Context) {
 	common.ApiSuccess(c, nil)
 }
 
+
+// GetUserTransactions returns paginated payment transaction history for the authenticated user.
+// GET /api/transactions?page=1&size=20
+func GetUserTransactions(c *gin.Context) {
+	userId := c.GetInt("id")
+	pageInfo := common.GetPageQuery(c)
+	txs, total, err := model.GetUserTransactions(userId, pageInfo)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	pageInfo.SetTotal(int(total))
+	pageInfo.SetItems(txs)
+	common.ApiSuccess(c, pageInfo)
+}

@@ -37,8 +37,7 @@ import {
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 import { useLocation } from 'react-router-dom';
-import { normalizeLanguage } from '../../i18n/language';
-import LanguageSuggestionBanner from '../common/LanguageSuggestionBanner';
+import { normalizeLanguage, RTL_LANGS } from '../../i18n/language';
 const { Sider, Content, Header } = Layout;
 
 const PageLayout = () => {
@@ -145,13 +144,16 @@ const PageLayout = () => {
     }
   }, [i18n, userState?.user?.setting]);
 
+  // RTL support: set document direction when language changes
+  useEffect(() => {
+    const lang = normalizeLanguage(i18n.language);
+    document.documentElement.dir = RTL_LANGS.has(lang) ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang || 'en';
+  }, [i18n.language]);
+
   if (isLandingPage) {
     return (
       <div>
-        {/* Language suggestion banner — shown above everything */}
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200 }}>
-          <LanguageSuggestionBanner />
-        </div>
         <Header
           style={{
             padding: 0,
@@ -199,7 +201,6 @@ const PageLayout = () => {
           zIndex: 100,
         }}
       >
-        <LanguageSuggestionBanner />
         <HeaderBar
           onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
           drawerOpen={drawerOpen}

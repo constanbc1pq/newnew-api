@@ -5,13 +5,34 @@ import (
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 )
 
-// CalcTopupQuota converts a USD amount to quota units, applying the new-user
-// first-topup promo when applicable.
+// CalcTopupQuota converts a USD amount to quota units, applying:
+//  1. New-user first-topup promo multiplier
+//  2. Volume discount bonus (AmountDiscount config: amount→bonus multiplier)
 //
-// Formula: quota = amountUSD × QuotaPerUnit × groupRatio × promoMultiplier
+// Formula: quota = amountUSD × QuotaPerUnit × groupRatio × promoMult × volumeMult
 func CalcTopupQuota(userID int, amountUSD float64, quotaPerUnit float64, groupRatio float64) int64 {
-	multiplier := newUserPromoMultiplier(userID, amountUSD)
-	return int64(amountUSD * quotaPerUnit * groupRatio * multiplier)
+	promoMult := newUserPromoMultiplier(userID, amountUSD)
+	volumeMult := volumeDiscountMultiplier(amountUSD)
+	return int64(amountUSD * quotaPerUnit * groupRatio * promoMult * volumeMult)
+}
+
+// volumeDiscountMultiplier returns the quota bonus multiplier for a given USD amount.
+// Uses AmountDiscount setting: e.g. {20: 1.05, 100: 1.10, 200: 1.20}
+// Picks the largest threshold ≤ amountUSD.
+func volumeDiscountMultiplier(amountUSD float64) float64 {
+	s := operation_setting.GetPaymentSetting()
+	if len(s.AmountDiscount) == 0 {
+		return 1.0
+	}
+	best := 1.0
+	bestThreshold := -1
+	for threshold, mult := range s.AmountDiscount {
+		if float64(threshold) <= amountUSD && threshold > bestThreshold {
+			bestThreshold = threshold
+			best = mult
+		}
+	}
+	return best
 }
 
 // newUserPromoMultiplier returns the effective quota multiplier for amountUSD.

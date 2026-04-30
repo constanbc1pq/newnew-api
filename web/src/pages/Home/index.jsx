@@ -13,8 +13,12 @@ import SectionHeader from './SectionHeader';
 import ScenarioCard from './ScenarioCard';
 import TerminalBlock from './TerminalBlock';
 import CountUp from './CountUp';
-import { SiAlipay, SiWechat, SiStripe, SiBitcoin, SiTether } from 'react-icons/si';
-import { CreditCard, Zap, Globe } from 'lucide-react';
+import {
+  SiAlipay, SiWechat, SiStripe, SiBitcoin, SiTether,
+  SiPaypal, SiGooglepay, SiApplepay, SiVisa, SiMastercard,
+  SiAmericanexpress, SiEthereum,
+} from 'react-icons/si';
+import { CreditCard, Zap, Globe, Link as LinkIcon, Smartphone } from 'lucide-react';
 import {
   Moonshot, OpenAI, XAI, Zhipu, Volcengine, Cohere,
   Claude, Gemini, Suno, Minimax, Wenxin, Spark,
@@ -24,6 +28,22 @@ import {
 
 const { Text } = Typography;
 const ICON_CLS = 'w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center';
+
+// Reusable payment method card for the landing page
+const PaymentCard = ({ icon, label, sub, color, border }) => (
+  <div
+    className='flex flex-col items-center gap-1.5 p-3 rounded-xl text-center'
+    style={{ background: color, border: `1px solid ${border}` }}
+  >
+    <div className='flex items-center justify-center h-7'>{icon}</div>
+    <span className='font-heading text-xs font-medium leading-tight' style={{ color: 'var(--lr-fg)' }}>
+      {label}
+    </span>
+    <span className='font-heading text-[10px] leading-tight' style={{ color: 'var(--lr-fg-40)' }}>
+      {sub}
+    </span>
+  </div>
+);
 
 const PROVIDERS = [
   { key: 'openai', I: OpenAI }, { key: 'claude', I: Claude, c: 1 },
@@ -175,7 +195,7 @@ const Home = () => {
             </p>
             {/* Payment methods mini-strip in hero */}
             <div className='flex items-center gap-3 mt-4 opacity-60'>
-              <SiStripe size={18} /><SiAlipay size={18} color='#1677FF' /><SiWechat size={18} color='#07C160' /><SiBitcoin size={18} color='#F7931A' /><SiTether size={18} color='#26A17B' />
+              <SiVisa size={18} /><SiMastercard size={18} /><SiApplepay size={20} /><SiGooglepay size={22} /><SiPaypal size={18} color='#003087' /><SiAlipay size={18} color='#1677FF' /><SiWechat size={18} color='#07C160' /><SiBitcoin size={18} color='#F7931A' /><SiTether size={18} color='#26A17B' />
               <span className='font-heading text-[10px] tracking-wider' style={{ color: 'var(--lr-fg-40)' }}>
                 {t('landing_payment_card')} · {t('landing_payment_alipay')} · {t('landing_payment_wechat')} · Crypto
               </span>
@@ -272,7 +292,8 @@ const Home = () => {
             importLine={<><span style={{ color: 'var(--lr-primary)' }}>import</span>{' { pay } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-primary)' }}>"./global-checkout"</span></>}
           />
           <div className='py-12 md:py-16 px-4 md:px-12'>
-            <div className='max-w-4xl mx-auto'>
+            <div className='max-w-5xl mx-auto'>
+
               <div className='text-center mb-10'>
                 <h2 className='font-heading text-xl md:text-2xl font-light mb-2'>
                   {t('landing_payment_title')}
@@ -281,68 +302,147 @@ const Home = () => {
                   {t('landing_payment_subtitle')}
                 </p>
               </div>
-              {/* Payment method grid */}
-              <div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-8'>
-                {[
-                  {
-                    icon: <div className='flex gap-1'><SiStripe size={20} /><CreditCard size={20} /></div>,
-                    label: t('landing_payment_card'),
-                    tags: ['Visa', 'MC', 'Amex'],
-                    color: 'rgba(99,91,255,0.1)',
-                    border: 'rgba(99,91,255,0.2)',
-                  },
-                  {
-                    icon: <SiAlipay size={28} color='#1677FF' />,
-                    label: t('landing_payment_alipay'),
-                    tags: ['CNY', 'HKD'],
-                    color: 'rgba(22,119,255,0.08)',
-                    border: 'rgba(22,119,255,0.2)',
-                  },
-                  {
-                    icon: <SiWechat size={28} color='#07C160' />,
-                    label: t('landing_payment_wechat'),
-                    tags: ['CNY'],
-                    color: 'rgba(7,193,96,0.08)',
-                    border: 'rgba(7,193,96,0.2)',
-                  },
-                  {
-                    icon: <div className='flex gap-1'><SiBitcoin size={22} color='#F7931A' /><SiTether size={22} color='#26A17B' /></div>,
-                    label: t('landing_payment_crypto'),
-                    tags: ['BTC', 'ETH', 'USDC', 'USDT'],
-                    color: 'rgba(247,147,26,0.08)',
-                    border: 'rgba(247,147,26,0.2)',
-                  },
-                ].map((method, i) => (
-                  <div
-                    key={i}
-                    className='flex flex-col items-center gap-2 p-4 rounded-xl text-center'
-                    style={{ background: method.color, border: `1px solid ${method.border}` }}
-                  >
-                    <div className='flex items-center justify-center h-8'>{method.icon}</div>
-                    <span className='font-heading text-xs font-light' style={{ color: 'var(--lr-fg)' }}>
-                      {method.label}
-                    </span>
-                    <div className='flex flex-wrap gap-1 justify-center'>
-                      {method.tags.map(tag => (
-                        <span key={tag} className='font-heading text-[10px] px-1.5 py-0.5 rounded' style={{ background: 'var(--lr-fg-10)', color: 'var(--lr-fg-40)' }}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+
+              {/* ── Row 1: Global cards & digital wallets ── */}
+              <div className='mb-3'>
+                <p className='font-heading text-[10px] uppercase tracking-widest mb-2' style={{ color: 'var(--lr-fg-30)' }}>
+                  {t('landing_payment_group_cards', 'Cards & Digital Wallets')}
+                </p>
+                <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
+                  {[
+                    {
+                      icon: <div className='flex items-center gap-1.5'>
+                        <SiVisa size={22} color='#1A1F71' />
+                        <SiMastercard size={22} />
+                        <SiAmericanexpress size={22} color='#007BC1' />
+                      </div>,
+                      label: 'Credit / Debit',
+                      sub: 'Visa · MC · Amex · UnionPay',
+                      color: 'rgba(99,91,255,0.07)',
+                      border: 'rgba(99,91,255,0.18)',
+                    },
+                    {
+                      icon: <div className='flex items-center gap-1.5'>
+                        <SiApplepay size={28} />
+                      </div>,
+                      label: 'Apple Pay',
+                      sub: 'One-tap on Apple devices',
+                      color: 'rgba(0,0,0,0.05)',
+                      border: 'rgba(0,0,0,0.12)',
+                    },
+                    {
+                      icon: <SiGooglepay size={32} />,
+                      label: 'Google Pay',
+                      sub: 'One-tap on Android & Chrome',
+                      color: 'rgba(66,133,244,0.07)',
+                      border: 'rgba(66,133,244,0.18)',
+                    },
+                    {
+                      icon: <div className='flex items-center gap-1.5'>
+                        <LinkIcon size={18} style={{ color: '#635BFF' }} />
+                        <SiStripe size={18} style={{ color: '#635BFF' }} />
+                      </div>,
+                      label: 'Stripe Link',
+                      sub: 'One-click returning checkout',
+                      color: 'rgba(99,91,255,0.07)',
+                      border: 'rgba(99,91,255,0.18)',
+                    },
+                  ].map((m, i) => <PaymentCard key={i} {...m} />)}
+                </div>
               </div>
-              {/* Highlights */}
+
+              {/* ── Row 2: Chinese & Asian e-wallets ── */}
+              <div className='mb-3'>
+                <p className='font-heading text-[10px] uppercase tracking-widest mb-2' style={{ color: 'var(--lr-fg-30)' }}>
+                  {t('landing_payment_group_asia', 'Asian E-Wallets')}
+                </p>
+                <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
+                  {[
+                    {
+                      icon: <SiAlipay size={26} color='#1677FF' />,
+                      label: t('landing_payment_alipay'),
+                      sub: 'CNY · HKD · Global',
+                      color: 'rgba(22,119,255,0.07)',
+                      border: 'rgba(22,119,255,0.18)',
+                    },
+                    {
+                      icon: <SiWechat size={26} color='#07C160' />,
+                      label: t('landing_payment_wechat'),
+                      sub: 'CNY · WeChat users',
+                      color: 'rgba(7,193,96,0.07)',
+                      border: 'rgba(7,193,96,0.18)',
+                    },
+                    {
+                      icon: <Smartphone size={22} style={{ color: '#FF6B00' }} />,
+                      label: 'GrabPay',
+                      sub: 'SE Asia',
+                      color: 'rgba(255,107,0,0.07)',
+                      border: 'rgba(255,107,0,0.18)',
+                    },
+                    {
+                      icon: <Smartphone size={22} style={{ color: '#E2001A' }} />,
+                      label: 'PromptPay · FPX · PayNow',
+                      sub: 'TH · MY · SG',
+                      color: 'rgba(226,0,26,0.07)',
+                      border: 'rgba(226,0,26,0.18)',
+                    },
+                  ].map((m, i) => <PaymentCard key={i} {...m} />)}
+                </div>
+              </div>
+
+              {/* ── Row 3: Crypto ── */}
+              <div className='mb-8'>
+                <p className='font-heading text-[10px] uppercase tracking-widest mb-2' style={{ color: 'var(--lr-fg-30)' }}>
+                  {t('landing_payment_group_crypto', 'Cryptocurrency')}
+                </p>
+                <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
+                  {[
+                    {
+                      icon: <SiBitcoin size={26} color='#F7931A' />,
+                      label: 'Bitcoin',
+                      sub: 'BTC on-chain',
+                      color: 'rgba(247,147,26,0.07)',
+                      border: 'rgba(247,147,26,0.18)',
+                    },
+                    {
+                      icon: <SiEthereum size={26} color='#627EEA' />,
+                      label: 'Ethereum',
+                      sub: 'ETH · USDC · DAI',
+                      color: 'rgba(98,126,234,0.07)',
+                      border: 'rgba(98,126,234,0.18)',
+                    },
+                    {
+                      icon: <SiTether size={26} color='#26A17B' />,
+                      label: 'Tether',
+                      sub: 'USDT TRC-20 · ERC-20',
+                      color: 'rgba(38,161,123,0.07)',
+                      border: 'rgba(38,161,123,0.18)',
+                    },
+                    {
+                      icon: <div className='font-mono text-xs font-bold' style={{ color: 'var(--lr-fg-50)' }}>300+</div>,
+                      label: t('landing_payment_more_crypto', 'More Coins'),
+                      sub: 'via NowPayments',
+                      color: 'rgba(0,0,0,0.03)',
+                      border: 'rgba(0,0,0,0.08)',
+                    },
+                  ].map((m, i) => <PaymentCard key={i} {...m} />)}
+                </div>
+              </div>
+
+              {/* Highlights strip */}
               <div className='flex flex-wrap justify-center gap-6'>
                 {[
-                  { icon: <Zap size={14} />, text: t('landing_payment_instant') },
-                  { icon: <Globe size={14} />, text: t('landing_payment_nocache') },
+                  { icon: <Zap size={13} />, text: t('landing_payment_instant') },
+                  { icon: <Globe size={13} />, text: t('landing_payment_nocache') },
+                  { icon: <CreditCard size={13} />, text: t('landing_payment_currencies', '40+ currencies') },
+                  { icon: <LinkIcon size={13} />, text: t('landing_payment_newuser_promo', 'First $10 at 2× quota') },
                 ].map(({ icon, text }, i) => (
                   <div key={i} className='flex items-center gap-2 font-heading text-xs' style={{ color: 'var(--lr-fg-40)' }}>
                     {icon}<span>{text}</span>
                   </div>
                 ))}
               </div>
+
             </div>
           </div>
         </section>

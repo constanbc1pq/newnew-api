@@ -24,6 +24,7 @@ import { StatusContext } from '../../context/Status';
 
 import DashboardHeader from './DashboardHeader';
 import OnboardingCard from './OnboardingCard';
+import RedeemCodeBox from '../common/RedeemCodeBox';
 import StatsCards from './StatsCards';
 import ChartsPanel from './ChartsPanel';
 import ApiInfoPanel from './ApiInfoPanel';
@@ -203,13 +204,25 @@ const Dashboard = () => {
 
       {/* 新人三步引导卡 — 仅对零余额零消耗用户展示 */}
       {isNewUser && (
-        <OnboardingCard
-          isNewUserPromo={onboardingInfo.isNewUserPromo}
-          promoInfo={onboardingInfo.promoInfo}
-          userQuota={userState?.user?.quota ?? 0}
-          hasToken={onboardingInfo.hasToken}
-          t={dashboardData.t}
-        />
+        <>
+          <OnboardingCard
+            isNewUserPromo={onboardingInfo.isNewUserPromo}
+            promoInfo={onboardingInfo.promoInfo}
+            userQuota={userState?.user?.quota ?? 0}
+            hasToken={onboardingInfo.hasToken}
+            t={dashboardData.t}
+          />
+          {/* Redeem code entry — shown inline for new users who may have a promo code */}
+          <div style={{
+            margin: '-8px 0 16px',
+            padding: '12px 20px',
+            background: 'var(--semi-color-bg-2)',
+            borderRadius: 12,
+            border: '1px solid var(--semi-color-border)',
+          }}>
+            <RedeemCodeBox compact={false} />
+          </div>
+        </>
       )}
 
       <StatsCards

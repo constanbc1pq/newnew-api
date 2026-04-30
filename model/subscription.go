@@ -671,6 +671,29 @@ func GetAllActiveUserSubscriptions(userId int) ([]SubscriptionSummary, error) {
 	return buildSubscriptionSummaries(subs), nil
 }
 
+// GetActiveSubscriptionKeyPoolID returns the KeyPoolID of the user's first active subscription
+// whose plan has a non-zero KeyPoolID. Returns 0 if no such subscription exists.
+// Used in the relay hot path — single JOIN query, zero extra round trips.
+func GetActiveSubscriptionKeyPoolID(userId int) (int, error) {
+	if userId <= 0 {
+		return 0, nil
+	}
+	now := common.GetTimestamp()
+	var keyPoolID int
+	err := DB.Raw(`
+		SELECT sp.key_pool_id
+		FROM user_subscriptions us
+		JOIN subscription_plans sp ON sp.id = us.plan_id
+		WHERE us.user_id = ? AND us.status = 'active' AND us.end_time > ? AND sp.key_pool_id > 0
+		ORDER BY us.end_time DESC
+		LIMIT 1
+	`, userId, now).Scan(&keyPoolID).Error
+	if err != nil {
+		return 0, err
+	}
+	return keyPoolID, nil
+}
+
 // HasActiveUserSubscription returns whether the user has any active subscription.
 // This is a lightweight existence check to avoid heavy pre-consume transactions.
 func HasActiveUserSubscription(userId int) (bool, error) {

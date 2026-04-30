@@ -45,6 +45,9 @@ import ModelPage from './pages/Model';
 import ModelDeploymentPage from './pages/ModelDeployment';
 import Playground from './pages/Playground';
 import Subscription from './pages/Subscription';
+import KeyPool from './pages/KeyPool';
+import EmailCampaigns from './pages/EmailCampaigns';
+import Billing from './pages/Billing';
 import OAuth2Callback from './components/auth/OAuth2Callback';
 import PersonalSetting from './components/settings/PersonalSetting';
 import Setup from './pages/Setup';
@@ -129,6 +132,30 @@ function App() {
             <AdminRoute>
               <Subscription />
             </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/key-pools'
+          element={
+            <AdminRoute>
+              <KeyPool />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/campaigns'
+          element={
+            <AdminRoute>
+              <EmailCampaigns />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/billing'
+          element={
+            <PrivateRoute>
+              <Billing />
+            </PrivateRoute>
           }
         />
         <Route

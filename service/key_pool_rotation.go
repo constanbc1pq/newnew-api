@@ -12,6 +12,38 @@ import (
 // poolCounters holds round-robin counters per pool (poolID → *int64).
 var poolCounters sync.Map
 
+// GetNextPoolPlainKey picks the next entry from a pool and returns its decrypted key.
+// Use this in the relay hot path where the actual key is needed.
+func GetNextPoolPlainKey(poolID int) (plainKey string, entry *model.KeyPoolEntry, err error) {
+	entries, err := model.GetEnabledPoolEntries(poolID)
+	if err != nil {
+		return "", nil, err
+	}
+	if len(entries) == 0 {
+		return "", nil, errors.New("no enabled entries in pool")
+	}
+	pool, err := model.GetKeyPool(poolID)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var picked *model.KeyPoolEntry
+	switch pool.RotationMode {
+	case "weighted":
+		picked = weightedSelect(entries)
+	case "random":
+		picked = randomSelect(entries)
+	default:
+		picked = roundRobinSelect(poolID, entries)
+	}
+
+	plainKey, err = DecryptPoolEntryKey(picked)
+	if err != nil {
+		return "", nil, err
+	}
+	return plainKey, picked, nil
+}
+
 // GetNextPoolEntry picks the next key from a pool based on its rotation mode.
 // Returns the entry and a masked version of the key (first 8 chars + "...").
 func GetNextPoolEntry(poolID int) (*model.KeyPoolEntry, string, error) {

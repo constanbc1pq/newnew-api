@@ -50,6 +50,9 @@ import {
   IconUser,
   IconLock,
   IconKey,
+  IconGift,
+  IconChevronDown,
+  IconChevronRight,
 } from '@douyinfe/semi-icons';
 import {
   onGitHubOAuthClicked,
@@ -80,7 +83,9 @@ const RegisterForm = () => {
     email: '',
     verification_code: '',
     wechat_verification_code: '',
+    promo_code: '',
   });
+  const [showPromoField, setShowPromoField] = useState(false);
   const { username, password, password2 } = inputs;
   const [userState, userDispatch] = useContext(UserContext);
   const [statusState] = useContext(StatusContext);
@@ -622,6 +627,38 @@ const RegisterForm = () => {
                     />
                   </>
                 )}
+
+                {/* Optional promo code — collapsed by default */}
+                <div style={{ paddingTop: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowPromoField(v => !v)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                      color: 'var(--semi-color-text-2)', fontSize: 13, padding: 0,
+                    }}
+                  >
+                    {showPromoField ? <IconChevronDown size="small" /> : <IconChevronRight size="small" />}
+                    <IconGift size="small" />
+                    有优惠码？
+                  </button>
+                  {showPromoField && (
+                    <div style={{ marginTop: 8 }}>
+                      <Form.Input
+                        field='promo_code'
+                        placeholder='输入兑换码（可选）'
+                        value={inputs.promo_code}
+                        onChange={(value) => handleChange('promo_code', value.toUpperCase())}
+                        prefix={<IconGift />}
+                        style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}
+                      />
+                      <Text type="tertiary" size="small" style={{ display: 'block', marginTop: 4 }}>
+                        注册后兑换码将自动核销，额度即时到账
+                      </Text>
+                    </div>
+                  )}
+                </div>
 
                 {(hasUserAgreement || hasPrivacyPolicy) && (
                   <div className='pt-4'>

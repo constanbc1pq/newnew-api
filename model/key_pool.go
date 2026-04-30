@@ -94,9 +94,18 @@ func DeleteKeyPool(id int) error {
 }
 
 // GetEnabledPoolEntries returns all enabled entries for a given pool.
+// Used in the relay hot-path to pick the next key.
 func GetEnabledPoolEntries(poolID int) ([]KeyPoolEntry, error) {
 	var entries []KeyPoolEntry
 	err := DB.Where("pool_id = ? AND enabled = ?", poolID, true).Find(&entries).Error
+	return entries, err
+}
+
+// GetAllPoolEntries returns all entries (enabled and disabled) for a given pool.
+// Used by the admin API to display the full list.
+func GetAllPoolEntries(poolID int) ([]KeyPoolEntry, error) {
+	var entries []KeyPoolEntry
+	err := DB.Where("pool_id = ?", poolID).Order("id asc").Find(&entries).Error
 	return entries, err
 }
 

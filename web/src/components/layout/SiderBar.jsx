@@ -49,6 +49,9 @@ const routerMap = {
   deployment: '/console/deployment',
   playground: '/console/playground',
   personal: '/console/personal',
+  'key-pools': '/console/key-pools',
+  campaigns: '/console/campaigns',
+  billing: '/console/billing',
 };
 
 const SiderBar = ({ onNavigate = () => {} }) => {
@@ -130,6 +133,11 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         to: '/topup',
       },
       {
+        text: t('Billing'),
+        itemKey: 'billing',
+        to: '/billing',
+      },
+      {
         text: t('个人设置'),
         itemKey: 'personal',
         to: '/personal',
@@ -157,6 +165,18 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         text: t('订阅管理'),
         itemKey: 'subscription',
         to: '/subscription',
+        className: isAdmin() ? '' : 'tableHiddle',
+      },
+      {
+        text: t('Key Pool'),
+        itemKey: 'key-pools',
+        to: '/console/key-pools',
+        className: isAdmin() ? '' : 'tableHiddle',
+      },
+      {
+        text: t('Email Campaigns'),
+        itemKey: 'campaigns',
+        to: '/console/campaigns',
         className: isAdmin() ? '' : 'tableHiddle',
       },
       {

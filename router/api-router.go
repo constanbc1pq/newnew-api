@@ -86,7 +86,9 @@ func SetApiRouter(router *gin.Engine) {
 				selfRoute.GET("/aff", controller.GetAffCode)
 				selfRoute.GET("/topup/info", controller.GetTopUpInfo)
 				selfRoute.GET("/topup/self", controller.GetUserTopUps)
-				selfRoute.POST("/topup", middleware.CriticalRateLimit(), controller.TopUp)
+				selfRoute.GET("/transactions", controller.GetUserTransactions)
+				selfRoute.POST("/topup", middleware.CriticalRateLimit(), controller.TopUp)    // legacy: redemption via key field
+				selfRoute.POST("/redeem", middleware.CriticalRateLimit(), controller.RedeemCode) // dedicated redeem endpoint
 				selfRoute.POST("/pay", middleware.CriticalRateLimit(), controller.RequestEpay)
 				selfRoute.POST("/amount", controller.RequestAmount)
 				selfRoute.POST("/stripe/pay", middleware.CriticalRateLimit(), controller.RequestStripePay)
@@ -390,6 +392,20 @@ func SetApiRouter(router *gin.Engine) {
 			deploymentsRoute.PUT("/:id/name", controller.UpdateDeploymentName)
 			deploymentsRoute.POST("/:id/extend", controller.ExtendDeployment)
 			deploymentsRoute.DELETE("/:id", controller.DeleteDeployment)
+		}
+
+		// Email Campaigns (admin only)
+		campaignRoute := apiRouter.Group("/admin/campaigns")
+		campaignRoute.Use(middleware.AdminAuth())
+		{
+			campaignRoute.GET("/", controller.ListEmailCampaigns)
+			campaignRoute.POST("/", controller.CreateEmailCampaign)
+			campaignRoute.GET("/:id", controller.GetEmailCampaign)
+			campaignRoute.PUT("/:id", controller.UpdateEmailCampaign)
+			campaignRoute.DELETE("/:id", controller.DeleteEmailCampaign)
+			campaignRoute.GET("/:id/recipients", controller.PreviewCampaignRecipients)
+			campaignRoute.POST("/:id/send", controller.TriggerCampaignSend)
+			campaignRoute.POST("/:id/pause", controller.PauseCampaign)
 		}
 	}
 }

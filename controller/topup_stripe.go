@@ -309,19 +309,33 @@ func genStripeLink(referenceId string, customerId string, email string, amountUS
 		AllowPromotionCodes: stripe.Bool(setting.StripePromotionCodesEnabled),
 	}
 
-	// Apply configured payment methods (card, alipay, wechat_pay, etc.)
+	// Build payment method list.
+	// Default: card + link (Stripe Link one-click checkout for returning users)
+	// Configurable via StripePaymentMethods setting (comma-separated).
+	// Supported values: card, link, alipay, wechat_pay, grabpay, fpx, paynow,
+	//   promptpay, ideal, sepa_debit, klarna, afterpay_clearpay, paypal, etc.
+	defaultMethods := []string{"card", "link"}
 	if setting.StripePaymentMethods != "" {
-		methods := strings.Split(setting.StripePaymentMethods, ",")
+		rawMethods := strings.Split(setting.StripePaymentMethods, ",")
+		seen := map[string]bool{}
 		var pmTypes []*string
-		for _, m := range methods {
+		for _, m := range rawMethods {
 			m = strings.TrimSpace(m)
-			if m != "" {
+			if m != "" && !seen[m] {
+				seen[m] = true
 				pmTypes = append(pmTypes, stripe.String(m))
 			}
 		}
 		if len(pmTypes) > 0 {
 			params.PaymentMethodTypes = pmTypes
 		}
+	} else {
+		// Default: card + Stripe Link
+		var pmTypes []*string
+		for _, m := range defaultMethods {
+			pmTypes = append(pmTypes, stripe.String(m))
+		}
+		params.PaymentMethodTypes = pmTypes
 	}
 
 	if customerId == "" {
