@@ -18,13 +18,59 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React, { useMemo } from 'react';
-import { Empty } from '@douyinfe/semi-ui';
+import { Empty, Button, Typography } from '@douyinfe/semi-ui';
+import { useNavigate } from 'react-router-dom';
+import { Key, Wallet } from 'lucide-react';
 import CardTable from '../../common/ui/CardTable';
 import {
   IllustrationNoResult,
   IllustrationNoResultDark,
+  IllustrationIdle,
+  IllustrationIdleDark,
 } from '@douyinfe/semi-illustrations';
 import { getTokensColumns } from './TokensColumnDefs';
+
+// Empty state for brand-new users with no tokens
+const EmptyTokensState = ({ t, setEditingToken, setShowEdit }) => {
+  const navigate = useNavigate();
+  return (
+    <Empty
+      image={<IllustrationIdle style={{ width: 150, height: 150 }} />}
+      darkModeImage={<IllustrationIdleDark style={{ width: 150, height: 150 }} />}
+      title={t('还没有 API Key')}
+      description={
+        <Typography.Text type='secondary' style={{ fontSize: '13px' }}>
+          {t('创建第一个 API Key 即可接入 AI 服务，兼容 OpenAI SDK')}
+        </Typography.Text>
+      }
+      style={{ padding: '40px 30px' }}
+    >
+      <div className='flex gap-2 justify-center flex-wrap'>
+        <Button
+          type='primary'
+          theme='solid'
+          icon={<Key size={15} />}
+          onClick={() => {
+            setEditingToken({ id: 0 });
+            setShowEdit(true);
+          }}
+          className='!rounded-lg'
+        >
+          {t('创建 API Key')}
+        </Button>
+        <Button
+          theme='outline'
+          type='tertiary'
+          icon={<Wallet size={15} />}
+          onClick={() => navigate('/console/topup')}
+          className='!rounded-lg'
+        >
+          {t('先去充值')}
+        </Button>
+      </div>
+    </Empty>
+  );
+};
 
 const TokensTable = (tokensData) => {
   const {
@@ -34,6 +80,7 @@ const TokensTable = (tokensData) => {
     pageSize,
     tokenCount,
     compactMode,
+    searching,
     handlePageChange,
     handlePageSizeChange,
     rowSelection,
@@ -115,14 +162,22 @@ const TokensTable = (tokensData) => {
       rowSelection={rowSelection}
       onRow={handleRow}
       empty={
-        <Empty
-          image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}
-          darkModeImage={
-            <IllustrationNoResultDark style={{ width: 150, height: 150 }} />
-          }
-          description={t('搜索无结果')}
-          style={{ padding: 30 }}
-        />
+        !loading && tokenCount === 0 && !searching ? (
+          <EmptyTokensState
+            t={t}
+            setEditingToken={setEditingToken}
+            setShowEdit={setShowEdit}
+          />
+        ) : (
+          <Empty
+            image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}
+            darkModeImage={
+              <IllustrationNoResultDark style={{ width: 150, height: 150 }} />
+            }
+            description={t('搜索无结果')}
+            style={{ padding: 30 }}
+          />
+        )
       }
       className='rounded-xl overflow-hidden'
       size='middle'
