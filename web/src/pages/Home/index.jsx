@@ -8,7 +8,7 @@ import { marked } from 'marked';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import NoticeModal from '../../components/layout/NoticeModal';
-import GameOfLifeBackground from './GameOfLifeBackground';
+import OrganicBackground from './OrganicBackground';
 import SectionHeader from './SectionHeader';
 import ScenarioCard from './ScenarioCard';
 import TerminalBlock from './TerminalBlock';
@@ -179,38 +179,102 @@ const Home = () => {
 
       {/* ===== HERO ===== */}
       <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)', minHeight: 'min(600px, 70vh)' }}>
-        <GameOfLifeBackground />
+        <OrganicBackground />
         <div className='relative z-10 flex flex-col items-center justify-center px-4 py-20 md:py-28 lg:py-32'>
-            <span className='font-heading text-[10px] tracking-[0.3em] mb-8' style={{ color: 'var(--lr-fg-40)' }}>
-              // market-router
+            {/* Eyebrow */}
+            <span
+              className='font-heading text-[10px] tracking-[0.35em] mb-10 uppercase'
+              style={{ color: 'var(--lr-fg-40)' }}
+            >
+              Market Router
             </span>
-            <h1 className='font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-center leading-tight'>
+
+            {/* Main headline — large, black, no color accent */}
+            <h1
+              style={{
+                fontFamily: '"Georgia", "Times New Roman", serif',
+                fontSize: 'clamp(2.6rem, 7vw, 5.5rem)',
+                fontWeight: 300,
+                lineHeight: 1.08,
+                letterSpacing: '-0.02em',
+                textAlign: 'center',
+                color: 'var(--lr-fg)',
+                maxWidth: 780,
+              }}
+            >
               {t('landing_hero_line1')}<br />
-              <span style={{ color: 'var(--lr-primary)' }}>{t('landing_hero_line2')}</span><br />
-              {t('landing_hero_line3')}
+              {t('landing_hero_line2')}<br />
+              <em style={{ fontStyle: 'italic' }}>{t('landing_hero_line3')}</em>
             </h1>
-            {/* Direct tagline for non-tech users */}
-            <p className='font-heading text-sm md:text-base mt-6 text-center max-w-xl' style={{ color: 'var(--lr-fg-60, var(--lr-fg-40))' }}>
+
+            {/* Sub-tagline */}
+            <p
+              className='text-sm md:text-base mt-8 text-center max-w-lg leading-relaxed'
+              style={{ color: 'var(--lr-fg-40)', fontFamily: '"Inter", system-ui, sans-serif' }}
+            >
               {t('landing_hero_tagline')}
             </p>
-            {/* Payment methods mini-strip in hero */}
-            <div className='flex items-center gap-3 mt-4 opacity-60'>
-              <SiVisa size={18} /><SiMastercard size={18} /><SiApplepay size={20} /><SiGooglepay size={22} /><SiPaypal size={18} color='#003087' /><SiAlipay size={18} color='#1677FF' /><SiWechat size={18} color='#07C160' /><SiBitcoin size={18} color='#F7931A' /><SiTether size={18} color='#26A17B' />
-              <span className='font-heading text-[10px] tracking-wider' style={{ color: 'var(--lr-fg-40)' }}>
-                {t('landing_payment_card')} · {t('landing_payment_alipay')} · {t('landing_payment_wechat')} · Crypto
-              </span>
-            </div>
-            <div className='flex flex-row gap-4 mt-8'>
+
+            {/* CTAs — black pill primary, ghost secondary */}
+            <div className='flex flex-row items-center gap-3 mt-10'>
               <Link to='/register'>
-                <Button theme='solid' type='primary' size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2'>
+                <button
+                  style={{
+                    background: 'var(--lr-fg)',
+                    color: 'var(--lr-bg)',
+                    border: 'none',
+                    borderRadius: 9999,
+                    padding: isMobile ? '10px 24px' : '12px 32px',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    letterSpacing: '0.01em',
+                    transition: 'opacity 0.15s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                >
                   {t('landing_cta_start')}
-                </Button>
+                </button>
               </Link>
               <Link to='/pricing'>
-                <Button size={isMobile ? 'default' : 'large'} className='!rounded-none px-8 py-2' style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}>
+                <button
+                  style={{
+                    background: 'transparent',
+                    color: 'var(--lr-fg)',
+                    border: '1px solid var(--lr-fg-20)',
+                    borderRadius: 9999,
+                    padding: isMobile ? '10px 24px' : '12px 32px',
+                    fontSize: 14,
+                    fontWeight: 400,
+                    cursor: 'pointer',
+                    letterSpacing: '0.01em',
+                    transition: 'border-color 0.15s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--lr-fg-60)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--lr-fg-20)'}
+                >
                   {t('landing_cta_pricing')}
-                </Button>
+                </button>
               </Link>
+            </div>
+
+            {/* Payment pills — subtle, small */}
+            <div className='flex flex-wrap items-center justify-center gap-2 mt-8'>
+              {[
+                { icon: <SiVisa size={14} />, label: 'Visa / MC' },
+                { icon: <SiAlipay size={14} />, label: '支付宝' },
+                { icon: <SiWechat size={14} />, label: '微信' },
+                { icon: <SiBitcoin size={14} />, label: 'Crypto' },
+              ].map(({ icon, label }) => (
+                <span
+                  key={label}
+                  className='flex items-center gap-1.5 font-heading text-[10px] tracking-wide px-3 py-1 rounded-full'
+                  style={{ border: '1px solid var(--lr-fg-10)', color: 'var(--lr-fg-40)' }}
+                >
+                  {icon} {label}
+                </span>
+              ))}
             </div>
         </div>
         {/* Stats bar */}
@@ -234,7 +298,7 @@ const Home = () => {
           <SectionHeader
             number='01'
             slug='providers'
-            importLine={<><span style={{ color: 'var(--lr-primary)' }}>import</span>{' { providers } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-primary)' }}>"./ecosystem"</span></>}
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>import</span>{' { providers } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-fg-60)' }}>"./ecosystem"</span></>}
           />
           <div className='py-12 md:py-16'>{providerIcons}</div>
         </section>
@@ -246,7 +310,7 @@ const Home = () => {
           <SectionHeader
             number='02'
             slug='use-cases'
-            importLine={<><span style={{ color: 'var(--lr-primary)' }}>import</span>{' { scenarios } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-primary)' }}>"./market-router"</span></>}
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>import</span>{' { scenarios } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-fg-60)' }}>"./market-router"</span></>}
             actionLabel='scenarios.list()'
           />
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'>
@@ -263,7 +327,7 @@ const Home = () => {
           <SectionHeader
             number='03'
             slug='advantages'
-            importLine={<><span style={{ color: 'var(--lr-primary)' }}>export</span>{' { features }'}</>}
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>export</span>{' { features }'}</>}
           />
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'>
             {ADVANTAGES.map(({ key }, i) => (
@@ -289,7 +353,7 @@ const Home = () => {
           <SectionHeader
             number='04'
             slug='payment'
-            importLine={<><span style={{ color: 'var(--lr-primary)' }}>import</span>{' { pay } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-primary)' }}>"./global-checkout"</span></>}
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>import</span>{' { pay } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-fg-60)' }}>"./global-checkout"</span></>}
           />
           <div className='py-12 md:py-16 px-4 md:px-12'>
             <div className='max-w-5xl mx-auto'>
@@ -454,7 +518,7 @@ const Home = () => {
           <SectionHeader
             number='05'
             slug='quickstart'
-            importLine={<><span style={{ color: 'var(--lr-primary)' }}>await</span>{' router.start()'}</>}
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>await</span>{' router.start()'}</>}
           />
           <div className='py-12 md:py-16 px-4'>
             <TerminalBlock />
@@ -466,7 +530,7 @@ const Home = () => {
       <Reveal>
         <section className='py-20 md:py-28 text-center px-4'>
           <h2 className='font-heading text-2xl md:text-3xl font-light mb-8'>
-            <span style={{ color: 'var(--lr-primary)' }}>router</span>.start()
+            <span style={{ color: 'var(--lr-fg-60)' }}>router</span>.start()
           </h2>
           <Link to='/register'>
             <Button theme='solid' type='primary' size='large' className='!rounded-none px-10 py-3'>

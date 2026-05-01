@@ -63,14 +63,20 @@ const HeaderLogo = ({
             </Typography.Title>
           </SkeletonWrapper>
           {(isSelfUseMode || isDemoSiteMode) && !isLoading && (
-            <Tag
-              color={isSelfUseMode ? 'purple' : 'blue'}
-              className='text-xs px-1.5 py-0.5 rounded whitespace-nowrap shadow-sm'
-              size='small'
-              shape='circle'
+            <span
+              style={{
+                fontSize: 10,
+                letterSpacing: '0.08em',
+                color: 'var(--semi-color-text-2)',
+                border: '1px solid var(--semi-color-border)',
+                borderRadius: 4,
+                padding: '1px 6px',
+                whiteSpace: 'nowrap',
+                fontFamily: 'monospace',
+              }}
             >
               {isSelfUseMode ? t('自用模式') : t('演示站点')}
-            </Tag>
+            </span>
           )}
         </div>
       </div>

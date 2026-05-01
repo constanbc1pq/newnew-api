@@ -65,7 +65,13 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
   const { mainNavLinks } = useNavigation(t, docsLink, headerNavModules);
 
   return (
-    <header className='text-semi-color-text-0 sticky top-0 z-50 transition-colors duration-300 bg-white/75 dark:bg-zinc-900/75 backdrop-blur-lg font-heading'>
+    <header
+      className='text-semi-color-text-0 sticky top-0 z-50 transition-colors duration-300 backdrop-blur-md font-heading'
+      style={isConsoleRoute
+        ? { background: 'var(--semi-color-bg-0)', borderBottom: '1px solid var(--semi-color-border)' }
+        : { background: 'rgba(247,243,238,0.85)', borderBottom: '1px solid rgba(10,10,10,0.07)' }
+      }
+    >
       <NoticeModal
         visible={noticeVisible}
         onClose={handleNoticeClose}
