@@ -5,6 +5,7 @@ import (
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
+	"github.com/QuantumNous/new-api/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -63,14 +64,44 @@ func DeleteKeyPool(c *gin.Context) {
 }
 
 // GET /api/admin/key_pools/:id/entries
+// keyPoolEntryView is the response shape for admin — masked key, no raw key.
+type keyPoolEntryView struct {
+	ID          int    `json:"id"`
+	PoolID      int    `json:"pool_id"`
+	Name        string `json:"name"`
+	MaskedKey   string `json:"masked_key"`
+	Provider    string `json:"provider"`
+	Weight      int    `json:"weight"`
+	Enabled     bool   `json:"enabled"`
+	TotalCalls  int64  `json:"total_calls"`
+	LastUsedAt  int64  `json:"last_used_at"`
+	CreatedAt   int64  `json:"created_at"`
+}
+
 func GetKeyPoolEntries(c *gin.Context) {
 	poolID, _ := strconv.Atoi(c.Param("id"))
-	entries, err := model.GetEnabledPoolEntries(poolID)
+	entries, err := model.GetAllPoolEntries(poolID)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, entries)
+	views := make([]keyPoolEntryView, 0, len(entries))
+	for _, e := range entries {
+		plain, _ := service.DecryptPoolEntryKey(&e)
+		views = append(views, keyPoolEntryView{
+			ID:         e.ID,
+			PoolID:     e.PoolID,
+			Name:       e.Name,
+			MaskedKey:  service.MaskKey(plain),
+			Provider:   e.Provider,
+			Weight:     e.Weight,
+			Enabled:    e.Enabled,
+			TotalCalls: e.TotalCalls,
+			LastUsedAt: e.LastUsedAt,
+			CreatedAt:  e.CreatedAt,
+		})
+	}
+	common.ApiSuccess(c, views)
 }
 
 type addKeyPoolEntryRequest struct {

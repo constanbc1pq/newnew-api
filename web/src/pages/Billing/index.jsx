@@ -5,7 +5,6 @@ import {
   Tag,
   Button,
   Typography,
-  Statistic,
   Empty,
   Spin,
 } from '@douyinfe/semi-ui';
@@ -189,18 +188,13 @@ export default function BillingPage() {
       {/* Balance card */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 20 }}>
         <Card>
-          <Statistic
-            title="Current Balance"
-            value={renderQuota(quota)}
-            suffix=" tokens"
-          />
+          <Text type="tertiary" size="small">Current Balance</Text>
+          <Title heading={3} style={{ margin: '4px 0' }}>{renderQuota(quota)} tokens</Title>
           <Text type="tertiary" size="small">≈ ${approxUSD} USD at default rate</Text>
         </Card>
         <Card>
-          <Statistic
-            title="Username"
-            value={userState?.user?.username || '—'}
-          />
+          <Text type="tertiary" size="small">Username</Text>
+          <Title heading={3} style={{ margin: '4px 0' }}>{userState?.user?.username || '—'}</Title>
           <Text type="tertiary" size="small">Group: {userState?.user?.group || 'default'}</Text>
         </Card>
         <Card style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
