@@ -64,6 +64,9 @@ const TopUp = () => {
   const [enableStripeTopUp, setEnableStripeTopUp] = useState(
     statusState?.status?.enable_stripe_topup || false,
   );
+  const [stripePublicKey, setStripePublicKey] = useState(
+    statusState?.status?.stripe_public_key || '',
+  );
   const [statusLoading, setStatusLoading] = useState(true);
 
   // Creem 相关状态
@@ -654,6 +657,9 @@ const TopUp = () => {
       // setTopUpCount(minTopUpValue);
       setTopUpLink(statusState.status.top_up_link || '');
       setPriceRatio(statusState.status.price || 1);
+      if (statusState.status.stripe_public_key) {
+        setStripePublicKey(statusState.status.stripe_public_key);
+      }
 
       setStatusLoading(false);
     }
@@ -919,6 +925,7 @@ const TopUp = () => {
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         <RechargeCard
           t={t}
+          stripePublicKey={stripePublicKey}
           enableOnlineTopUp={enableOnlineTopUp}
           enableStripeTopUp={enableStripeTopUp}
           enableCreemTopUp={enableCreemTopUp}

@@ -54,6 +54,7 @@ const { Text } = Typography;
 
 const RechargeCard = ({
   t,
+  stripePublicKey,
   enableOnlineTopUp,
   enableStripeTopUp,
   enableCreemTopUp,
@@ -105,6 +106,13 @@ const RechargeCard = ({
   allSubscriptions = [],
   reloadSubscriptionSelf,
 }) => {
+  // Expose Stripe public key globally so payment confirmation flows can access it
+  useEffect(() => {
+    if (stripePublicKey) {
+      window.__STRIPE_PUBLIC_KEY__ = stripePublicKey;
+    }
+  }, [stripePublicKey]);
+
   const onlineFormApiRef = useRef(null);
   const redeemFormApiRef = useRef(null);
   const initialTabSetRef = useRef(false);

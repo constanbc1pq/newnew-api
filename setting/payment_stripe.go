@@ -1,5 +1,6 @@
 package setting
 
+var StripePublicKey = "pk_live_51TMsBqA9lovNsebN9ixn2TX0MpfygXTPCKg3FKm1u2YiY314AHt5uRRYqUlZNKQCbCaqeJUk4fiKJLnxI3xdXUUt00SojdP1jb"
 var StripeApiSecret = ""
 var StripeWebhookSecret = ""
 var StripePriceId = ""
