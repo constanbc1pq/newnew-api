@@ -520,19 +520,32 @@ const SubscriptionPlansCard = ({
                 return (
                   <Card
                     key={plan?.id}
-                    className={`!rounded-xl transition-all hover:shadow-lg w-full h-full ${
-                      isPopular ? 'ring-2 ring-purple-500' : ''
-                    }`}
+                    className='!rounded-xl w-full h-full'
+                    style={{
+                      border: isPopular ? '2px solid #000' : '1.5px solid #e5e7eb',
+                    }}
                     bodyStyle={{ padding: 0 }}
                   >
                     <div className='p-4 h-full flex flex-col'>
                       {/* 推荐标签 */}
                       {isPopular && (
                         <div className='mb-2'>
-                          <Tag color='purple' shape='circle' size='small'>
-                            <Sparkles size={10} className='mr-1' />
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '2px 10px',
+                              borderRadius: '9999px',
+                              background: '#000',
+                              color: '#fff',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                            }}
+                          >
+                            <Sparkles size={10} />
                             {t('推荐')}
-                          </Tag>
+                          </span>
                         </div>
                       )}
                       {/* 套餐名称 */}
@@ -559,10 +572,10 @@ const SubscriptionPlansCard = ({
                       {/* 价格区域 */}
                       <div className='py-2'>
                         <div className='flex items-baseline justify-start'>
-                          <span className='text-xl font-bold text-purple-600'>
+                          <span className='text-xl font-bold text-gray-900'>
                             {symbol}
                           </span>
-                          <span className='text-3xl font-bold text-purple-600'>
+                          <span className='text-3xl font-bold text-gray-900'>
                             {displayPrice}
                           </span>
                         </div>
@@ -608,17 +621,23 @@ const SubscriptionPlansCard = ({
                             ? t('已达到购买上限') + ` (${count}/${limit})`
                             : '';
                           const buttonEl = (
-                            <Button
-                              theme='outline'
-                              type='primary'
-                              block
+                            <button
                               disabled={reached}
-                              onClick={() => {
-                                if (!reached) openBuy(p);
+                              onClick={() => { if (!reached) openBuy(p); }}
+                              style={{
+                                width: '100%',
+                                padding: '10px',
+                                borderRadius: '9999px',
+                                background: reached ? '#9ca3af' : '#000',
+                                color: '#fff',
+                                fontWeight: 600,
+                                fontSize: '14px',
+                                border: 'none',
+                                cursor: reached ? 'not-allowed' : 'pointer',
                               }}
                             >
                               {reached ? t('已达上限') : t('立即订阅')}
-                            </Button>
+                            </button>
                           );
                           return reached ? (
                             <Tooltip content={tip} position='top'>

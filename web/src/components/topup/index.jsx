@@ -921,8 +921,8 @@ const TopUp = () => {
         }}
       />
 
-      {/* 主布局区域 */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+      {/* 主布局区域 — 单列居中 */}
+      <div className='max-w-2xl mx-auto space-y-6'>
         <RechargeCard
           t={t}
           stripePublicKey={stripePublicKey}
