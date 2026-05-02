@@ -398,7 +398,7 @@ const EditRedemptionModal = (props) => {
                       >
                         <Select
                           style={{ width: '100%' }}
-                          placeholder='搜索用户名或邮箱（留空 = 任何人可用）'
+                          placeholder={t('搜索用户名或邮箱（留空 = 任何人可用）')}
                           filter
                           remote
                           onSearch={handleUserSearch}
@@ -425,7 +425,7 @@ const EditRedemptionModal = (props) => {
                             内部备注
                           </span>
                         }
-                        placeholder='例如：2025年4月 邮件营销活动 / 用户投诉补偿'
+                        placeholder={t('例如：2025年4月 邮件营销活动 / 用户投诉补偿')}
                         style={{ width: '100%' }}
                         showClear
                       />

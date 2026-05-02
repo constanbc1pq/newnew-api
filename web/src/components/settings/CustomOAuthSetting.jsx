@@ -184,10 +184,10 @@ const ACCESS_POLICY_TEMPLATES = {
 }`,
 };
 
-const ACCESS_DENIED_TEMPLATES = {
-  level_hint: '需要等级 {{required}}，你当前等级 {{current}}（字段：{{field}}）',
-  org_hint: '仅限指定组织或角色访问。组织={{current.org}}，角色={{current.roles}}',
-};
+const getAccessDeniedTemplates = (t) => ({
+  level_hint: t('需要等级 {{required}}，你当前等级 {{current}}（字段：{{field}}）'),
+  org_hint: t('仅限指定组织或角色访问。组织={{current.org}}，角色={{current.roles}}'),
+});
 
 const CustomOAuthSetting = ({ serverAddress }) => {
   const { t } = useTranslation();
@@ -523,7 +523,7 @@ const CustomOAuthSetting = ({ serverAddress }) => {
   };
 
   const applyDeniedTemplate = (templateKey) => {
-    const template = ACCESS_DENIED_TEMPLATES[templateKey];
+    const template = getAccessDeniedTemplates(t)[templateKey];
     if (!template) return;
     mergeFormValues({ access_denied_message: template });
     showSuccess(t('已填充提示模板'));

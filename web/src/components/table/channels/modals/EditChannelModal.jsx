@@ -539,7 +539,7 @@ const EditChannelModal = (props) => {
       try {
         settings = JSON.parse(inputs.settings);
       } catch (error) {
-        console.error('解析设置失败:', error);
+        console.error(t('解析设置失败:'), error);
       }
     }
     settings[key] = value;
@@ -853,7 +853,7 @@ const EditChannelModal = (props) => {
           data.system_prompt_override =
             parsedSettings.system_prompt_override || false;
         } catch (error) {
-          console.error('解析渠道设置失败:', error);
+          console.error(t('解析渠道设置失败:'), error);
           data.force_format = false;
           data.thinking_to_content = false;
           data.proxy = '';
@@ -909,7 +909,7 @@ const EditChannelModal = (props) => {
             ? parsedSettings.upstream_model_update_ignored_models.join(',')
             : '';
         } catch (error) {
-          console.error('解析其他设置失败:', error);
+          console.error(t('解析其他设置失败:'), error);
           data.azure_responses_version = '';
           data.region = '';
           data.vertex_key_type = 'json';
@@ -1742,7 +1742,7 @@ const EditChannelModal = (props) => {
       try {
         settings = JSON.parse(localInputs.settings);
       } catch (error) {
-        console.error('解析settings失败:', error);
+        console.error(t('解析settings失败:'), error);
       }
     }
 

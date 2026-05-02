@@ -53,10 +53,10 @@ const ENDPOINT_TEMPLATE = {
 };
 
 const nameRuleOptions = [
-  { label: '精确名称匹配', value: 0 },
-  { label: '前缀名称匹配', value: 1 },
-  { label: '包含名称匹配', value: 2 },
-  { label: '后缀名称匹配', value: 3 },
+  { label: t('精确名称匹配'), value: 0 },
+  { label: t('前缀名称匹配'), value: 1 },
+  { label: t('包含名称匹配'), value: 2 },
+  { label: t('后缀名称匹配'), value: 3 },
 ];
 
 const EditModelModal = (props) => {

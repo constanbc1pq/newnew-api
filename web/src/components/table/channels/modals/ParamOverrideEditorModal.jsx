@@ -44,29 +44,29 @@ import {
 const { Text } = Typography;
 
 const OPERATION_MODE_OPTIONS = [
-  { label: '设置字段', value: 'set' },
-  { label: '删除字段', value: 'delete' },
-  { label: '追加到末尾', value: 'append' },
-  { label: '追加到开头', value: 'prepend' },
-  { label: '复制字段', value: 'copy' },
-  { label: '移动字段', value: 'move' },
-  { label: '字符串替换', value: 'replace' },
-  { label: '正则替换', value: 'regex_replace' },
-  { label: '裁剪前缀', value: 'trim_prefix' },
-  { label: '裁剪后缀', value: 'trim_suffix' },
-  { label: '确保前缀', value: 'ensure_prefix' },
-  { label: '确保后缀', value: 'ensure_suffix' },
-  { label: '去掉空白', value: 'trim_space' },
-  { label: '转小写', value: 'to_lower' },
-  { label: '转大写', value: 'to_upper' },
-  { label: '返回自定义错误', value: 'return_error' },
-  { label: '清理对象项', value: 'prune_objects' },
-  { label: '请求头透传', value: 'pass_headers' },
-  { label: '字段同步', value: 'sync_fields' },
-  { label: '设置请求头', value: 'set_header' },
-  { label: '删除请求头', value: 'delete_header' },
-  { label: '复制请求头', value: 'copy_header' },
-  { label: '移动请求头', value: 'move_header' },
+  { label: t('设置字段'), value: 'set' },
+  { label: t('删除字段'), value: 'delete' },
+  { label: t('追加到末尾'), value: 'append' },
+  { label: t('追加到开头'), value: 'prepend' },
+  { label: t('复制字段'), value: 'copy' },
+  { label: t('移动字段'), value: 'move' },
+  { label: t('字符串替换'), value: 'replace' },
+  { label: t('正则替换'), value: 'regex_replace' },
+  { label: t('裁剪前缀'), value: 'trim_prefix' },
+  { label: t('裁剪后缀'), value: 'trim_suffix' },
+  { label: t('确保前缀'), value: 'ensure_prefix' },
+  { label: t('确保后缀'), value: 'ensure_suffix' },
+  { label: t('去掉空白'), value: 'trim_space' },
+  { label: t('转小写'), value: 'to_lower' },
+  { label: t('转大写'), value: 'to_upper' },
+  { label: t('返回自定义错误'), value: 'return_error' },
+  { label: t('清理对象项'), value: 'prune_objects' },
+  { label: t('请求头透传'), value: 'pass_headers' },
+  { label: t('字段同步'), value: 'sync_fields' },
+  { label: t('设置请求头'), value: 'set_header' },
+  { label: t('删除请求头'), value: 'delete_header' },
+  { label: t('复制请求头'), value: 'copy_header' },
+  { label: t('移动请求头'), value: 'move_header' },
 ];
 
 const OPERATION_MODE_VALUES = new Set(
@@ -74,14 +74,14 @@ const OPERATION_MODE_VALUES = new Set(
 );
 
 const CONDITION_MODE_OPTIONS = [
-  { label: '完全匹配', value: 'full' },
-  { label: '前缀匹配', value: 'prefix' },
-  { label: '后缀匹配', value: 'suffix' },
-  { label: '包含', value: 'contains' },
-  { label: '大于', value: 'gt' },
-  { label: '大于等于', value: 'gte' },
-  { label: '小于', value: 'lt' },
-  { label: '小于等于', value: 'lte' },
+  { label: t('完全匹配'), value: 'full' },
+  { label: t('前缀匹配'), value: 'prefix' },
+  { label: t('后缀匹配'), value: 'suffix' },
+  { label: t('包含'), value: 'contains' },
+  { label: t('大于'), value: 'gt' },
+  { label: t('大于等于'), value: 'gte' },
+  { label: t('小于'), value: 'lt' },
+  { label: t('小于等于'), value: 'lte' },
 ];
 
 const CONDITION_MODE_VALUES = new Set(
@@ -144,39 +144,39 @@ const TO_REQUIRED_MODES = new Set([
 ]);
 
 const MODE_DESCRIPTIONS = {
-  set: '把值写入目标字段',
-  delete: '删除目标字段',
-  append: '把值追加到数组 / 字符串 / 对象末尾',
-  prepend: '把值追加到数组 / 字符串 / 对象开头',
-  copy: '把来源字段复制到目标字段',
-  move: '把来源字段移动到目标字段',
-  replace: '在目标字段里做字符串替换',
-  regex_replace: '在目标字段里做正则替换',
-  trim_prefix: '去掉字符串前缀',
-  trim_suffix: '去掉字符串后缀',
-  ensure_prefix: '确保字符串有指定前缀',
-  ensure_suffix: '确保字符串有指定后缀',
-  trim_space: '去掉字符串头尾空白',
-  to_lower: '把字符串转成小写',
-  to_upper: '把字符串转成大写',
-  return_error: '立即返回自定义错误',
-  prune_objects: '按条件清理对象中的子项',
-  pass_headers: '把指定请求头透传到上游请求',
-  sync_fields: '在一个字段有值、另一个缺失时自动补齐',
-  set_header: '设置运行期请求头：可直接覆盖整条值，也可对逗号分隔的 token 做删除、替换、追加或白名单保留',
-  delete_header: '删除运行期请求头',
-  copy_header: '复制请求头',
-  move_header: '移动请求头',
+  set: t('把值写入目标字段'),
+  delete: t('删除目标字段'),
+  append: t('把值追加到数组 / 字符串 / 对象末尾'),
+  prepend: t('把值追加到数组 / 字符串 / 对象开头'),
+  copy: t('把来源字段复制到目标字段'),
+  move: t('把来源字段移动到目标字段'),
+  replace: t('在目标字段里做字符串替换'),
+  regex_replace: t('在目标字段里做正则替换'),
+  trim_prefix: t('去掉字符串前缀'),
+  trim_suffix: t('去掉字符串后缀'),
+  ensure_prefix: t('确保字符串有指定前缀'),
+  ensure_suffix: t('确保字符串有指定后缀'),
+  trim_space: t('去掉字符串头尾空白'),
+  to_lower: t('把字符串转成小写'),
+  to_upper: t('把字符串转成大写'),
+  return_error: t('立即返回自定义错误'),
+  prune_objects: t('按条件清理对象中的子项'),
+  pass_headers: t('把指定请求头透传到上游请求'),
+  sync_fields: t('在一个字段有值、另一个缺失时自动补齐'),
+  set_header: t('设置运行期请求头：可直接覆盖整条值，也可对逗号分隔的 token 做删除、替换、追加或白名单保留'),
+  delete_header: t('删除运行期请求头'),
+  copy_header: t('复制请求头'),
+  move_header: t('移动请求头'),
 };
 
 const getModePathLabel = (mode) => {
   if (mode === 'set_header' || mode === 'delete_header') {
-    return '请求头名称';
+    return t('请求头名称');
   }
   if (mode === 'prune_objects') {
-    return '目标路径（可选）';
+    return t('目标路径（可选）');
   }
-  return '目标字段路径';
+  return t('目标字段路径');
 };
 
 const getModePathPlaceholder = (mode) => {
@@ -187,10 +187,10 @@ const getModePathPlaceholder = (mode) => {
 };
 
 const getModeFromLabel = (mode) => {
-  if (mode === 'replace') return '匹配文本';
-  if (mode === 'regex_replace') return '正则表达式';
-  if (mode === 'copy_header' || mode === 'move_header') return '来源请求头';
-  return '来源字段';
+  if (mode === 'replace') return t('匹配文本');
+  if (mode === 'regex_replace') return t('正则表达式');
+  if (mode === 'copy_header' || mode === 'move_header') return t('来源请求头');
+  return t('来源字段');
 };
 
 const getModeFromPlaceholder = (mode) => {
@@ -201,33 +201,33 @@ const getModeFromPlaceholder = (mode) => {
 };
 
 const getModeToLabel = (mode) => {
-  if (mode === 'replace' || mode === 'regex_replace') return '替换为';
-  if (mode === 'copy_header' || mode === 'move_header') return '目标请求头';
-  return '目标字段';
+  if (mode === 'replace' || mode === 'regex_replace') return t('替换为');
+  if (mode === 'copy_header' || mode === 'move_header') return t('目标请求头');
+  return t('目标字段');
 };
 
 const getModeToPlaceholder = (mode) => {
-  if (mode === 'replace') return '（可留空）';
+  if (mode === 'replace') return t('（可留空）');
   if (mode === 'regex_replace') return 'openai/gpt-';
   if (mode === 'copy_header' || mode === 'move_header') return 'X-Upstream-Auth';
   return 'original_model';
 };
 
 const getModeValueLabel = (mode) => {
-  if (mode === 'set_header') return '请求头值（支持字符串或 JSON 映射）';
-  if (mode === 'pass_headers') return '透传请求头（支持逗号分隔或 JSON 数组）';
+  if (mode === 'set_header') return t('请求头值（支持字符串或 JSON 映射）');
+  if (mode === 'pass_headers') return t('透传请求头（支持逗号分隔或 JSON 数组）');
   if (
     mode === 'trim_prefix' ||
     mode === 'trim_suffix' ||
     mode === 'ensure_prefix' ||
     mode === 'ensure_suffix'
   ) {
-    return '前后缀文本';
+    return t('前后缀文本');
   }
   if (mode === 'prune_objects') {
-    return '清理规则（字符串或 JSON 对象）';
+    return t('清理规则（字符串或 JSON 对象）');
   }
-  return '值（支持 JSON 或普通文本）';
+  return t('值（支持 JSON 或普通文本）');
 };
 
 const HEADER_VALUE_JSONC_EXAMPLE = `{
@@ -244,10 +244,10 @@ const HEADER_VALUE_JSONC_EXAMPLE = `{
 const getModeValuePlaceholder = (mode) => {
   if (mode === 'set_header') {
     return [
-      '纯字符串（整条覆盖）：',
+      t('纯字符串（整条覆盖）：'),
       'Bearer sk-xxx',
       '',
-      '或使用 JSON 规则：',
+      t('或使用 JSON 规则：'),
       '{',
       '  "files-api-2025-04-14": null,',
       '  "advanced-tool-use-2025-11-20": "tool-search-tool-2025-10-19",',
@@ -271,8 +271,8 @@ const getModeValuePlaceholder = (mode) => {
 };
 
 const SYNC_TARGET_TYPE_OPTIONS = [
-  { label: '请求体字段', value: 'json' },
-  { label: '请求头字段', value: 'header' },
+  { label: t('请求体字段'), value: 'json' },
+  { label: t('请求头字段'), value: 'header' },
 ];
 
 const LEGACY_TEMPLATE = {
@@ -388,99 +388,99 @@ const AWS_BEDROCK_ANTHROPIC_COMPAT_TEMPLATE = {
 };
 
 const TEMPLATE_GROUP_OPTIONS = [
-  { label: '基础模板', value: 'basic' },
-  { label: '场景模板', value: 'scenario' },
+  { label: t('基础模板'), value: 'basic' },
+  { label: t('场景模板'), value: 'scenario' },
 ];
 
 const TEMPLATE_PRESET_CONFIG = {
   operations_default: {
     group: 'basic',
-    label: '新格式模板（规则集）',
+    label: t('新格式模板（规则集）'),
     kind: 'operations',
     payload: OPERATION_TEMPLATE,
   },
   legacy_default: {
     group: 'basic',
-    label: '旧格式模板（JSON 对象）',
+    label: t('旧格式模板（JSON 对象）'),
     kind: 'legacy',
     payload: LEGACY_TEMPLATE,
   },
   pass_headers_auth: {
     group: 'scenario',
-    label: '请求头透传（X-Request-Id）',
+    label: t('请求头透传（X-Request-Id）'),
     kind: 'operations',
     payload: HEADER_PASSTHROUGH_TEMPLATE,
   },
   gemini_image_4k: {
     group: 'scenario',
-    label: 'Gemini 图片 4K',
+    label: t('Gemini 图片 4K'),
     kind: 'operations',
     payload: GEMINI_IMAGE_4K_TEMPLATE,
   },
   claude_cli_headers_passthrough: {
     group: 'scenario',
-    label: 'Claude CLI 请求头透传',
+    label: t('Claude CLI 请求头透传'),
     kind: 'operations',
     payload: CLAUDE_CLI_HEADER_PASSTHROUGH_TEMPLATE,
   },
   codex_cli_headers_passthrough: {
     group: 'scenario',
-    label: 'Codex CLI 请求头透传',
+    label: t('Codex CLI 请求头透传'),
     kind: 'operations',
     payload: CODEX_CLI_HEADER_PASSTHROUGH_TEMPLATE,
   },
   aws_bedrock_anthropic_beta_override: {
     group: 'scenario',
-    label: 'AWS Bedrock Claude 兼容模板',
+    label: t('AWS Bedrock Claude 兼容模板'),
     kind: 'operations',
     payload: AWS_BEDROCK_ANTHROPIC_COMPAT_TEMPLATE,
   },
 };
 
 const FIELD_GUIDE_TARGET_OPTIONS = [
-  { label: '填入目标路径', value: 'path' },
-  { label: '填入来源字段', value: 'from' },
-  { label: '填入目标字段', value: 'to' },
+  { label: t('填入目标路径'), value: 'path' },
+  { label: t('填入来源字段'), value: 'from' },
+  { label: t('填入目标字段'), value: 'to' },
 ];
 
 const BUILTIN_FIELD_SECTIONS = [
   {
-    title: '常用请求字段',
+    title: t('常用请求字段'),
     fields: [
       {
         key: 'model',
-        label: '模型名称',
-        tip: '支持多级模型名，例如 openai/gpt-4o-mini',
+        label: t('模型名称'),
+        tip: t('支持多级模型名，例如 openai/gpt-4o-mini'),
       },
-      { key: 'temperature', label: '采样温度', tip: '控制输出随机性' },
-      { key: 'max_tokens', label: '最大输出 Token', tip: '控制输出长度上限' },
-      { key: 'messages.-1.content', label: '最后一条消息内容', tip: '常用于重写用户输入' },
+      { key: 'temperature', label: t('采样温度'), tip: t('控制输出随机性') },
+      { key: 'max_tokens', label: t('最大输出 Token'), tip: t('控制输出长度上限') },
+      { key: 'messages.-1.content', label: t('最后一条消息内容'), tip: t('常用于重写用户输入') },
     ],
   },
   {
-    title: '上下文字段',
+    title: t('上下文字段'),
     fields: [
-      { key: 'retry.is_retry', label: '是否重试', tip: 'true 表示重试请求' },
-      { key: 'last_error.code', label: '上次错误码', tip: '配合重试策略使用' },
+      { key: 'retry.is_retry', label: t('是否重试'), tip: t('true 表示重试请求') },
+      { key: 'last_error.code', label: t('上次错误码'), tip: t('配合重试策略使用') },
       {
         key: 'metadata.conversation_id',
-        label: '会话 ID',
-        tip: '可用于路由或缓存命中',
+        label: t('会话 ID'),
+        tip: t('可用于路由或缓存命中'),
       },
     ],
   },
   {
-    title: '请求头映射字段',
+    title: t('请求头映射字段'),
     fields: [
       {
         key: 'header_override_normalized.authorization',
-        label: '标准化 Authorization',
-        tip: '统一小写后可稳定匹配',
+        label: t('标准化 Authorization'),
+        tip: t('统一小写后可稳定匹配'),
       },
       {
         key: 'header_override_normalized.x_debug_mode',
-        label: '标准化 X-Debug-Mode',
-        tip: '适合灰度 / 调试开关判断',
+        label: t('标准化 X-Debug-Mode'),
+        tip: t('适合灰度 / 调试开关判断'),
       },
     ],
   },
@@ -884,7 +884,7 @@ const parseInitialState = (rawValue) => {
       legacyValue: '',
       operations: [createDefaultOperation()],
       jsonText: text,
-      jsonError: 'JSON 格式不正确',
+      jsonError: t('JSON 格式不正确'),
     };
   }
 

@@ -49,9 +49,9 @@ export const usePlaygroundState = () => {
       loaded[1].id === '3'
     ) {
       const hasOldChinese =
-        loaded[0].content === '你好' ||
-        loaded[1].content === '你好，请问有什么可以帮助您的吗？' ||
-        loaded[1].content === '你好！很高兴见到你。有什么我可以帮助你的吗？';
+        loaded[0].content === t('你好') ||
+        loaded[1].content === t('你好，请问有什么可以帮助您的吗？') ||
+        loaded[1].content === t('你好！很高兴见到你。有什么我可以帮助你的吗？');
 
       if (hasOldChinese) {
         // 清除旧的默认消息

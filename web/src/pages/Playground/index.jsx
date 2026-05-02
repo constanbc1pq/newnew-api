@@ -192,7 +192,7 @@ const Playground = () => {
         try {
           return JSON.parse(customRequestBody);
         } catch (parseError) {
-          console.warn('自定义请求体JSON解析失败，回退到默认预览:', parseError);
+          console.warn(t('自定义请求体JSON解析失败，回退到默认预览:'), parseError);
         }
       }
 
@@ -230,7 +230,7 @@ const Playground = () => {
 
       return buildApiPayload(messages, null, inputs, parameterEnabled);
     } catch (error) {
-      console.error('构造预览请求体失败:', error);
+      console.error(t('构造预览请求体失败:'), error);
       return null;
     }
   }, [inputs, parameterEnabled, message, customRequestMode, customRequestBody]);
@@ -261,7 +261,7 @@ const Playground = () => {
         });
         return;
       } catch (error) {
-        console.error('自定义请求体JSON解析失败:', error);
+        console.error(t('自定义请求体JSON解析失败:'), error);
         Toast.error(ERROR_MESSAGES.JSON_PARSE_ERROR);
         return;
       }

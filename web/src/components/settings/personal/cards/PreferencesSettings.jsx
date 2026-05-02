@@ -27,9 +27,9 @@ import { normalizeLanguage } from "../../../../i18n/language";
 
 // Language options with native names
 const languageOptions = [
-	{ value: "zh-CN", label: "简体中文" },
+	{ value: "zh-CN", label: t("简体中文") },
 	{ value: "en", label: "English" },
-	{ value: 'ja', label: '日本語'},
+	{ value: 'ja', label: t('日本語')},
 ];
 
 const PreferencesSettings = ({ t }) => {

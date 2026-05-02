@@ -199,7 +199,7 @@ export const useApiRequest = (
           try {
             errorBody = await response.text();
           } catch (e) {
-            errorBody = '无法读取错误响应体';
+            errorBody = t('无法读取错误响应体');
           }
 
           const errorInfo = handleApiError(
@@ -408,7 +408,7 @@ export const useApiRequest = (
           source.status !== 200 &&
           !isStreamComplete
         ) {
-          const errorInfo = handleApiError(new Error('HTTP状态错误'));
+          const errorInfo = handleApiError(new Error(t('HTTP状态错误')));
           errorInfo.status = source.status;
           errorInfo.readyState = source.readyState;
 
@@ -435,7 +435,7 @@ export const useApiRequest = (
 
         setDebugData((prev) => ({
           ...prev,
-          response: 'Stream启动失败:\n' + JSON.stringify(errorInfo, null, 2),
+          response: t('Stream启动失败:\n') + JSON.stringify(errorInfo, null, 2),
         }));
         setActiveDebugTab(DEBUG_TABS.RESPONSE);
 

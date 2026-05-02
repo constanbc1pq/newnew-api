@@ -204,7 +204,7 @@ export default function SettingsPaymentGateway(props) {
               <Form.Input
                 field='StripePublicKey'
                 label={t('可发布密钥（公钥）')}
-                placeholder='pk_live_xxx 或 pk_test_xxx'
+                placeholder={t('pk_live_xxx 或 pk_test_xxx')}
               />
             </Col>
             <Col xs={24} sm={24} md={8} lg={8} xl={8}>

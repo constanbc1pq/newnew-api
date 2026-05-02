@@ -34,21 +34,21 @@ const APP_CONFIGS = {
     label: 'Claude',
     defaultName: 'My Claude',
     modelFields: [
-      { key: 'model', label: '主模型' },
-      { key: 'haikuModel', label: 'Haiku 模型' },
-      { key: 'sonnetModel', label: 'Sonnet 模型' },
-      { key: 'opusModel', label: 'Opus 模型' },
+      { key: 'model', label: t('主模型') },
+      { key: 'haikuModel', label: t('Haiku 模型') },
+      { key: 'sonnetModel', label: t('Sonnet 模型') },
+      { key: 'opusModel', label: t('Opus 模型') },
     ],
   },
   codex: {
     label: 'Codex',
     defaultName: 'My Codex',
-    modelFields: [{ key: 'model', label: '主模型' }],
+    modelFields: [{ key: 'model', label: t('主模型') }],
   },
   gemini: {
     label: 'Gemini',
     defaultName: 'My Gemini',
-    modelFields: [{ key: 'model', label: '主模型' }],
+    modelFields: [{ key: 'model', label: t('主模型') }],
   },
 };
 
