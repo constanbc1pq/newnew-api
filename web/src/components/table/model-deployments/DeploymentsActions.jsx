@@ -17,9 +17,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React from 'react';
-import { Button, Popconfirm } from '@douyinfe/semi-ui';
+import React, { useState } from 'react';
+import { Button } from '@douyinfe/semi-ui';
 import CompactModeToggle from '../../common/ui/CompactModeToggle';
+import ConfirmModal from '../../common/modals/ConfirmModal';
 
 const DeploymentsActions = ({
   selectedKeys,
@@ -35,6 +36,7 @@ const DeploymentsActions = ({
   t,
 }) => {
   const hasSelected = batchOperationsEnabled && selectedKeys.length > 0;
+  const [batchDeleteOpen, setBatchDeleteOpen] = useState(false);
 
   const handleAddDeployment = () => {
     if (setShowCreateModal) {
@@ -67,23 +69,27 @@ const DeploymentsActions = ({
 
       {hasSelected && (
         <>
-          <Popconfirm
+          <Button
+            type='danger'
+            className='flex-1 md:flex-initial'
+            disabled={selectedKeys.length === 0}
+            size='small'
+            onClick={() => setBatchDeleteOpen(true)}
+          >
+            {t('批量删除')} ({selectedKeys.length})
+          </Button>
+          <ConfirmModal
+            visible={batchDeleteOpen}
+            type='danger'
             title={t('确认删除')}
             content={`${t('确定要删除选中的')} ${selectedKeys.length} ${t('个部署吗？此操作不可逆。')}`}
             okText={t('删除')}
-            cancelText={t('取消')}
-            okType='danger'
-            onConfirm={handleBatchDelete}
-          >
-            <Button
-              type='danger'
-              className='flex-1 md:flex-initial'
-              disabled={selectedKeys.length === 0}
-              size='small'
-            >
-              {t('批量删除')} ({selectedKeys.length})
-            </Button>
-          </Popconfirm>
+            onCancel={() => setBatchDeleteOpen(false)}
+            onOk={async () => {
+              await handleBatchDelete();
+              setBatchDeleteOpen(false);
+            }}
+          />
 
           <Button
             type='tertiary'

@@ -24,12 +24,12 @@ import {
   Spin,
   Typography,
   Tag,
-  Popconfirm,
   Badge,
   SideSheet,
   Form,
   Empty,
 } from '@douyinfe/semi-ui';
+import ConfirmModal from '../../components/common/modals/ConfirmModal';
 import {
   IconPlus,
   IconDelete,
@@ -261,6 +261,8 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
   const [loadingEntries, setLoadingEntries] = useState(false);
   const [editSheetOpen, setEditSheetOpen] = useState(false);
   const [addKeySheetOpen, setAddKeySheetOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deletingEntryId, setDeletingEntryId] = useState(null);
 
   async function loadEntries() {
     setLoadingEntries(true);
@@ -364,15 +366,12 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
         >
           <Button size='small' icon={<IconEdit />} onClick={() => setEditSheetOpen(true)} />
           <Switch size='small' checked={pool.enabled} onChange={togglePoolEnabled} />
-          <Popconfirm
-            title={t('确认删除这个 Key Pool？')}
-            content={t('同时删除所有关联 Key')}
-            onConfirm={() => onDeleted(pool.id)}
-            okText={t('删除')}
-            cancelText={t('取消')}
-          >
-            <Button size='small' type='danger' icon={<IconDelete />} />
-          </Popconfirm>
+          <Button
+            size='small'
+            type='danger'
+            icon={<IconDelete />}
+            onClick={() => setDeleteConfirmOpen(true)}
+          />
         </span>
       </div>
 
@@ -389,7 +388,7 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
                   key={entry.id}
                   entry={entry}
                   onToggle={() => toggleEntry(entry)}
-                  onDelete={() => deleteEntry(entry.id)}
+                  onDelete={() => setDeletingEntryId(entry.id)}
                 />
               ))}
               {entries.length === 0 && (
@@ -423,6 +422,32 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
         onClose={() => setAddKeySheetOpen(false)}
         poolId={pool.id}
         onCreated={(entry) => setEntries((prev) => [...prev, entry])}
+      />
+
+      <ConfirmModal
+        visible={deleteConfirmOpen}
+        type='danger'
+        title={t('确认删除这个 Key Pool？')}
+        content={t('同时删除所有关联 Key，此操作不可撤销。')}
+        okText={t('删除')}
+        onCancel={() => setDeleteConfirmOpen(false)}
+        onOk={async () => {
+          await onDeleted(pool.id);
+          setDeleteConfirmOpen(false);
+        }}
+      />
+
+      <ConfirmModal
+        visible={deletingEntryId != null}
+        type='danger'
+        title={t('删除这个 Key？')}
+        content={t('删除后该 Key 不再参与轮换，此操作不可撤销。')}
+        okText={t('删除')}
+        onCancel={() => setDeletingEntryId(null)}
+        onOk={async () => {
+          await deleteEntry(deletingEntryId);
+          setDeletingEntryId(null);
+        }}
       />
     </div>
   );
@@ -472,14 +497,7 @@ function EntryRow({ entry, onToggle, onDelete }) {
       </Text>
       <Switch size='small' checked={entry.enabled} onChange={onToggle} />
       <Button size='small' icon={<IconCopy />} onClick={copyKey} />
-      <Popconfirm
-        title={t('删除这个 Key？')}
-        onConfirm={onDelete}
-        okText={t('删除')}
-        cancelText={t('取消')}
-      >
-        <Button size='small' type='danger' icon={<IconDelete />} />
-      </Popconfirm>
+      <Button size='small' type='danger' icon={<IconDelete />} onClick={onDelete} />
     </div>
   );
 }

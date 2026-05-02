@@ -8,10 +8,10 @@ import {
   Modal,
   Typography,
   Badge,
-  Popconfirm,
   Spin,
   Empty,
 } from '@douyinfe/semi-ui';
+import ConfirmModal from '../../components/common/modals/ConfirmModal';
 import {
   IllustrationConstruction,
   IllustrationConstructionDark,
@@ -273,6 +273,8 @@ export default function EmailCampaignsPage() {
   const [editItem, setEditItem] = useState(null);
   const [recipientsModal, setRecipientsModal] = useState({ open: false, id: null });
   const [sendingId, setSendingId] = useState(null);
+  const [sendConfirmRow, setSendConfirmRow] = useState(null);
+  const [deleteConfirmRow, setDeleteConfirmRow] = useState(null);
 
   const loadCampaigns = useCallback(async (p = 1, ps = PAGE_SIZE) => {
     setLoading(true);
@@ -397,32 +399,24 @@ export default function EmailCampaignsPage() {
             </Button>
           )}
           {(row.status === 'draft' || row.status === 'scheduled' || row.status === 'paused') && (
-            <Popconfirm
-              title={t('确认发送给 {{count}} 个收件人？', { count: row.total_recipients ?? '?' })}
-              onConfirm={() => handleSend(row.id)}
-              okText={t('确认')}
-              cancelText={t('取消')}
+            <Button
+              size='small'
+              theme='solid'
+              type='primary'
+              icon={<IconSend />}
+              loading={sendingId === row.id}
+              onClick={() => setSendConfirmRow(row)}
             >
-              <Button
-                size='small'
-                theme='solid'
-                type='primary'
-                icon={<IconSend />}
-                loading={sendingId === row.id}
-              >
-                {t('发送')}
-              </Button>
-            </Popconfirm>
+              {t('发送')}
+            </Button>
           )}
           {row.status !== 'sent' && row.status !== 'sending' && (
-            <Popconfirm
-              title={t('删除该 Campaign？')}
-              onConfirm={() => handleDelete(row.id)}
-              okText={t('删除')}
-              cancelText={t('取消')}
-            >
-              <Button size='small' type='danger' icon={<IconDelete />} />
-            </Popconfirm>
+            <Button
+              size='small'
+              type='danger'
+              icon={<IconDelete />}
+              onClick={() => setDeleteConfirmRow(row)}
+            />
           )}
         </div>
       ),
@@ -503,6 +497,36 @@ export default function EmailCampaignsPage() {
         campaignId={recipientsModal.id}
         onClose={() => setRecipientsModal({ open: false, id: null })}
         t={t}
+      />
+
+      <ConfirmModal
+        visible={!!sendConfirmRow}
+        type='warning'
+        title={t('确认发送给 {{count}} 个收件人？', {
+          count: sendConfirmRow?.total_recipients ?? '?',
+        })}
+        content={t('邮件一旦发出无法撤回，请确认后再继续。')}
+        okText={t('立即发送')}
+        onCancel={() => setSendConfirmRow(null)}
+        onOk={async () => {
+          const id = sendConfirmRow?.id;
+          setSendConfirmRow(null);
+          if (id != null) await handleSend(id);
+        }}
+      />
+
+      <ConfirmModal
+        visible={!!deleteConfirmRow}
+        type='danger'
+        title={t('删除该 Campaign？')}
+        content={t('删除后该 Campaign 不再保留，此操作不可撤销。')}
+        okText={t('删除')}
+        onCancel={() => setDeleteConfirmRow(null)}
+        onOk={async () => {
+          const id = deleteConfirmRow?.id;
+          setDeleteConfirmRow(null);
+          if (id != null) await handleDelete(id);
+        }}
       />
     </div>
   );

@@ -31,9 +31,9 @@ import {
   Switch,
   Table,
   Tag,
-  Popconfirm,
   Space,
 } from '@douyinfe/semi-ui';
+import ConfirmModal from '../common/modals/ConfirmModal';
 import {
   IconPlus,
   IconEdit,
@@ -200,6 +200,7 @@ const CustomOAuthSetting = ({ serverAddress }) => {
   const [baseUrl, setBaseUrl] = useState('');
   const [discoveryLoading, setDiscoveryLoading] = useState(false);
   const [discoveryInfo, setDiscoveryInfo] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [advancedActiveKeys, setAdvancedActiveKeys] = useState([]);
   const formApiRef = React.useRef(null);
 
@@ -578,14 +579,14 @@ const CustomOAuthSetting = ({ serverAddress }) => {
           >
             {t('编辑')}
           </Button>
-          <Popconfirm
-            title={t('确定要删除此 OAuth 提供商吗？')}
-            onConfirm={() => handleDelete(record.id)}
+          <Button
+            icon={<IconDelete />}
+            size="small"
+            type="danger"
+            onClick={() => setDeleteTargetId(record.id)}
           >
-            <Button icon={<IconDelete />} size="small" type="danger">
-              {t('删除')}
-            </Button>
-          </Popconfirm>
+            {t('删除')}
+          </Button>
         </Space>
       ),
     },
@@ -1046,6 +1047,20 @@ const CustomOAuthSetting = ({ serverAddress }) => {
           </Form>
         </Modal>
       </Form.Section>
+
+      <ConfirmModal
+        visible={deleteTargetId != null}
+        type='danger'
+        title={t('确定要删除此 OAuth 提供商吗？')}
+        content={t('删除后该 OAuth 配置不再生效，使用该方式登录的用户将无法继续登录。')}
+        okText={t('删除')}
+        onCancel={() => setDeleteTargetId(null)}
+        onOk={async () => {
+          const id = deleteTargetId;
+          setDeleteTargetId(null);
+          if (id != null) await handleDelete(id);
+        }}
+      />
     </Card>
   );
 };

@@ -24,7 +24,6 @@ import {
   Typography,
   Space,
   Tag,
-  Popconfirm,
   Card,
   Avatar,
   Spin,
@@ -45,6 +44,7 @@ import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../../../../hooks/common/useIsMobile';
 import CardTable from '../../../common/ui/CardTable';
 import EditPrefillGroupModal from './EditPrefillGroupModal';
+import ConfirmModal from '../../../common/modals/ConfirmModal';
 import {
   renderLimitedItems,
   renderDescription,
@@ -59,6 +59,7 @@ const PrefillGroupManagement = ({ visible, onClose }) => {
   const [groups, setGroups] = useState([]);
   const [showEdit, setShowEdit] = useState(false);
   const [editingGroup, setEditingGroup] = useState({ id: undefined });
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   const typeOptions = [
     { label: t('模型组'), value: 'model' },
@@ -202,14 +203,13 @@ const PrefillGroupManagement = ({ visible, onClose }) => {
           <Button size='small' onClick={() => handleEdit(record)}>
             {t('编辑')}
           </Button>
-          <Popconfirm
-            title={t('确定删除此组？')}
-            onConfirm={() => deleteGroup(record.id)}
+          <Button
+            size='small'
+            type='danger'
+            onClick={() => setDeleteTargetId(record.id)}
           >
-            <Button size='small' type='danger'>
-              {t('删除')}
-            </Button>
-          </Popconfirm>
+            {t('删除')}
+          </Button>
         </Space>
       ),
     },
@@ -300,6 +300,20 @@ const PrefillGroupManagement = ({ visible, onClose }) => {
         onClose={closeEdit}
         editingGroup={editingGroup}
         onSuccess={handleEditSuccess}
+      />
+
+      <ConfirmModal
+        visible={deleteTargetId != null}
+        type='danger'
+        title={t('确定删除此组？')}
+        content={t('删除后该预填组不再生效，此操作不可撤销。')}
+        okText={t('删除')}
+        onCancel={() => setDeleteTargetId(null)}
+        onOk={async () => {
+          const id = deleteTargetId;
+          setDeleteTargetId(null);
+          if (id != null) await deleteGroup(id);
+        }}
       />
     </>
   );
