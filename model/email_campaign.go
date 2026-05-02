@@ -53,7 +53,7 @@ type EmailCampaign struct {
 
 	// Email content
 	Subject     string `json:"subject" gorm:"type:varchar(500)"`
-	BodyHTML    string `json:"body_html" gorm:"type:longtext"`
+	BodyHTML    string `json:"body_html" gorm:"type:text"`
 	BodyText    string `json:"body_text" gorm:"type:text"`     // plain-text fallback
 	FromName    string `json:"from_name" gorm:"type:varchar(100)"`
 
