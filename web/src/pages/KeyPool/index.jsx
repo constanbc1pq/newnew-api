@@ -598,8 +598,8 @@ export default function KeyPoolPage() {
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: '24px 16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 12 }}>
+      <div style={{ padding: '24px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 12, flexWrap: 'wrap' }}>
           <div>
             <Title heading={4} style={{ margin: 0 }}>{t('Key Pool 管理')}</Title>
             <Text type='tertiary' style={{ fontSize: 13 }}>
