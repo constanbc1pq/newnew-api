@@ -231,3 +231,24 @@ body[theme-mode='dark'] .semi-navigation-item-selected {
 .semi-tagInput .semi-tagInput-content {
   padding-left: 8px !important;
 }
+
+/* ==================== 按钮组间距 ==================== */
+/* Modal / SideSheet footer：内部 wrapper 无 class，强制 inline-flex + gap */
+.semi-modal-footer > div,
+.semi-sidesheet-footer > div {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Popconfirm footer 同样规则（保留的轻量 Popconfirm 也享用） */
+.semi-popconfirm-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Semi Space 已经处理了间距，但仍兜底相邻按钮（不影响已用 flex-gap 的容器，因为
+ * 那种容器里的按钮通常各自有 flex-shrink，margin 会被 gap 吸收）。
+ * 仅在非 flex 容器（如 inline 直接相邻）下生效——这里用更具体的规则保险起见。 */
