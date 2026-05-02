@@ -1,17 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
-  Card,
-  Table,
   Tag,
-  Modal,
   Form,
-  Input,
-  InputNumber,
-  TextArea,
-  Select,
-  Switch,
-  Toast,
+  SideSheet,
+  Modal,
   Typography,
   Badge,
   Popconfirm,
@@ -19,104 +13,97 @@ import {
   Empty,
 } from '@douyinfe/semi-ui';
 import {
+  IllustrationConstruction,
+  IllustrationConstructionDark,
+  IllustrationNoResult,
+  IllustrationNoResultDark,
+} from '@douyinfe/semi-illustrations';
+import {
   IconPlus,
   IconSend,
   IconDelete,
   IconEdit,
   IconEyeOpened,
-  IconPause,
   IconRefresh,
 } from '@douyinfe/semi-icons';
+import CardPro from '../../components/common/ui/CardPro';
+import CardTable from '../../components/common/ui/CardTable';
 import { API, showError, showSuccess } from '../../helpers';
+import { createCardProPagination } from '../../helpers/utils';
+import { useIsMobile } from '../../hooks/common/useIsMobile';
 
 const { Title, Text } = Typography;
 
-// ─── Status badge ───────────────────────────────────────────────────────────
-
-const STATUS_MAP = {
-  draft:     { color: 'grey',   label: 'Draft' },
-  scheduled: { color: 'blue',   label: 'Scheduled' },
-  sending:   { color: 'orange', label: 'Sending' },
-  sent:      { color: 'green',  label: 'Sent' },
-  paused:    { color: 'red',    label: 'Paused' },
+const STATUS_KEY = {
+  draft:     { color: 'grey',   labelKey: '草稿' },
+  scheduled: { color: 'blue',   labelKey: '已计划' },
+  sending:   { color: 'orange', labelKey: '发送中' },
+  sent:      { color: 'green',  labelKey: '已发送' },
+  paused:    { color: 'red',    labelKey: '已暂停' },
 };
 
-function StatusTag({ status }) {
-  const s = STATUS_MAP[status] || STATUS_MAP.draft;
-  return <Tag color={s.color}>{s.label}</Tag>;
+function StatusTag({ status, t }) {
+  const s = STATUS_KEY[status] || STATUS_KEY.draft;
+  return <Tag color={s.color} size='small'>{t(s.labelKey)}</Tag>;
 }
 
-// ─── Campaign Form Modal ─────────────────────────────────────────────────────
+const PAGE_SIZE = 20;
 
-function CampaignModal({ visible, onClose, onSaved, initial }) {
-  const [form, setForm] = useState({
-    name: '',
-    subject: '',
-    from_name: '',
-    body_html: '',
-    body_text: '',
-    segment_json: '{}',
-    // segment UI fields
-    min_quota: 0,
-    max_quota: 0,
-    inactive_days: 0,
-    registered_within_days: 0,
-  });
+function CampaignSideSheet({ visible, onClose, onSaved, initial, t }) {
+  const formApiRef = useRef(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (initial) {
-      const seg = (() => {
-        try { return JSON.parse(initial.segment_json || '{}'); } catch { return {}; }
-      })();
-      setForm({
-        name: initial.name || '',
-        subject: initial.subject || '',
-        from_name: initial.from_name || '',
-        body_html: initial.body_html || '',
-        body_text: initial.body_text || '',
-        segment_json: initial.segment_json || '{}',
-        min_quota: seg.min_quota || 0,
-        max_quota: seg.max_quota || 0,
-        inactive_days: seg.inactive_days || 0,
-        registered_within_days: seg.registered_within_days || 0,
-      });
-    } else {
-      setForm({
+  const initValues = useMemo(() => {
+    if (!initial) {
+      return {
         name: '', subject: '', from_name: '', body_html: '', body_text: '',
-        segment_json: '{}', min_quota: 0, max_quota: 0, inactive_days: 0, registered_within_days: 0,
-      });
+        min_quota: 0, max_quota: 0, inactive_days: 0, registered_within_days: 0,
+      };
     }
-  }, [initial, visible]);
+    let seg = {};
+    try { seg = JSON.parse(initial.segment_json || '{}'); } catch { /* noop */ }
+    return {
+      name: initial.name || '',
+      subject: initial.subject || '',
+      from_name: initial.from_name || '',
+      body_html: initial.body_html || '',
+      body_text: initial.body_text || '',
+      min_quota: seg.min_quota || 0,
+      max_quota: seg.max_quota || 0,
+      inactive_days: seg.inactive_days || 0,
+      registered_within_days: seg.registered_within_days || 0,
+    };
+  }, [initial]);
 
-  const buildSegmentJSON = (f) => JSON.stringify({
-    min_quota:               f.min_quota || 0,
-    max_quota:               f.max_quota || 0,
-    inactive_days:           f.inactive_days || 0,
-    registered_within_days:  f.registered_within_days || 0,
-  });
+  useEffect(() => {
+    if (visible && formApiRef.current) {
+      formApiRef.current.setValues(initValues);
+    }
+  }, [visible, initValues]);
 
   const handleSave = async () => {
-    if (!form.name.trim()) return Toast.error('Campaign name is required');
-    if (!form.subject.trim()) return Toast.error('Email subject is required');
+    const values = await formApiRef.current?.validate().catch(() => null);
+    if (!values) return;
     setSaving(true);
     try {
       const payload = {
-        name:         form.name,
-        subject:      form.subject,
-        from_name:    form.from_name,
-        body_html:    form.body_html,
-        body_text:    form.body_text,
-        segment_json: buildSegmentJSON(form),
+        name:         values.name,
+        subject:      values.subject,
+        from_name:    values.from_name,
+        body_html:    values.body_html,
+        body_text:    values.body_text,
+        segment_json: JSON.stringify({
+          min_quota:               values.min_quota || 0,
+          max_quota:               values.max_quota || 0,
+          inactive_days:           values.inactive_days || 0,
+          registered_within_days:  values.registered_within_days || 0,
+        }),
       };
-      let res;
-      if (initial?.id) {
-        res = await API.put(`/api/admin/campaigns/${initial.id}`, payload);
-      } else {
-        res = await API.post('/api/admin/campaigns/', payload);
-      }
+      const res = initial?.id
+        ? await API.put(`/api/admin/campaigns/${initial.id}`, payload)
+        : await API.post('/api/admin/campaigns/', payload);
       if (res.data.success) {
-        showSuccess(initial?.id ? 'Campaign updated' : 'Campaign created');
+        showSuccess(initial?.id ? t('Campaign 已更新') : t('Campaign 已创建'));
         onSaved(res.data.data);
       } else {
         showError(res.data.message);
@@ -128,104 +115,82 @@ function CampaignModal({ visible, onClose, onSaved, initial }) {
     }
   };
 
-  const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
-
   return (
-    <Modal
-      title={initial?.id ? 'Edit Campaign' : 'New Campaign'}
+    <SideSheet
+      title={initial?.id ? t('编辑 Campaign') : t('新建 Campaign')}
       visible={visible}
       onCancel={onClose}
-      width={720}
+      width={560}
+      placement='right'
       footer={
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button theme="solid" loading={saving} onClick={handleSave}>
-            {initial?.id ? 'Save Changes' : 'Create Campaign'}
+          <Button onClick={onClose}>{t('取消')}</Button>
+          <Button theme='solid' type='primary' loading={saving} onClick={handleSave}>
+            {initial?.id ? t('保存修改') : t('创建')}
           </Button>
         </div>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {/* Basic info */}
-        <Form.Section text="Campaign Info">
+      <Form
+        getFormApi={(api) => (formApiRef.current = api)}
+        initValues={initValues}
+        layout='vertical'
+      >
+        <Form.Section text={t('基本信息')}>
           <Form.Input
-            field="name"
-            label="Campaign Name (internal)"
-            placeholder="e.g. Promo April 2025"
-            value={form.name}
-            onChange={v => set('name', v)}
+            field='name'
+            label={t('Campaign 名称（仅内部）')}
+            placeholder='e.g. Promo April 2025'
+            rules={[{ required: true, message: t('Campaign 名称必填') }]}
           />
           <Form.Input
-            field="subject"
-            label="Email Subject"
-            placeholder="e.g. 🎉 Get 20% more credits this week!"
-            value={form.subject}
-            onChange={v => set('subject', v)}
+            field='subject'
+            label={t('邮件标题')}
+            placeholder='🎉 Get 20% more credits this week!'
+            rules={[{ required: true, message: t('邮件标题必填') }]}
           />
           <Form.Input
-            field="from_name"
-            label="From Name (optional, overrides system name)"
-            placeholder="e.g. Market Router Team"
-            value={form.from_name}
-            onChange={v => set('from_name', v)}
+            field='from_name'
+            label={t('发件人名称（可选，覆盖系统名）')}
+            placeholder='Market Router Team'
           />
         </Form.Section>
 
-        {/* Email body */}
-        <Form.Section text="Email Body">
-          <div>
-            <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>HTML Body</label>
-            <TextArea
-              rows={8}
-              placeholder="<h1>Hello {{username}},</h1><p>We have a special offer...</p>"
-              value={form.body_html}
-              onChange={v => set('body_html', v)}
-              style={{ fontFamily: 'monospace', fontSize: 12 }}
-            />
-            <Text type="tertiary" size="small">
-              Supported template variable: <code>{'{{username}}'}</code>
-            </Text>
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>Plain-text Fallback</label>
-            <TextArea
-              rows={3}
-              placeholder="Hello, we have a special offer for you..."
-              value={form.body_text}
-              onChange={v => set('body_text', v)}
-            />
-          </div>
+        <Form.Section text={t('邮件内容')}>
+          <Form.TextArea
+            field='body_html'
+            label={t('HTML 正文')}
+            rows={8}
+            placeholder='<h1>Hello {{username}},</h1><p>We have a special offer...</p>'
+            style={{ fontFamily: 'var(--font-mono, monospace)', fontSize: 12 }}
+            extraText={
+              <span>
+                {t('支持模板变量：')}<code>{'{{username}}'}</code>
+              </span>
+            }
+          />
+          <Form.TextArea
+            field='body_text'
+            label={t('纯文本回退')}
+            rows={3}
+            placeholder='Hello, we have a special offer for you...'
+          />
         </Form.Section>
 
-        {/* Audience segment */}
-        <Form.Section text="Audience Filter (leave 0 = no filter)">
+        <Form.Section text={t('用户筛选条件（0 表示不限制）')}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div>
-              <label style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Min Quota (tokens)</label>
-              <InputNumber value={form.min_quota} onChange={v => set('min_quota', v)} min={0} style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Max Quota (tokens)</label>
-              <InputNumber value={form.max_quota} onChange={v => set('max_quota', v)} min={0} style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Inactive for N days</label>
-              <InputNumber value={form.inactive_days} onChange={v => set('inactive_days', v)} min={0} style={{ width: '100%' }} />
-            </div>
-            <div>
-              <label style={{ fontSize: 13, display: 'block', marginBottom: 4 }}>Registered within N days</label>
-              <InputNumber value={form.registered_within_days} onChange={v => set('registered_within_days', v)} min={0} style={{ width: '100%' }} />
-            </div>
+            <Form.InputNumber field='min_quota' label={t('最低额度')} min={0} style={{ width: '100%' }} />
+            <Form.InputNumber field='max_quota' label={t('最高额度')} min={0} style={{ width: '100%' }} />
+            <Form.InputNumber field='inactive_days' label={t('已不活跃 N 天')} min={0} style={{ width: '100%' }} />
+            <Form.InputNumber field='registered_within_days' label={t('注册时间在 N 天内')} min={0} style={{ width: '100%' }} />
           </div>
         </Form.Section>
-      </div>
-    </Modal>
+      </Form>
+    </SideSheet>
   );
 }
 
-// ─── Recipients Preview Modal ────────────────────────────────────────────────
-
-function RecipientsModal({ visible, campaignId, onClose }) {
+function RecipientsPreviewModal({ visible, campaignId, onClose, t }) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
 
@@ -239,33 +204,54 @@ function RecipientsModal({ visible, campaignId, onClose }) {
         })
         .catch(e => showError(e.message))
         .finally(() => setLoading(false));
+    } else if (!visible) {
+      setData(null);
     }
   }, [visible, campaignId]);
 
   return (
-    <Modal title="Preview Recipients" visible={visible} onCancel={onClose} width={600} footer={null}>
+    <Modal
+      title={t('收件人预览')}
+      visible={visible}
+      onCancel={onClose}
+      width={600}
+      footer={null}
+    >
       {loading && <div style={{ textAlign: 'center', padding: 40 }}><Spin /></div>}
       {!loading && data && (
         <div>
-          <div style={{ marginBottom: 16 }}>
-            <Tag color="blue" size="large">Total matching: {data.total} users</Tag>
+          <div style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Text type='tertiary'>{t('匹配用户总数：')}</Text>
+            <Badge count={data.total} overflowCount={9999} type='primary' />
           </div>
           {data.preview?.length > 0 ? (
             <>
-              <Text type="tertiary" size="small">Showing first 20:</Text>
-              <Table
-                size="small"
-                dataSource={data.preview}
-                columns={[
-                  { title: 'Username', dataIndex: 'Username' },
-                  { title: 'Email', dataIndex: 'Email' },
-                ]}
-                pagination={false}
-                style={{ marginTop: 8 }}
-              />
+              <Text type='tertiary' size='small'>{t('显示前 20 位：')}</Text>
+              <div style={{ marginTop: 8, border: '1px solid var(--mr-border-default)', borderRadius: 14, overflow: 'hidden' }}>
+                <table style={{ width: '100%', fontSize: 13 }}>
+                  <thead style={{ background: 'var(--mr-bg-surface-2)' }}>
+                    <tr>
+                      <th style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--mr-text-tertiary)', fontWeight: 500 }}>{t('用户名')}</th>
+                      <th style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--mr-text-tertiary)', fontWeight: 500 }}>{t('邮箱')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.preview.map((u, i) => (
+                      <tr key={i} style={{ borderTop: '1px solid var(--mr-border-subtle)' }}>
+                        <td style={{ padding: '8px 12px' }}>{u.Username || u.username}</td>
+                        <td style={{ padding: '8px 12px', color: 'var(--mr-text-secondary)' }}>{u.Email || u.email}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </>
           ) : (
-            <Empty description="No users match these filters" />
+            <Empty
+              image={<IllustrationNoResult style={{ width: 100, height: 100 }} />}
+              darkModeImage={<IllustrationNoResultDark style={{ width: 100, height: 100 }} />}
+              description={t('没有用户匹配该筛选条件')}
+            />
           )}
         </div>
       )}
@@ -273,26 +259,29 @@ function RecipientsModal({ visible, campaignId, onClose }) {
   );
 }
 
-// ─── Main Page ───────────────────────────────────────────────────────────────
-
 export default function EmailCampaignsPage() {
+  const { t } = useTranslation();
+  const isMobile = useIsMobile();
+
   const [campaigns, setCampaigns] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE);
   const [loading, setLoading] = useState(false);
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [recipientsModal, setRecipientsModal] = useState({ open: false, id: null });
   const [sendingId, setSendingId] = useState(null);
 
-  const loadCampaigns = useCallback(async (p = 1) => {
+  const loadCampaigns = useCallback(async (p = 1, ps = PAGE_SIZE) => {
     setLoading(true);
     try {
-      const res = await API.get(`/api/admin/campaigns/?page=${p}&size=20`);
+      const res = await API.get(`/api/admin/campaigns/?page=${p}&size=${ps}`);
       if (res.data.success) {
-        setCampaigns(res.data.data || []);
-        setTotal(res.data.total || 0);
+        const payload = res.data.data || {};
+        setCampaigns(Array.isArray(payload) ? payload : payload.items || []);
+        setTotal(payload.total ?? res.data.total ?? 0);
       } else {
         showError(res.data.message);
       }
@@ -303,13 +292,13 @@ export default function EmailCampaignsPage() {
     }
   }, []);
 
-  useEffect(() => { loadCampaigns(page); }, [page, loadCampaigns]);
+  useEffect(() => { loadCampaigns(page, pageSize); }, [page, pageSize, loadCampaigns]);
 
   const handleDelete = async (id) => {
     try {
       const res = await API.delete(`/api/admin/campaigns/${id}`);
       if (res.data.success) {
-        showSuccess('Campaign deleted');
+        showSuccess(t('Campaign 已删除'));
         setCampaigns(cs => cs.filter(c => c.id !== id));
       } else {
         showError(res.data.message);
@@ -324,8 +313,8 @@ export default function EmailCampaignsPage() {
     try {
       const res = await API.post(`/api/admin/campaigns/${id}/send`);
       if (res.data.success) {
-        showSuccess(res.data.message);
-        loadCampaigns(page);
+        showSuccess(res.data.message || t('已发送'));
+        loadCampaigns(page, pageSize);
       } else {
         showError(res.data.message);
       }
@@ -346,86 +335,93 @@ export default function EmailCampaignsPage() {
       }
       return [item, ...cs];
     });
-    setModalOpen(false);
+    setSheetOpen(false);
     setEditItem(null);
   };
 
   const columns = [
     {
-      title: 'Name',
+      title: t('名称'),
       dataIndex: 'name',
       render: (name, row) => (
         <div>
           <Text strong>{name}</Text>
           <br />
-          <Text type="tertiary" size="small">{row.subject}</Text>
+          <Text type='tertiary' size='small'>{row.subject}</Text>
         </div>
       ),
     },
     {
-      title: 'Status',
+      title: t('状态'),
       dataIndex: 'status',
       width: 110,
-      render: s => <StatusTag status={s} />,
+      render: s => <StatusTag status={s} t={t} />,
     },
     {
-      title: 'Recipients',
-      width: 120,
+      title: t('收件人'),
+      width: 130,
       render: (_, row) => (
         row.status === 'sent'
-          ? <span>
-              <Text style={{ color: 'var(--semi-color-success)' }}>✓ {row.sent_count}</Text>
-              {row.failed_count > 0 && <Text type="danger"> / ✗ {row.failed_count}</Text>}
+          ? <span className='mr-tabular'>
+              <Text style={{ color: 'var(--mr-success)' }}>✓ {row.sent_count}</Text>
+              {row.failed_count > 0 && <Text type='danger'> / ✗ {row.failed_count}</Text>}
             </span>
-          : <Text type="tertiary">{row.total_recipients || '—'}</Text>
+          : <Text type='tertiary' className='mr-tabular'>{row.total_recipients ?? '—'}</Text>
       ),
     },
     {
-      title: 'Created',
+      title: t('创建时间'),
       dataIndex: 'created_at',
       width: 140,
       render: ts => ts ? new Date(ts * 1000).toLocaleDateString() : '—',
     },
     {
-      title: 'Actions',
-      width: 200,
+      title: t('操作'),
+      width: 240,
       render: (_, row) => (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           <Button
-            size="small"
+            size='small'
             icon={<IconEyeOpened />}
             onClick={() => setRecipientsModal({ open: true, id: row.id })}
           >
-            Preview
+            {t('预览')}
           </Button>
           {(row.status === 'draft' || row.status === 'paused') && (
             <Button
-              size="small"
+              size='small'
               icon={<IconEdit />}
-              onClick={() => { setEditItem(row); setModalOpen(true); }}
+              onClick={() => { setEditItem(row); setSheetOpen(true); }}
             >
-              Edit
+              {t('编辑')}
             </Button>
           )}
           {(row.status === 'draft' || row.status === 'scheduled' || row.status === 'paused') && (
             <Popconfirm
-              title={`Send to ${row.total_recipients || '?'} recipients?`}
+              title={t('确认发送给 {{count}} 个收件人？', { count: row.total_recipients ?? '?' })}
               onConfirm={() => handleSend(row.id)}
+              okText={t('确认')}
+              cancelText={t('取消')}
             >
               <Button
-                size="small"
-                theme="solid"
-                type="primary"
+                size='small'
+                theme='solid'
+                type='primary'
                 icon={<IconSend />}
                 loading={sendingId === row.id}
               >
-                Send
+                {t('发送')}
               </Button>
             </Popconfirm>
           )}
           {row.status !== 'sent' && row.status !== 'sending' && (
-            <Popconfirm title="Delete this campaign?" onConfirm={() => handleDelete(row.id)}>
-              <Button size="small" type="danger" icon={<IconDelete />} />
+            <Popconfirm
+              title={t('删除该 Campaign？')}
+              onConfirm={() => handleDelete(row.id)}
+              okText={t('删除')}
+              cancelText={t('取消')}
+            >
+              <Button size='small' type='danger' icon={<IconDelete />} />
             </Popconfirm>
           )}
         </div>
@@ -443,49 +439,70 @@ export default function EmailCampaignsPage() {
         padding: '0 4px',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, gap: 12 }}>
         <div>
-          <Title heading={4} style={{ margin: 0 }}>Email Campaigns</Title>
-          <Text type="tertiary">Send targeted marketing emails to user segments</Text>
+          <Title heading={4} style={{ margin: 0 }}>{t('Email Campaigns')}</Title>
+          <Text type='tertiary' size='small'>
+            {t('向用户分群发送精准营销邮件')}
+          </Text>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <Button icon={<IconRefresh />} onClick={() => loadCampaigns(page)}>Refresh</Button>
+          <Button icon={<IconRefresh />} onClick={() => loadCampaigns(page, pageSize)}>
+            {t('刷新')}
+          </Button>
           <Button
             icon={<IconPlus />}
-            theme="solid"
-            onClick={() => { setEditItem(null); setModalOpen(true); }}
+            theme='solid'
+            type='primary'
+            onClick={() => { setEditItem(null); setSheetOpen(true); }}
           >
-            New Campaign
+            {t('新建 Campaign')}
           </Button>
         </div>
       </div>
 
-      <Card bodyStyle={{ padding: 0 }}>
-        <Table
-          dataSource={campaigns}
+      <CardPro
+        type='type1'
+        paginationArea={createCardProPagination({
+          currentPage: page,
+          pageSize,
+          total,
+          onPageChange: setPage,
+          onPageSizeChange: (ps) => { setPageSize(ps); setPage(1); },
+          isMobile,
+          t,
+        })}
+        t={t}
+      >
+        <CardTable
           columns={columns}
+          dataSource={campaigns}
           loading={loading}
-          pagination={{
-            total,
-            pageSize: 20,
-            currentPage: page,
-            onPageChange: setPage,
-          }}
-          empty={<Empty description="No campaigns yet. Create your first one!" style={{ padding: 40 }} />}
+          hidePagination
+          empty={
+            <Empty
+              image={<IllustrationConstruction style={{ width: 120, height: 120 }} />}
+              darkModeImage={<IllustrationConstructionDark style={{ width: 120, height: 120 }} />}
+              title={t('还没有 Campaign')}
+              description={t('点击右上角"新建 Campaign"创建你的第一个邮件活动')}
+            />
+          }
         />
-      </Card>
+      </CardPro>
 
-      <CampaignModal
-        visible={modalOpen}
-        onClose={() => { setModalOpen(false); setEditItem(null); }}
+      <CampaignSideSheet
+        visible={sheetOpen}
+        onClose={() => { setSheetOpen(false); setEditItem(null); }}
         onSaved={handleSaved}
         initial={editItem}
+        t={t}
       />
 
-      <RecipientsModal
+      <RecipientsPreviewModal
         visible={recipientsModal.open}
         campaignId={recipientsModal.id}
         onClose={() => setRecipientsModal({ open: false, id: null })}
+        t={t}
       />
     </div>
   );

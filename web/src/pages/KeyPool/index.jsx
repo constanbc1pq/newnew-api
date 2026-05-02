@@ -20,15 +20,15 @@ For commercial licensing, please contact support@quantumnous.com
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Button,
-  Input,
-  Select,
   Switch,
   Spin,
   Typography,
   Tag,
   Popconfirm,
-  Toast,
   Badge,
+  SideSheet,
+  Form,
+  Empty,
 } from '@douyinfe/semi-ui';
 import {
   IconPlus,
@@ -39,6 +39,10 @@ import {
   IconCopy,
   IconEdit,
 } from '@douyinfe/semi-icons';
+import {
+  IllustrationConstruction,
+  IllustrationConstructionDark,
+} from '@douyinfe/semi-illustrations';
 import { useTranslation } from 'react-i18next';
 import { API, showError, showSuccess } from '../../helpers';
 
@@ -80,11 +84,169 @@ function StatusDot({ enabled }) {
         width: 8,
         height: 8,
         borderRadius: '50%',
-        background: enabled ? '#1CB55A' : '#C9CDD4',
+        background: enabled ? 'var(--mr-success)' : 'var(--mr-text-disabled)',
         marginRight: 6,
         flexShrink: 0,
       }}
     />
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Pool 编辑 SideSheet
+// ────────────────────────────────────────────────────────────────────────────
+
+function PoolEditSheet({ visible, onClose, pool, onSaved }) {
+  const { t } = useTranslation();
+  const formApiRef = useRef(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (visible && formApiRef.current && pool) {
+      formApiRef.current.setValues({
+        name: pool.name,
+        description: pool.description,
+        rotation_mode: pool.rotation_mode,
+      });
+    }
+  }, [visible, pool]);
+
+  const handleSave = async () => {
+    const values = await formApiRef.current?.validate().catch(() => null);
+    if (!values) return;
+    setSaving(true);
+    try {
+      const res = await API.put(`/api/admin/key_pools/${pool.id}`, { ...pool, ...values });
+      if (res.data.success) {
+        onSaved({ ...pool, ...values });
+        showSuccess(t('保存成功'));
+        onClose();
+      } else {
+        showError(res.data.message || t('保存失败'));
+      }
+    } catch (e) {
+      showError(t('保存失败'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <SideSheet
+      title={t('编辑 Key Pool')}
+      visible={visible}
+      onCancel={onClose}
+      width={420}
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          <Button onClick={onClose}>{t('取消')}</Button>
+          <Button theme='solid' type='primary' loading={saving} onClick={handleSave}>
+            {t('保存')}
+          </Button>
+        </div>
+      }
+    >
+      <Form
+        getFormApi={(api) => (formApiRef.current = api)}
+        layout='vertical'
+        initValues={{
+          name: pool?.name || '',
+          description: pool?.description || '',
+          rotation_mode: pool?.rotation_mode || 'round_robin',
+        }}
+      >
+        <Form.Input
+          field='name'
+          label={t('Pool 名称')}
+          rules={[{ required: true, message: t('请输入 Pool 名称') }]}
+        />
+        <Form.Input
+          field='description'
+          label={t('备注（可选）')}
+          placeholder={t('备注（可选）')}
+        />
+        <Form.Select
+          field='rotation_mode'
+          label={t('轮换模式')}
+          optionList={getRotationModes(t)}
+          style={{ width: '100%' }}
+        />
+      </Form>
+    </SideSheet>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// 添加 Key SideSheet
+// ────────────────────────────────────────────────────────────────────────────
+
+function AddKeySheet({ visible, onClose, poolId, onCreated }) {
+  const { t } = useTranslation();
+  const formApiRef = useRef(null);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    const values = await formApiRef.current?.validate().catch(() => null);
+    if (!values) return;
+    setSaving(true);
+    try {
+      const res = await API.post(`/api/admin/key_pools/${poolId}/entries`, {
+        ...DEFAULT_ENTRY,
+        ...values,
+        weight: values.weight || 1,
+      });
+      if (res.data.success) {
+        onCreated(res.data.data);
+        showSuccess(t('Key 已添加'));
+        formApiRef.current?.reset();
+        onClose();
+      } else {
+        showError(res.data.message || t('添加失败'));
+      }
+    } catch (e) {
+      showError(t('添加失败'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <SideSheet
+      title={t('添加 Key')}
+      visible={visible}
+      onCancel={onClose}
+      width={420}
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          <Button onClick={onClose}>{t('取消')}</Button>
+          <Button theme='solid' type='primary' loading={saving} onClick={handleSave}>
+            {t('确认')}
+          </Button>
+        </div>
+      }
+    >
+      <Form
+        getFormApi={(api) => (formApiRef.current = api)}
+        layout='vertical'
+        initValues={DEFAULT_ENTRY}
+      >
+        <Form.Input
+          field='key'
+          label='API Key'
+          placeholder='sk-...'
+          rules={[{ required: true, message: t('请输入 API Key') }]}
+        />
+        <Form.Input field='name' label={t('备注名（可选）')} />
+        <Form.Input field='provider' label={t('提供商（可选）')} />
+        <Form.InputNumber
+          field='weight'
+          label={t('权重')}
+          min={1}
+          initValue={1}
+          style={{ width: '100%' }}
+        />
+      </Form>
+    </SideSheet>
   );
 }
 
@@ -97,12 +259,8 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
   const [expanded, setExpanded] = useState(false);
   const [entries, setEntries] = useState([]);
   const [loadingEntries, setLoadingEntries] = useState(false);
-  const [addingKey, setAddingKey] = useState(false);
-  const [newEntry, setNewEntry] = useState(DEFAULT_ENTRY);
-  const [editingPool, setEditingPool] = useState(false);
-  const [poolDraft, setPoolDraft] = useState({ name: pool.name, description: pool.description, rotation_mode: pool.rotation_mode });
-  const [saving, setSaving] = useState(false);
-  const keyInputRef = useRef(null);
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [addKeySheetOpen, setAddKeySheetOpen] = useState(false);
 
   async function loadEntries() {
     setLoadingEntries(true);
@@ -140,46 +298,6 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
     }
   }
 
-  async function savePoolEdits() {
-    setSaving(true);
-    try {
-      const res = await API.put(`/api/admin/key_pools/${pool.id}`, {
-        ...pool,
-        ...poolDraft,
-      });
-      if (res.data.success) {
-        onUpdated({ ...pool, ...poolDraft });
-        setEditingPool(false);
-        showSuccess(t('保存成功'));
-      }
-    } catch (e) {
-      showError(t('保存失败'));
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function addEntry() {
-    if (!newEntry.key.trim()) {
-      showError(t('请输入 API Key'));
-      return;
-    }
-    setSaving(true);
-    try {
-      const res = await API.post(`/api/admin/key_pools/${pool.id}/entries`, newEntry);
-      if (res.data.success) {
-        setEntries((prev) => [...prev, res.data.data]);
-        setNewEntry(DEFAULT_ENTRY);
-        setAddingKey(false);
-        showSuccess(t('Key 已添加'));
-      }
-    } catch (e) {
-      showError(t('添加失败'));
-    } finally {
-      setSaving(false);
-    }
-  }
-
   async function toggleEntry(entry) {
     try {
       const res = await API.put(`/api/admin/key_pools/${pool.id}/entries/${entry.id}`, {
@@ -208,23 +326,15 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
     }
   }
 
-  // Focus the key input when addingKey panel opens
-  useEffect(() => {
-    if (addingKey && keyInputRef.current) {
-      setTimeout(() => keyInputRef.current?.focus(), 50);
-    }
-  }, [addingKey]);
-
   return (
     <div
       style={{
-        border: '1px solid var(--semi-color-border)',
-        borderRadius: 10,
+        border: '1px solid var(--mr-border-default)',
+        borderRadius: 18,
         overflow: 'hidden',
-        background: 'var(--semi-color-bg-0)',
+        background: 'var(--mr-bg-surface-1)',
       }}
     >
-      {/* Pool Header */}
       <div
         style={{
           display: 'flex',
@@ -233,57 +343,27 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
           padding: '12px 16px',
           cursor: 'pointer',
           userSelect: 'none',
-          background: expanded ? 'var(--semi-color-fill-0)' : 'transparent',
+          background: expanded ? 'var(--mr-bg-surface-2)' : 'transparent',
           transition: 'background 0.15s',
         }}
         onClick={handleExpand}
       >
-        <span style={{ color: 'var(--semi-color-text-2)', flexShrink: 0 }}>
+        <span style={{ color: 'var(--mr-text-tertiary)', flexShrink: 0 }}>
           {expanded ? <IconChevronDown /> : <IconChevronRight />}
         </span>
         <StatusDot enabled={pool.enabled} />
-        <Text strong style={{ flex: 1, fontSize: 14 }}>
-          {editingPool ? (
-            <Input
-              value={poolDraft.name}
-              size='small'
-              onClick={(e) => e.stopPropagation()}
-              onChange={(v) => setPoolDraft((d) => ({ ...d, name: v }))}
-              style={{ width: 200 }}
-            />
-          ) : (
-            pool.name
-          )}
-        </Text>
+        <Text strong style={{ flex: 1, fontSize: 14 }}>{pool.name}</Text>
 
-        {/* rotation mode */}
         <RotationBadge mode={pool.rotation_mode} />
 
-        {/* entry count badge */}
         <Badge count={pool.entry_count ?? entries.length} overflowCount={99} type='primary' />
 
-        {/* Actions */}
         <span
           style={{ display: 'flex', gap: 6, marginLeft: 8 }}
           onClick={(e) => e.stopPropagation()}
         >
-          {editingPool ? (
-            <>
-              <Button size='small' theme='solid' type='primary' loading={saving} onClick={savePoolEdits}>
-                {t('保存')}
-              </Button>
-              <Button size='small' onClick={() => { setEditingPool(false); setPoolDraft({ name: pool.name, description: pool.description, rotation_mode: pool.rotation_mode }); }}>
-                {t('取消')}
-              </Button>
-            </>
-          ) : (
-            <Button size='small' icon={<IconEdit />} onClick={() => setEditingPool(true)} />
-          )}
-          <Switch
-            size='small'
-            checked={pool.enabled}
-            onChange={togglePoolEnabled}
-          />
+          <Button size='small' icon={<IconEdit />} onClick={() => setEditSheetOpen(true)} />
+          <Switch size='small' checked={pool.enabled} onChange={togglePoolEnabled} />
           <Popconfirm
             title={t('确认删除这个 Key Pool？')}
             content={t('同时删除所有关联 Key')}
@@ -296,31 +376,8 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
         </span>
       </div>
 
-      {/* Pool Body — entries */}
       {expanded && (
-        <div style={{ borderTop: '1px solid var(--semi-color-border)', padding: '12px 16px' }}>
-          {/* Edit pool metadata */}
-          {editingPool && (
-            <div style={{ display: 'flex', gap: 10, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Select
-                value={poolDraft.rotation_mode}
-                onChange={(v) => setPoolDraft((d) => ({ ...d, rotation_mode: v }))}
-                optionList={getRotationModes(t)}
-                size='small'
-                style={{ width: 180 }}
-                prefix={t('轮换模式')}
-              />
-              <Input
-                value={poolDraft.description}
-                placeholder={t('备注（可选）')}
-                size='small'
-                onChange={(v) => setPoolDraft((d) => ({ ...d, description: v }))}
-                style={{ flex: 1, minWidth: 200 }}
-              />
-            </div>
-          )}
-
-          {/* Entry list */}
+        <div style={{ borderTop: '1px solid var(--mr-border-subtle)', padding: '12px 16px' }}>
           {loadingEntries ? (
             <div style={{ textAlign: 'center', padding: 16 }}>
               <Spin />
@@ -335,7 +392,7 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
                   onDelete={() => deleteEntry(entry.id)}
                 />
               ))}
-              {entries.length === 0 && !addingKey && (
+              {entries.length === 0 && (
                 <Text type='tertiary' style={{ padding: '4px 0' }}>
                   {t('暂无 Key，点击「添加 Key」开始')}
                 </Text>
@@ -343,69 +400,30 @@ function PoolCard({ pool, onUpdated, onDeleted }) {
             </div>
           )}
 
-          {/* Inline add-key form */}
-          {addingKey ? (
-            <div
-              style={{
-                marginTop: 10,
-                padding: '10px 12px',
-                background: 'var(--semi-color-fill-0)',
-                borderRadius: 8,
-                display: 'flex',
-                gap: 8,
-                flexWrap: 'wrap',
-                alignItems: 'flex-end',
-              }}
-            >
-              <Input
-                ref={keyInputRef}
-                value={newEntry.key}
-                placeholder='API Key *'
-                onChange={(v) => setNewEntry((e) => ({ ...e, key: v }))}
-                style={{ flex: 2, minWidth: 220 }}
-                size='small'
-              />
-              <Input
-                value={newEntry.name}
-                placeholder={t('备注名（可选）')}
-                onChange={(v) => setNewEntry((e) => ({ ...e, name: v }))}
-                style={{ flex: 1, minWidth: 140 }}
-                size='small'
-              />
-              <Input
-                value={newEntry.provider}
-                placeholder={t('提供商（可选）')}
-                onChange={(v) => setNewEntry((e) => ({ ...e, provider: v }))}
-                style={{ width: 120 }}
-                size='small'
-              />
-              <Input
-                type='number'
-                value={newEntry.weight}
-                placeholder={t('权重')}
-                onChange={(v) => setNewEntry((e) => ({ ...e, weight: parseInt(v) || 1 }))}
-                style={{ width: 70 }}
-                size='small'
-              />
-              <Button size='small' theme='solid' type='primary' loading={saving} onClick={addEntry}>
-                {t('确认')}
-              </Button>
-              <Button size='small' onClick={() => { setAddingKey(false); setNewEntry(DEFAULT_ENTRY); }}>
-                {t('取消')}
-              </Button>
-            </div>
-          ) : (
-            <Button
-              size='small'
-              icon={<IconPlus />}
-              style={{ marginTop: 10 }}
-              onClick={() => setAddingKey(true)}
-            >
-              {t('添加 Key')}
-            </Button>
-          )}
+          <Button
+            size='small'
+            icon={<IconPlus />}
+            style={{ marginTop: 10 }}
+            onClick={() => setAddKeySheetOpen(true)}
+          >
+            {t('添加 Key')}
+          </Button>
         </div>
       )}
+
+      <PoolEditSheet
+        visible={editSheetOpen}
+        onClose={() => setEditSheetOpen(false)}
+        pool={pool}
+        onSaved={onUpdated}
+      />
+
+      <AddKeySheet
+        visible={addKeySheetOpen}
+        onClose={() => setAddKeySheetOpen(false)}
+        poolId={pool.id}
+        onCreated={(entry) => setEntries((prev) => [...prev, entry])}
+      />
     </div>
   );
 }
@@ -418,7 +436,7 @@ function EntryRow({ entry, onToggle, onDelete }) {
   const { t } = useTranslation();
   function copyKey() {
     navigator.clipboard.writeText(entry.masked_key || entry.encrypted_key || '').then(() => {
-      Toast.info(t('已复制（掩码版本）'));
+      showSuccess(t('已复制（掩码版本）'));
     });
   }
 
@@ -428,15 +446,15 @@ function EntryRow({ entry, onToggle, onDelete }) {
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        padding: '5px 8px',
-        borderRadius: 6,
-        background: 'var(--semi-color-bg-1)',
+        padding: '6px 10px',
+        borderRadius: 10,
+        background: 'var(--mr-bg-surface-2)',
         opacity: entry.enabled ? 1 : 0.45,
       }}
     >
       <StatusDot enabled={entry.enabled} />
       <Text
-        style={{ flex: 1, fontFamily: 'monospace', fontSize: 13 }}
+        style={{ flex: 1, fontFamily: 'var(--font-mono, monospace)', fontSize: 13 }}
         ellipsis={{ showTooltip: true }}
       >
         {entry.masked_key || entry.encrypted_key || '•••'}
@@ -449,7 +467,7 @@ function EntryRow({ entry, onToggle, onDelete }) {
       {entry.provider && (
         <Tag size='small' color='grey'>{entry.provider}</Tag>
       )}
-      <Text type='tertiary' style={{ fontSize: 11, whiteSpace: 'nowrap' }}>
+      <Text className='mr-tabular' type='tertiary' style={{ fontSize: 11, whiteSpace: 'nowrap' }}>
         {entry.total_calls?.toLocaleString() ?? 0} {t('次')}
       </Text>
       <Switch size='small' checked={entry.enabled} onChange={onToggle} />
@@ -467,77 +485,69 @@ function EntryRow({ entry, onToggle, onDelete }) {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// CreatePoolInline — inline form to create a new pool
+// 创建 Pool SideSheet
 // ────────────────────────────────────────────────────────────────────────────
 
-function CreatePoolInline({ onCreated }) {
+function CreatePoolSheet({ visible, onClose, onCreated }) {
   const { t } = useTranslation();
-  const [draft, setDraft] = useState(DEFAULT_POOL);
+  const formApiRef = useRef(null);
   const [saving, setSaving] = useState(false);
 
-  async function handleCreate() {
-    if (!draft.name.trim()) { showError(t('请输入 Pool 名称')); return; }
+  const handleCreate = async () => {
+    const values = await formApiRef.current?.validate().catch(() => null);
+    if (!values) return;
     setSaving(true);
     try {
-      const res = await API.post('/api/admin/key_pools', draft);
+      const res = await API.post('/api/admin/key_pools', { ...DEFAULT_POOL, ...values });
       if (res.data.success) {
         onCreated(res.data.data);
-        setDraft(DEFAULT_POOL);
         showSuccess(t('Pool 已创建'));
+        formApiRef.current?.reset();
+        onClose();
+      } else {
+        showError(res.data.message || t('创建失败'));
       }
     } catch (e) {
       showError(t('创建失败'));
     } finally {
       setSaving(false);
     }
-  }
+  };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: 8,
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        padding: '10px 14px',
-        background: 'var(--semi-color-fill-0)',
-        borderRadius: 10,
-        border: '1px dashed var(--semi-color-border)',
-      }}
+    <SideSheet
+      title={t('新建 Key Pool')}
+      visible={visible}
+      onCancel={onClose}
+      width={420}
+      footer={
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          <Button onClick={onClose}>{t('取消')}</Button>
+          <Button theme='solid' type='primary' loading={saving} onClick={handleCreate}>
+            {t('创建 Pool')}
+          </Button>
+        </div>
+      }
     >
-      <Input
-        value={draft.name}
-        placeholder={t('Pool 名称 *')}
-        onChange={(v) => setDraft((d) => ({ ...d, name: v }))}
-        style={{ flex: 1, minWidth: 160 }}
-        size='small'
-        onEnterPress={handleCreate}
-      />
-      <Input
-        value={draft.description}
-        placeholder={t('备注（可选）')}
-        onChange={(v) => setDraft((d) => ({ ...d, description: v }))}
-        style={{ flex: 1, minWidth: 160 }}
-        size='small'
-      />
-      <Select
-        value={draft.rotation_mode}
-        onChange={(v) => setDraft((d) => ({ ...d, rotation_mode: v }))}
-        optionList={getRotationModes(t)}
-        size='small'
-        style={{ width: 160 }}
-      />
-      <Button
-        size='small'
-        theme='solid'
-        type='primary'
-        icon={<IconPlus />}
-        loading={saving}
-        onClick={handleCreate}
+      <Form
+        getFormApi={(api) => (formApiRef.current = api)}
+        layout='vertical'
+        initValues={DEFAULT_POOL}
       >
-        {t('创建 Pool')}
-      </Button>
-    </div>
+        <Form.Input
+          field='name'
+          label={t('Pool 名称')}
+          rules={[{ required: true, message: t('请输入 Pool 名称') }]}
+        />
+        <Form.Input field='description' label={t('备注（可选）')} />
+        <Form.Select
+          field='rotation_mode'
+          label={t('轮换模式')}
+          optionList={getRotationModes(t)}
+          style={{ width: '100%' }}
+        />
+      </Form>
+    </SideSheet>
   );
 }
 
@@ -549,6 +559,7 @@ export default function KeyPoolPage() {
   const { t } = useTranslation();
   const [pools, setPools] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [createSheetOpen, setCreateSheetOpen] = useState(false);
 
   async function loadPools() {
     setLoading(true);
@@ -588,58 +599,71 @@ export default function KeyPoolPage() {
       }}
     >
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '24px 16px' }}>
-      {/* Page header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <div>
-          <Title heading={4} style={{ margin: 0 }}>{t('Key Pool 管理')}</Title>
-          <Text type='tertiary' style={{ fontSize: 13 }}>
-            {t('为订阅套餐绑定轮换 Key Pool，系统自动分发给用户')}
-          </Text>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 12 }}>
+          <div>
+            <Title heading={4} style={{ margin: 0 }}>{t('Key Pool 管理')}</Title>
+            <Text type='tertiary' style={{ fontSize: 13 }}>
+              {t('为订阅套餐绑定轮换 Key Pool，系统自动分发给用户')}
+            </Text>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button
+              icon={<IconRefresh />}
+              onClick={loadPools}
+              loading={loading}
+            >
+              {t('刷新')}
+            </Button>
+            <Button
+              icon={<IconPlus />}
+              theme='solid'
+              type='primary'
+              onClick={() => setCreateSheetOpen(true)}
+            >
+              {t('新建 Pool')}
+            </Button>
+          </div>
         </div>
-        <Button
-          icon={<IconRefresh />}
-          onClick={loadPools}
-          loading={loading}
-          size='small'
-        >
-          {t('刷新')}
-        </Button>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: 40 }}>
+              <Spin size='large' />
+            </div>
+          ) : pools.length === 0 ? (
+            <div style={{
+              padding: '40px 20px',
+              border: '1px dashed var(--mr-border-default)',
+              borderRadius: 18,
+              background: 'var(--mr-bg-surface-1)',
+            }}>
+              <Empty
+                image={<IllustrationConstruction style={{ width: 120, height: 120 }} />}
+                darkModeImage={<IllustrationConstructionDark style={{ width: 120, height: 120 }} />}
+                title={t('还没有 Key Pool')}
+                description={t('点击右上角"新建 Pool"，把要轮换的 Key 都放进来')}
+              />
+            </div>
+          ) : (
+            pools.map((pool) => (
+              <PoolCard
+                key={pool.id}
+                pool={pool}
+                onUpdated={(updated) =>
+                  setPools((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
+                }
+                onDeleted={deletePool}
+              />
+            ))
+          )}
+        </div>
       </div>
 
-      {/* Create new pool */}
-      <CreatePoolInline onCreated={(p) => setPools((prev) => [p, ...prev])} />
-
-      {/* Pool list */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 16 }}>
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: 40 }}>
-            <Spin size='large' />
-          </div>
-        ) : pools.length === 0 ? (
-          <div
-            style={{
-              textAlign: 'center',
-              padding: 48,
-              border: '1px dashed var(--semi-color-border)',
-              borderRadius: 10,
-            }}
-          >
-            <Text type='tertiary'>{t('还没有 Key Pool，创建第一个吧')}</Text>
-          </div>
-        ) : (
-          pools.map((pool) => (
-            <PoolCard
-              key={pool.id}
-              pool={pool}
-              onUpdated={(updated) =>
-                setPools((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))
-              }
-              onDeleted={deletePool}
-            />
-          ))
-        )}
-      </div>
-      </div>
+      <CreatePoolSheet
+        visible={createSheetOpen}
+        onClose={() => setCreateSheetOpen(false)}
+        onCreated={(p) => setPools((prev) => [p, ...prev])}
+      />
     </div>
   );
 }
