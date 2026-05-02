@@ -118,12 +118,22 @@ body[theme-mode='dark'] {
   --semi-color-focus-border: rgba(255, 255, 255, 0.30) !important;
 }
 
-/* Primary solid 按钮：dark 下底变白，文字必须翻成深色
+/* Primary solid 按钮：dark 下显式声明底色为近白 + 文字翻深色（防止 Semi 内部用别的变量
+ * 导致底色没翻转，造成"暗底+暗字"看不见）
  * 例外：聊天发送按钮自带 Tailwind !bg-purple-500，文字保持白色 */
-body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton),
-body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton):hover,
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton) {
+  background-color: var(--mr-accent) !important;
+  color: var(--mr-accent-fg) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton):hover {
+  background-color: var(--mr-accent-hover) !important;
+  color: var(--mr-accent-fg) !important;
+}
+
 body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton) * {
-  color: var(--mr-text-inverse) !important;
+  color: var(--mr-accent-fg) !important;
 }
 
 body[theme-mode='dark'] .semi-chat-inputBox-sendButton,
@@ -131,11 +141,41 @@ body[theme-mode='dark'] .semi-chat-inputBox-sendButton * {
   color: #ffffff !important;
 }
 
-body[theme-mode='dark'] .semi-button-solid:not(.semi-chat-inputBox-sendButton) {
+body[theme-mode='dark'] .semi-button-solid:not(.semi-chat-inputBox-sendButton):not(.semi-button-primary) {
   border-color: rgba(255, 255, 255, 0.16) !important;
 }
 
 /* Sidebar 选中项的 hover/active 背景色，dark 下让 Semi 默认值更显眼 */
 body[theme-mode='dark'] .semi-navigation-item-selected {
   background-color: var(--mr-bg-surface-2) !important;
+}
+
+/* ==================== Input 左侧内边距（Semi 默认偏紧） ==================== */
+.semi-input-wrapper .semi-input,
+.semi-input-wrapper .semi-input-default,
+.semi-input-wrapper .semi-input-large,
+.semi-input-wrapper .semi-input-small {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* prefix 后面的 input 不再叠加 padding（避免和前缀拉太开） */
+.semi-input-wrapper .semi-input-prefix + .semi-input,
+.semi-input-wrapper .semi-input-prefix-text + .semi-input {
+  padding-left: 8px !important;
+}
+
+.semi-select-selection,
+.semi-select-selection-text {
+  padding-left: 12px !important;
+}
+
+.semi-input-textarea-wrapper .semi-input-textarea {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* TagInput 内部已选中 tag 区，左侧也加点呼吸 */
+.semi-tagInput .semi-tagInput-content {
+  padding-left: 8px !important;
 }
