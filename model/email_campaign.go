@@ -1,10 +1,10 @@
 package model
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/QuantumNous/new-api/common"
+	"gorm.io/gorm"
 )
 
 // ─────────────────────────────────────────────
@@ -75,7 +75,7 @@ type EmailCampaign struct {
 	SentAt    int64 `json:"sent_at"`
 }
 
-func (c *EmailCampaign) BeforeCreate(tx interface{ Set(string, interface{}) interface{ Error() } }) error {
+func (c *EmailCampaign) BeforeCreate(tx *gorm.DB) error {
 	now := common.GetTimestamp()
 	if c.CreatedAt == 0 {
 		c.CreatedAt = now
@@ -87,13 +87,13 @@ func (c *EmailCampaign) BeforeCreate(tx interface{ Set(string, interface{}) inte
 // GetSegment deserializes the segment criteria.
 func (c *EmailCampaign) GetSegment() UserSegment {
 	var seg UserSegment
-	_ = json.Unmarshal([]byte(c.SegmentJSON), &seg)
+	_ = common.UnmarshalJsonStr(c.SegmentJSON, &seg)
 	return seg
 }
 
 // SetSegment serializes the segment criteria.
 func (c *EmailCampaign) SetSegment(seg UserSegment) {
-	b, _ := json.Marshal(seg)
+	b, _ := common.Marshal(seg)
 	c.SegmentJSON = string(b)
 }
 

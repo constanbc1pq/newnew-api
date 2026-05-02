@@ -102,6 +102,58 @@ body[theme-mode='dark'] .semi-card {
   border-color: var(--mr-border-default) !important;
 }
 
+/* Semi danger 系列对齐到 --mr-danger，统一项目红色调
+ * Light: #dc2626 / Dark: #f87171
+ */
+:root,
+body[theme-mode='light'] {
+  --semi-color-danger: #dc2626 !important;
+  --semi-color-danger-hover: #b91c1c !important;
+  --semi-color-danger-active: #991b1b !important;
+  --semi-color-danger-disabled: rgba(220, 38, 38, 0.4) !important;
+  --semi-color-danger-light-default: rgba(220, 38, 38, 0.08) !important;
+  --semi-color-danger-light-hover: rgba(220, 38, 38, 0.14) !important;
+  --semi-color-danger-light-active: rgba(220, 38, 38, 0.20) !important;
+}
+
+body[theme-mode='dark'] {
+  --semi-color-danger: #f87171 !important;
+  --semi-color-danger-hover: #fca5a5 !important;
+  --semi-color-danger-active: #ef4444 !important;
+  --semi-color-danger-disabled: rgba(248, 113, 113, 0.4) !important;
+  --semi-color-danger-light-default: rgba(248, 113, 113, 0.12) !important;
+  --semi-color-danger-light-hover: rgba(248, 113, 113, 0.20) !important;
+  --semi-color-danger-light-active: rgba(248, 113, 113, 0.28) !important;
+}
+
+/* Danger solid 按钮：显式锁定红底白字（防止 Semi 内部从其他变量取色导致不红） */
+.semi-button-danger.semi-button-solid {
+  background-color: var(--mr-danger) !important;
+  border-color: var(--mr-danger) !important;
+  color: #ffffff !important;
+}
+.semi-button-danger.semi-button-solid:hover {
+  background-color: var(--semi-color-danger-hover) !important;
+  border-color: var(--semi-color-danger-hover) !important;
+  color: #ffffff !important;
+}
+.semi-button-danger.semi-button-solid:active {
+  background-color: var(--semi-color-danger-active) !important;
+  border-color: var(--semi-color-danger-active) !important;
+}
+.semi-button-danger.semi-button-solid * {
+  color: #ffffff !important;
+}
+
+/* Danger 浅色 / 边框态也跟随 */
+.semi-button-danger.semi-button-light {
+  background-color: var(--semi-color-danger-light-default) !important;
+  color: var(--mr-danger) !important;
+}
+.semi-button-danger.semi-button-light:hover {
+  background-color: var(--semi-color-danger-light-hover) !important;
+}
+
 /* Dark 下让 Semi 的 primary 系列翻转成近白，使所有"选中态"文字/图标可见
  * index.css 把 light/dark 一起钉死成黑色，这里只在 dark 下覆盖。
  */

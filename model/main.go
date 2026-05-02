@@ -284,6 +284,7 @@ func migrateDB() error {
 		&KeyPool{},
 		&KeyPoolEntry{},
 		&GuestUsage{},
+		&EmailCampaign{},
 	)
 	if err != nil {
 		return err
