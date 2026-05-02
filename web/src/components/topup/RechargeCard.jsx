@@ -46,9 +46,9 @@ const Pill = ({ selected, onClick, children, style = {} }) => (
     style={{
       padding: '8px 20px',
       borderRadius: '9999px',
-      border: selected ? '2px solid #000' : '1.5px solid #d1d5db',
-      background: selected ? '#000' : '#fff',
-      color: selected ? '#fff' : '#111',
+      border: selected ? '2px solid var(--mr-accent)' : '1px solid var(--mr-border-strong)',
+      background: selected ? 'var(--mr-accent)' : 'var(--mr-bg-surface-1)',
+      color: selected ? 'var(--mr-accent-fg)' : 'var(--mr-text-primary)',
       fontWeight: selected ? 600 : 400,
       fontSize: '14px',
       cursor: 'pointer',
@@ -71,8 +71,8 @@ const CtaButton = ({ onClick, disabled, loading, children, style = {} }) => (
       width: '100%',
       padding: '15px',
       borderRadius: '9999px',
-      background: disabled || loading ? '#9ca3af' : '#000',
-      color: '#fff',
+      background: disabled || loading ? 'var(--mr-text-disabled)' : 'var(--mr-accent)',
+      color: 'var(--mr-accent-fg)',
       fontWeight: 600,
       fontSize: '16px',
       border: 'none',
@@ -91,7 +91,7 @@ const CtaButton = ({ onClick, disabled, loading, children, style = {} }) => (
 
 // ─── Section label ────────────────────────────────────────────────────────────
 const SectionLabel = ({ children }) => (
-  <div style={{ fontSize: '13px', fontWeight: 500, color: '#374151', marginBottom: '10px' }}>
+  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--mr-text-secondary)', marginBottom: '10px' }}>
     {children}
   </div>
 );
@@ -259,7 +259,7 @@ const RechargeCard = ({
   const fiatSection = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {/* Security notice */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '13px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--mr-text-tertiary)', fontSize: '13px' }}>
         <ShieldCheck size={14} />
         <span>{t('您的支付受银行级技术加密，平台不保留任何信用卡信息')}</span>
       </div>
@@ -268,12 +268,12 @@ const RechargeCard = ({
       {isNewUserPromo && (
         <div
           style={{
-            background: 'linear-gradient(90deg, #dbeafe 0%, #fce7d6 100%)',
+            background: 'var(--mr-info-soft)',
             borderRadius: '12px',
             padding: '10px 16px',
             fontSize: '13px',
             fontWeight: 500,
-            color: '#1e3a5f',
+            color: 'var(--mr-info)',
           }}
         >
           🎁 {t('首次充值专属福利')}：{t('首充')} ${promoInfo.limit_usd} {t('或以上，立赠')} ${promoInfo.limit_usd}
@@ -308,20 +308,21 @@ const RechargeCard = ({
           {(selectedPreset != null || topUpCount > minTopUp) && (
             <div
               style={{
-                border: '1.5px solid #e5e7eb',
+                border: '1px solid var(--mr-border-default)',
                 borderRadius: '14px',
                 padding: '16px 20px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '10px',
+                background: 'var(--mr-bg-surface-1)',
               }}
             >
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{t('支付总计')}</div>
+                <div style={{ fontSize: '12px', color: 'var(--mr-text-tertiary)', marginBottom: '4px' }}>{t('支付总计')}</div>
                 {showAmountSkeleton ? (
-                  <div style={{ height: '36px', background: '#f3f4f6', borderRadius: '6px', width: '100px', animation: 'pulse 1.5s infinite' }} />
+                  <div style={{ height: '36px', background: 'var(--mr-bg-surface-2)', borderRadius: '6px', width: '100px', animation: 'pulse 1.5s infinite' }} />
                 ) : (
-                  <div style={{ fontSize: '28px', fontWeight: 700, color: '#111' }}>
+                  <div className='mr-tabular' style={{ fontSize: '28px', fontWeight: 700, color: 'var(--mr-text-primary)' }}>
                     {symbol}{typeof totalDisplay === 'number' ? totalDisplay.toFixed(2) : renderAmount()}
                   </div>
                 )}
@@ -331,8 +332,8 @@ const RechargeCard = ({
                 <span
                   style={{
                     fontSize: '12px',
-                    background: '#f3f4f6',
-                    color: '#6b7280',
+                    background: 'var(--mr-bg-surface-2)',
+                    color: 'var(--mr-text-tertiary)',
                     padding: '3px 10px',
                     borderRadius: '9999px',
                   }}
@@ -342,13 +343,13 @@ const RechargeCard = ({
               </div>
 
               <div>
-                <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>{t('获得积分')}</div>
-                <div style={{ fontSize: '18px', fontWeight: 600, color: '#111', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--mr-text-tertiary)', marginBottom: '4px' }}>{t('获得积分')}</div>
+                <div className='mr-tabular' style={{ fontSize: '18px', fontWeight: 600, color: 'var(--mr-text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span>{(topUpCount || 0).toLocaleString()} ⊕</span>
                   {bonusCredits > 0 && (
                     <>
-                      <span style={{ color: '#d1d5db' }}>+</span>
-                      <span style={{ color: '#f59e0b' }}>{bonusCredits.toLocaleString()} 🎁</span>
+                      <span style={{ color: 'var(--mr-text-disabled)' }}>+</span>
+                      <span style={{ color: 'var(--mr-warning)' }}>{bonusCredits.toLocaleString()} 🎁</span>
                     </>
                   )}
                 </div>
@@ -357,7 +358,7 @@ const RechargeCard = ({
           )}
 
           {/* Fee notice */}
-          <div style={{ textAlign: 'center', fontSize: '12px', color: '#9ca3af' }}>
+          <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--mr-text-tertiary)' }}>
             {t('最终结账金额将包含由支付网关收取的动态处理费')}
           </div>
 
@@ -438,7 +439,7 @@ const RechargeCard = ({
   // ── Crypto section ────────────────────────────────────────────────────────
   const cryptoSection = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ fontSize: '13px', color: '#6b7280' }}>
+      <div style={{ fontSize: '13px', color: 'var(--mr-text-tertiary)' }}>
         {t('我们目前支持 TRON、BNB Chain、Ethereum、Base、Arbitrum、Optimism、Polygon 充值')}
       </div>
 
@@ -458,9 +459,9 @@ const RechargeCard = ({
                 borderRadius: '9999px',
                 border: selectedChain === chain.id
                   ? `2px solid ${chain.color}`
-                  : '1.5px solid #e5e7eb',
-                background: selectedChain === chain.id ? `${chain.color}18` : '#fff',
-                color: selectedChain === chain.id ? chain.color : '#374151',
+                  : '1px solid var(--mr-border-default)',
+                background: selectedChain === chain.id ? `${chain.color}18` : 'var(--mr-bg-surface-1)',
+                color: selectedChain === chain.id ? chain.color : 'var(--mr-text-secondary)',
                 fontWeight: selectedChain === chain.id ? 600 : 400,
                 fontSize: '13px',
                 cursor: 'pointer',
@@ -480,12 +481,12 @@ const RechargeCard = ({
         {isNewUserPromo && (
           <div
             style={{
-              background: 'linear-gradient(90deg, #dbeafe 0%, #fce7d6 100%)',
+              background: 'var(--mr-info-soft)',
               borderRadius: '10px',
               padding: '8px 14px',
               fontSize: '13px',
               fontWeight: 500,
-              color: '#1e3a5f',
+              color: 'var(--mr-info)',
               marginBottom: '10px',
             }}
           >
@@ -510,7 +511,7 @@ const RechargeCard = ({
           <Pill
             selected={false}
             onClick={() => {}}
-            style={{ flex: 1, padding: '10px 8px', textAlign: 'center', color: '#6b7280' }}
+            style={{ flex: 1, padding: '10px 8px', textAlign: 'center', color: 'var(--mr-text-tertiary)' }}
           >
             {t('自定义')}
           </Pill>
@@ -557,8 +558,8 @@ const RechargeCard = ({
               style={{
                 padding: '4px 12px',
                 borderRadius: '6px',
-                background: '#000',
-                color: '#fff',
+                background: 'var(--mr-accent)',
+                color: 'var(--mr-accent-fg)',
                 border: 'none',
                 fontSize: '13px',
                 fontWeight: 500,
@@ -595,7 +596,7 @@ const RechargeCard = ({
             display: 'inline-flex',
             padding: '4px',
             borderRadius: '12px',
-            background: '#f3f4f6',
+            background: 'var(--mr-bg-surface-2)',
             alignSelf: 'flex-start',
           }}
         >
@@ -609,13 +610,13 @@ const RechargeCard = ({
               style={{
                 padding: '6px 16px',
                 borderRadius: '9px',
-                background: paymentType === key ? '#fff' : 'transparent',
-                color: paymentType === key ? '#111' : '#6b7280',
+                background: paymentType === key ? 'var(--mr-bg-surface-1)' : 'transparent',
+                color: paymentType === key ? 'var(--mr-text-primary)' : 'var(--mr-text-tertiary)',
                 fontWeight: paymentType === key ? 600 : 400,
                 fontSize: '14px',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: paymentType === key ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                boxShadow: paymentType === key ? 'var(--mr-shadow-sm)' : 'none',
                 transition: 'all 0.12s',
               }}
             >
@@ -635,7 +636,7 @@ const RechargeCard = ({
       {hasCrypto && !hasFiat && cryptoSection}
 
       {/* Divider + redemption code */}
-      <div style={{ borderTop: '1px solid #f0f0f0' }} />
+      <div style={{ borderTop: '1px solid var(--mr-border-subtle)' }} />
       {redemptionSection}
     </div>
   );
@@ -663,8 +664,8 @@ const RechargeCard = ({
   return (
     <div
       style={{
-        background: '#fff',
-        border: '1.5px solid #e5e7eb',
+        background: 'var(--mr-bg-surface-1)',
+        border: '1px solid var(--mr-border-default)',
         borderRadius: '16px',
         overflow: 'hidden',
       }}
@@ -675,7 +676,7 @@ const RechargeCard = ({
           display: 'flex',
           gap: '24px',
           padding: '0 24px',
-          borderBottom: '1px solid #f0f0f0',
+          borderBottom: '1px solid var(--mr-border-subtle)',
         }}
       >
         {[
@@ -691,8 +692,8 @@ const RechargeCard = ({
                 padding: '16px 0',
                 background: 'none',
                 border: 'none',
-                borderBottom: isActive ? '2px solid #111' : '2px solid transparent',
-                color: isActive ? '#111' : '#9ca3af',
+                borderBottom: isActive ? '2px solid var(--mr-text-primary)' : '2px solid transparent',
+                color: isActive ? 'var(--mr-text-primary)' : 'var(--mr-text-tertiary)',
                 fontWeight: isActive ? 600 : 400,
                 fontSize: '15px',
                 cursor: 'pointer',

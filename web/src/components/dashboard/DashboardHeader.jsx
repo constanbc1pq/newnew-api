@@ -31,21 +31,21 @@ const DashboardHeader = ({
   return (
     <div className='flex items-center justify-between mb-4'>
       <h2
-        style={{ fontSize: '20px', fontWeight: 600, color: '#111', opacity: greetingVisible ? 1 : 0, transition: 'opacity 1s ease-in-out', margin: 0 }}
+        style={{ fontSize: '20px', fontWeight: 600, color: 'var(--mr-text-primary)', opacity: greetingVisible ? 1 : 0, transition: 'opacity 1s ease-in-out', margin: 0 }}
       >
         {getGreeting}
       </h2>
       <div className='flex gap-2'>
         <button
           onClick={showSearchModal}
-          style={{ width: 34, height: 34, borderRadius: '9999px', border: '1.5px solid #e5e7eb', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280' }}
+          style={{ width: 34, height: 34, borderRadius: '9999px', border: '1px solid var(--mr-border-default)', background: 'var(--mr-bg-surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--mr-text-secondary)' }}
         >
           <Search size={15} />
         </button>
         <button
           onClick={refresh}
           disabled={loading}
-          style={{ width: 34, height: 34, borderRadius: '9999px', border: '1.5px solid #e5e7eb', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280', opacity: loading ? 0.5 : 1 }}
+          style={{ width: 34, height: 34, borderRadius: '9999px', border: '1px solid var(--mr-border-default)', background: 'var(--mr-bg-surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--mr-text-secondary)', opacity: loading ? 0.5 : 1 }}
         >
           <RefreshCw size={15} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
         </button>

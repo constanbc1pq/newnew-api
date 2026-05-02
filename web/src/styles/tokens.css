@@ -1,0 +1,141 @@
+/* Market Router 设计令牌
+ * Light/Dark 双主题语义化变量。Semi Design 不能覆盖的硬编码颜色都用这里的变量。
+ */
+
+:root,
+body[theme-mode='light'] {
+  /* Surface */
+  --mr-bg-page: #f5f5f7;
+  --mr-bg-canvas: #ffffff;
+  --mr-bg-surface-1: #ffffff;
+  --mr-bg-surface-2: #fafaf7;
+  --mr-bg-surface-3: #f2efe8;
+  --mr-bg-overlay: rgba(0, 0, 0, 0.45);
+
+  /* Text */
+  --mr-text-primary: #111111;
+  --mr-text-secondary: #4a5563;
+  --mr-text-tertiary: #6b7280;
+  --mr-text-disabled: #9ca3af;
+  --mr-text-inverse: #ffffff;
+
+  /* Border */
+  --mr-border-subtle: rgba(10, 10, 10, 0.06);
+  --mr-border-default: rgba(10, 10, 10, 0.10);
+  --mr-border-strong: rgba(10, 10, 10, 0.18);
+
+  /* Accent (CTA — 黑底白字) */
+  --mr-accent: #0a0a0a;
+  --mr-accent-fg: #ffffff;
+  --mr-accent-hover: #1f1f1f;
+  --mr-accent-soft: rgba(10, 10, 10, 0.06);
+  --mr-brand: #3b82f6;
+
+  /* Status */
+  --mr-success: #16a34a;
+  --mr-warning: #d97706;
+  --mr-danger: #dc2626;
+  --mr-info: #2563eb;
+  --mr-success-soft: rgba(22, 163, 74, 0.12);
+  --mr-warning-soft: rgba(217, 119, 6, 0.12);
+  --mr-danger-soft: rgba(220, 38, 38, 0.12);
+  --mr-info-soft: rgba(37, 99, 235, 0.12);
+
+  /* Shadow */
+  --mr-shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.04);
+  --mr-shadow-md: 0 4px 12px rgba(10, 10, 10, 0.06);
+  --mr-shadow-focus: 0 0 0 3px rgba(10, 10, 10, 0.10);
+}
+
+body[theme-mode='dark'] {
+  /* Surface — 分层灰阶，越上层越亮 */
+  --mr-bg-page: #0e0f11;
+  --mr-bg-canvas: #15171a;
+  --mr-bg-surface-1: #1a1c1f;
+  --mr-bg-surface-2: #212327;
+  --mr-bg-surface-3: #272a2e;
+  --mr-bg-overlay: rgba(0, 0, 0, 0.65);
+
+  /* Text — 不用纯白，避免眩光 */
+  --mr-text-primary: #f2f3f5;
+  --mr-text-secondary: #a8adb5;
+  --mr-text-tertiary: #7b828c;
+  --mr-text-disabled: #4b5058;
+  --mr-text-inverse: #0e0f11;
+
+  /* Border — alpha 而非实色，自适应不同 surface */
+  --mr-border-subtle: rgba(255, 255, 255, 0.06);
+  --mr-border-default: rgba(255, 255, 255, 0.10);
+  --mr-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Accent — dark 模式反相成近白 */
+  --mr-accent: #f2f3f5;
+  --mr-accent-fg: #0e0f11;
+  --mr-accent-hover: #e5e6e8;
+  --mr-accent-soft: rgba(255, 255, 255, 0.08);
+  --mr-brand: #60a5fa;
+
+  /* Status — 提亮 + 降饱和 */
+  --mr-success: #4ade80;
+  --mr-warning: #fbbf24;
+  --mr-danger: #f87171;
+  --mr-info: #60a5fa;
+  --mr-success-soft: rgba(74, 222, 128, 0.16);
+  --mr-warning-soft: rgba(251, 191, 36, 0.16);
+  --mr-danger-soft: rgba(248, 113, 113, 0.16);
+  --mr-info-soft: rgba(96, 165, 250, 0.16);
+
+  /* Shadow */
+  --mr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --mr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --mr-shadow-focus: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+/* 数字字体启用 tabular-nums，保证列对齐 */
+.mr-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Semi Card 跟随主题（覆盖 index.css 的硬编码白底） */
+body[theme-mode='dark'] .semi-card {
+  background: var(--mr-bg-surface-1) !important;
+  border-color: var(--mr-border-default) !important;
+}
+
+/* Dark 下让 Semi 的 primary 系列翻转成近白，使所有"选中态"文字/图标可见
+ * index.css 把 light/dark 一起钉死成黑色，这里只在 dark 下覆盖。
+ */
+body[theme-mode='dark'] {
+  --semi-color-primary: #f2f3f5 !important;
+  --semi-color-primary-hover: #e5e6e8 !important;
+  --semi-color-primary-active: #d4d5d7 !important;
+  --semi-color-primary-disabled: rgba(255, 255, 255, 0.25) !important;
+  --semi-color-primary-light-default: rgba(255, 255, 255, 0.06) !important;
+  --semi-color-primary-light-hover: rgba(255, 255, 255, 0.10) !important;
+  --semi-color-primary-light-active: rgba(255, 255, 255, 0.14) !important;
+  --semi-color-link: #60a5fa !important;
+  --semi-color-link-hover: #93c5fd !important;
+  --semi-color-focus-border: rgba(255, 255, 255, 0.30) !important;
+}
+
+/* Primary solid 按钮：dark 下底变白，文字必须翻成深色
+ * 例外：聊天发送按钮自带 Tailwind !bg-purple-500，文字保持白色 */
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton),
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton):hover,
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton) * {
+  color: var(--mr-text-inverse) !important;
+}
+
+body[theme-mode='dark'] .semi-chat-inputBox-sendButton,
+body[theme-mode='dark'] .semi-chat-inputBox-sendButton * {
+  color: #ffffff !important;
+}
+
+body[theme-mode='dark'] .semi-button-solid:not(.semi-chat-inputBox-sendButton) {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Sidebar 选中项的 hover/active 背景色，dark 下让 Semi 默认值更显眼 */
+body[theme-mode='dark'] .semi-navigation-item-selected {
+  background-color: var(--mr-bg-surface-2) !important;
+}

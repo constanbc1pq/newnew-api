@@ -73,7 +73,7 @@ function DiscountTable() {
             {tier.badge && (
               <div style={{
                 position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-                background: 'var(--semi-color-primary)', color: '#fff',
+                background: 'var(--semi-color-primary)', color: 'var(--semi-color-bg-0)',
                 fontSize: 10, padding: '2px 8px', borderRadius: 10,
               }}>
                 {tier.badge}
@@ -114,8 +114,9 @@ export default function BillingPage() {
     try {
       const res = await API.get(`/api/user/transactions?page=${p}&size=20`);
       if (res.data.success) {
-        setTransactions(res.data.data || []);
-        setTotal(res.data.total || 0);
+        const payload = res.data.data || {};
+        setTransactions(Array.isArray(payload) ? payload : payload.items || []);
+        setTotal(payload.total ?? res.data.total ?? 0);
       } else {
         showError(res.data.message);
       }
@@ -179,7 +180,15 @@ export default function BillingPage() {
   ];
 
   return (
-    <div style={{ padding: '0 4px' }}>
+    <div
+      className='mt-[60px] px-2'
+      style={{
+        height: 'calc(100dvh - 60px)',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        padding: '0 4px',
+      }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Title heading={4} style={{ margin: 0 }}>Billing &amp; Usage</Title>
         <Button icon={<IconRefresh />} onClick={() => loadTransactions(page)}>Refresh</Button>

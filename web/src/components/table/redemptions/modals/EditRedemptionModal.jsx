@@ -409,10 +409,10 @@ const EditRedemptionModal = (props) => {
                             formApiRef.current?.setValue('target_user_id', v || 0)
                           }
                           allowClear
-                          emptyContent={<div style={{ padding: 8, color: 'var(--semi-color-text-2)' }}>输入关键词搜索</div>}
+                          emptyContent={<div style={{ padding: 8, color: 'var(--semi-color-text-2)' }}>{t('输入关键词搜索')}</div>}
                         />
                         <div style={{ fontSize: 12, color: 'var(--semi-color-text-2)', marginTop: 4 }}>
-                          设置后，只有该用户才能使用此兑换码（定向优惠券）
+                          {t('设置后，只有该用户才能使用此兑换码（定向优惠券）')}
                         </div>
                       </Form.Slot>
                     </Col>

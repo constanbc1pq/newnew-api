@@ -69,7 +69,9 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
       className='text-semi-color-text-0 sticky top-0 z-50 transition-colors duration-300 backdrop-blur-md font-heading'
       style={isConsoleRoute
         ? { background: 'var(--semi-color-bg-0)', borderBottom: '1px solid var(--semi-color-border)' }
-        : { background: 'rgba(247,243,238,0.85)', borderBottom: '1px solid rgba(10,10,10,0.07)' }
+        : theme === 'dark'
+          ? { background: 'rgba(20,20,20,0.85)', borderBottom: '1px solid rgba(255,255,255,0.08)' }
+          : { background: 'rgba(247,243,238,0.85)', borderBottom: '1px solid rgba(10,10,10,0.07)' }
       }
     >
       <NoticeModal

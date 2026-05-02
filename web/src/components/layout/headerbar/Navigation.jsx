@@ -18,7 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import SkeletonWrapper from '../components/SkeletonWrapper';
 
 const Navigation = ({
@@ -28,16 +28,59 @@ const Navigation = ({
   userState,
   pricingRequireAuth,
 }) => {
+  const { pathname } = useLocation();
+
+  const isLinkActive = (link, targetPath) => {
+    if (link.isExternal) return false;
+    if (targetPath === '/') return pathname === '/';
+    return pathname === targetPath || pathname.startsWith(targetPath + '/');
+  };
+
   const renderNavLinks = () => {
     const baseClasses =
-      'flex-shrink-0 flex items-center gap-1 font-semibold rounded-md transition-all duration-200 ease-in-out';
+      'flex-shrink-0 flex items-center gap-1 rounded-md transition-all duration-200 ease-in-out';
     const hoverClasses = 'hover:text-semi-color-primary';
     const spacingClasses = isMobile ? 'p-1' : 'p-2';
 
     const commonLinkClasses = `${baseClasses} ${spacingClasses} ${hoverClasses}`;
 
     return mainNavLinks.map((link) => {
-      const linkContent = <span>{link.text}</span>;
+      let targetPath = link.to;
+      if (link.itemKey === 'console' && !userState.user) {
+        targetPath = '/login';
+      }
+      if (link.itemKey === 'pricing' && pricingRequireAuth && !userState.user) {
+        targetPath = '/login';
+      }
+
+      const active = isLinkActive(link, targetPath);
+
+      const linkContent = (
+        <span
+          className='font-display relative inline-block'
+          style={{
+            fontWeight: active ? 600 : 400,
+            letterSpacing: '-0.022em',
+            color: active ? 'var(--semi-color-text-0)' : 'var(--semi-color-text-1)',
+          }}
+        >
+          {link.text}
+          {active && (
+            <span
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: -6,
+                height: 2,
+                borderRadius: 2,
+                background: 'var(--semi-color-text-0)',
+              }}
+            />
+          )}
+        </span>
+      );
 
       if (link.isExternal) {
         return (
@@ -53,16 +96,13 @@ const Navigation = ({
         );
       }
 
-      let targetPath = link.to;
-      if (link.itemKey === 'console' && !userState.user) {
-        targetPath = '/login';
-      }
-      if (link.itemKey === 'pricing' && pricingRequireAuth && !userState.user) {
-        targetPath = '/login';
-      }
-
       return (
-        <Link key={link.itemKey} to={targetPath} className={commonLinkClasses}>
+        <Link
+          key={link.itemKey}
+          to={targetPath}
+          className={commonLinkClasses}
+          aria-current={active ? 'page' : undefined}
+        >
           {linkContent}
         </Link>
       );

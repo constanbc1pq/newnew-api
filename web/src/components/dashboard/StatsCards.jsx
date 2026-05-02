@@ -39,13 +39,13 @@ const StatsCards = ({
           <div
             key={idx}
             style={{
-              background: '#fff',
-              border: '1.5px solid #e5e7eb',
+              background: 'var(--mr-bg-surface-1)',
+              border: '1px solid var(--mr-border-default)',
               borderRadius: '18px',
               padding: '16px 20px',
             }}
           >
-            <div style={{ fontSize: '12px', color: '#9ca3af', fontWeight: 500, marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ fontSize: '12px', color: 'var(--mr-text-tertiary)', fontWeight: 500, marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {group.title}
             </div>
             <div className='space-y-4'>
@@ -56,8 +56,8 @@ const StatsCards = ({
                   onClick={item.onClick}
                 >
                   <div>
-                    <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>{item.title}</div>
-                    <div style={{ fontSize: '18px', fontWeight: 600, color: '#111', lineHeight: 1.2 }}>
+                    <div style={{ fontSize: '12px', color: 'var(--mr-text-tertiary)', marginBottom: '2px' }}>{item.title}</div>
+                    <div className='mr-tabular' style={{ fontSize: '18px', fontWeight: 600, color: 'var(--mr-text-primary)', lineHeight: 1.2 }}>
                       <Skeleton
                         loading={loading}
                         active
@@ -86,8 +86,8 @@ const StatsCards = ({
                       style={{
                         padding: '5px 14px',
                         borderRadius: '9999px',
-                        background: '#000',
-                        color: '#fff',
+                        background: 'var(--mr-accent)',
+                        color: 'var(--mr-accent-fg)',
                         border: 'none',
                         fontSize: '12px',
                         fontWeight: 500,

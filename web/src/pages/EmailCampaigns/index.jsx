@@ -434,7 +434,15 @@ export default function EmailCampaignsPage() {
   ];
 
   return (
-    <div style={{ padding: '0 4px' }}>
+    <div
+      className='mt-[60px] px-2'
+      style={{
+        height: 'calc(100dvh - 60px)',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
+        padding: '0 4px',
+      }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
           <Title heading={4} style={{ margin: 0 }}>Email Campaigns</Title>

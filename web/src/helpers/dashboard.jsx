@@ -101,11 +101,13 @@ export const updateChartSpec = (
 
 export const getTrendSpec = (data, color) => ({
   type: 'line',
-  data: [{ id: 'trend', values: data.map((val, idx) => ({ x: idx, y: val })) }],
+  data: [{ id: 'trend', values: data.map((val, idx) => ({ x: idx, y: val, type: 'trend' })) }],
   xField: 'x',
   yField: 'y',
+  seriesField: 'type',
   height: 40,
   width: 100,
+  color: [color],
   axes: [
     {
       orient: 'bottom',

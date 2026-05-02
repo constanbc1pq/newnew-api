@@ -8,11 +8,13 @@
 import React, { useState } from 'react';
 import { Input, Button, Typography, Toast } from '@douyinfe/semi-ui';
 import { IconTickCircle, IconGift } from '@douyinfe/semi-icons';
+import { useTranslation } from 'react-i18next';
 import { API } from '../../helpers';
 
 const { Text } = Typography;
 
 export default function RedeemCodeBox({ onSuccess, compact = false }) {
+  const { t } = useTranslation();
   const [code, setCode]       = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null); // quota gained
@@ -27,10 +29,10 @@ export default function RedeemCodeBox({ onSuccess, compact = false }) {
         const quota = res.data.data;
         setSuccess(quota);
         setCode('');
-        Toast.success(`兑换成功！获得 ${quota.toLocaleString()} tokens`);
+        Toast.success(t('兑换成功！获得 {{count}} tokens', { count: quota.toLocaleString() }));
         onSuccess?.(quota);
       } else {
-        Toast.error(res.data.message || '兑换失败');
+        Toast.error(res.data.message || t('兑换失败'));
       }
     } catch (e) {
       Toast.error(e.message);
@@ -50,7 +52,7 @@ export default function RedeemCodeBox({ onSuccess, compact = false }) {
       }}>
         <IconTickCircle size="large" />
         <Text style={{ color: 'var(--semi-color-success)' }}>
-          已兑换 +{success.toLocaleString()} tokens
+          {t('已兑换')} +{success.toLocaleString()} tokens
         </Text>
         <Button
           size="small"
@@ -58,7 +60,7 @@ export default function RedeemCodeBox({ onSuccess, compact = false }) {
           onClick={() => setSuccess(null)}
           style={{ marginLeft: 'auto' }}
         >
-          再兑一张
+          {t('再兑一张')}
         </Button>
       </div>
     );
@@ -69,14 +71,14 @@ export default function RedeemCodeBox({ onSuccess, compact = false }) {
       {!compact && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <IconGift style={{ color: 'var(--semi-color-primary)' }} />
-          <Text strong>兑换码</Text>
+          <Text strong>{t('兑换码')}</Text>
         </div>
       )}
       <div style={{ display: 'flex', gap: 8 }}>
         <Input
           value={code}
           onChange={setCode}
-          placeholder={compact ? '输入兑换码' : '输入兑换码，例如 WELCOME2025'}
+          placeholder={compact ? t('输入兑换码') : t('输入兑换码，例如 WELCOME2025')}
           style={{ flex: 1, fontFamily: 'monospace', letterSpacing: '0.05em', textTransform: 'uppercase' }}
           onEnterPress={handleRedeem}
           size={compact ? 'small' : 'default'}
@@ -88,12 +90,12 @@ export default function RedeemCodeBox({ onSuccess, compact = false }) {
           disabled={!code.trim()}
           size={compact ? 'small' : 'default'}
         >
-          兑换
+          {t('兑换')}
         </Button>
       </div>
       {!compact && (
         <Text type="tertiary" size="small">
-          兑换码区分大小写，每码只能使用一次
+          {t('兑换码区分大小写，每码只能使用一次')}
         </Text>
       )}
     </div>

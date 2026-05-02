@@ -139,10 +139,10 @@ export const getRedemptionsColumns = ({
       },
     },
     {
-      title: '定向用户',
+      title: t('定向用户'),
       dataIndex: 'target_user_id',
       render: (text) => {
-        if (!text || text === 0) return <span style={{ color: 'var(--semi-color-text-2)', fontSize: 12 }}>公开</span>;
+        if (!text || text === 0) return <span style={{ color: 'var(--semi-color-text-2)', fontSize: 12 }}>{t('公开')}</span>;
         return <Tag color='orange' size='small'>UID:{text}</Tag>;
       },
     },

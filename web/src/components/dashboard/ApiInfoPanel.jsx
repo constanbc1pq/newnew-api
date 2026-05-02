@@ -39,7 +39,7 @@ const ApiInfoPanel = ({
     <Card
       {...CARD_PROPS}
       className='!rounded-2xl'
-      style={{ border: '1.5px solid #e5e7eb', background: '#fff' }}
+      style={{ border: '1px solid var(--mr-border-default)', background: 'var(--mr-bg-surface-1)' }}
       title={
         <div className={FLEX_CENTER_GAP2}>
           <Server size={16} />
@@ -52,13 +52,18 @@ const ApiInfoPanel = ({
         {apiInfoData.length > 0 ? (
           apiInfoData.map((api) => (
             <React.Fragment key={api.id}>
-              <div className='flex p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer'>
-                <div className='flex-shrink-0 mr-3' style={{ width: 28, height: 28, borderRadius: '9999px', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>
+              <div
+                className='flex p-2 rounded-lg transition-colors cursor-pointer'
+                style={{ '--row-hover': 'var(--mr-bg-surface-2)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--mr-bg-surface-2)')}
+                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+              >
+                <div className='flex-shrink-0 mr-3' style={{ width: 28, height: 28, borderRadius: '9999px', background: 'var(--mr-bg-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600, color: 'var(--mr-text-tertiary)', flexShrink: 0 }}>
                   {api.route.substring(0, 2)}
                 </div>
                 <div className='flex-1'>
                   <div className='flex flex-wrap items-center justify-between mb-1 w-full gap-2'>
-                    <span className='text-sm font-medium text-gray-900 !font-bold break-all'>
+                    <span className='text-sm font-medium !font-bold break-all' style={{ color: 'var(--mr-text-primary)' }}>
                       {api.route}
                     </span>
                     <div className='flex items-center gap-1 mt-1 lg:mt-0'>
@@ -92,7 +97,7 @@ const ApiInfoPanel = ({
                   >
                     {api.url}
                   </div>
-                  <div className='text-gray-500'>{api.description}</div>
+                  <div style={{ color: 'var(--mr-text-tertiary)' }}>{api.description}</div>
                 </div>
               </div>
               <Divider />

@@ -60,7 +60,7 @@ const OnboardingCard = ({
       title: t('开始调用'),
       desc: (
         <span>
-          {t('兼容 OpenAI SDK，把')} <code style={{ fontFamily: 'monospace', fontSize: '12px', background: '#f3f4f6', padding: '1px 4px', borderRadius: '3px' }}>base_url</code> {t('改为')} <code style={{ fontFamily: 'monospace', fontSize: '12px', background: '#f3f4f6', padding: '1px 4px', borderRadius: '3px' }}>{baseURL}/v1</code>
+          {t('兼容 OpenAI SDK，把')} <code style={{ fontFamily: 'monospace', fontSize: '12px', background: 'var(--mr-bg-surface-2)', color: 'var(--mr-text-secondary)', padding: '1px 4px', borderRadius: '3px' }}>base_url</code> {t('改为')} <code style={{ fontFamily: 'monospace', fontSize: '12px', background: 'var(--mr-bg-surface-2)', color: 'var(--mr-text-secondary)', padding: '1px 4px', borderRadius: '3px' }}>{baseURL}/v1</code>
         </span>
       ),
       actionLabel: copied ? t('已复制!') : t('复制接入地址'),
@@ -71,16 +71,16 @@ const OnboardingCard = ({
   return (
     <div
       style={{
-        border: '1.5px solid #e5e7eb',
+        border: '1px solid var(--mr-border-default)',
         borderRadius: '18px',
         padding: '20px 24px',
         marginBottom: '16px',
-        background: '#fff',
+        background: 'var(--mr-bg-surface-1)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
-          <div style={{ fontWeight: 600, fontSize: '15px', color: '#111' }}>{t('快速开始')}</div>
+          <div style={{ fontWeight: 600, fontSize: '15px', color: 'var(--mr-text-primary)' }}>{t('快速开始')}</div>
           <Text type='secondary' style={{ fontSize: '13px' }}>
             {t('三步完成接入，5 分钟跑通第一个请求')}
           </Text>
@@ -89,10 +89,10 @@ const OnboardingCard = ({
           <span style={{
             padding: '3px 12px',
             borderRadius: '9999px',
-            background: 'linear-gradient(90deg, #dbeafe 0%, #fce7d6 100%)',
+            background: 'var(--mr-info-soft)',
             fontSize: '12px',
             fontWeight: 500,
-            color: '#1e3a5f',
+            color: 'var(--mr-info)',
             whiteSpace: 'nowrap',
           }}>
             🎁 {t('新人')} {promoInfo.multiplier}x {t('额度')}
@@ -105,27 +105,27 @@ const OnboardingCard = ({
           <div
             key={step.num}
             style={{
-              border: step.done ? '1.5px solid #000' : '1.5px solid #e5e7eb',
+              border: step.done ? '1.5px solid var(--mr-accent)' : '1px solid var(--mr-border-default)',
               borderRadius: '14px',
               padding: '16px',
               display: 'flex',
               flexDirection: 'column',
               gap: '10px',
-              background: step.done ? '#fafafa' : '#fff',
+              background: step.done ? 'var(--mr-bg-surface-2)' : 'var(--mr-bg-surface-1)',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
                 width: '24px', height: '24px',
                 borderRadius: '9999px',
-                background: step.done ? '#000' : '#f3f4f6',
-                color: step.done ? '#fff' : '#6b7280',
+                background: step.done ? 'var(--mr-accent)' : 'var(--mr-bg-surface-3)',
+                color: step.done ? 'var(--mr-accent-fg)' : 'var(--mr-text-tertiary)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '12px', fontWeight: 600, flexShrink: 0,
               }}>
                 {step.done ? <CheckCircle2 size={14} /> : step.num}
               </div>
-              <span style={{ fontWeight: 600, fontSize: '14px', color: '#111' }}>{step.title}</span>
+              <span style={{ fontWeight: 600, fontSize: '14px', color: 'var(--mr-text-primary)' }}>{step.title}</span>
             </div>
 
             <Text type='secondary' style={{ fontSize: '12px', lineHeight: 1.5 }}>
@@ -137,9 +137,9 @@ const OnboardingCard = ({
               style={{
                 padding: '7px 12px',
                 borderRadius: '9999px',
-                background: step.done ? '#fff' : '#000',
-                color: step.done ? '#111' : '#fff',
-                border: step.done ? '1.5px solid #d1d5db' : 'none',
+                background: step.done ? 'var(--mr-bg-surface-1)' : 'var(--mr-accent)',
+                color: step.done ? 'var(--mr-text-primary)' : 'var(--mr-accent-fg)',
+                border: step.done ? '1px solid var(--mr-border-strong)' : 'none',
                 fontSize: '13px',
                 fontWeight: 500,
                 cursor: 'pointer',

@@ -537,8 +537,8 @@ const SubscriptionPlansCard = ({
                               gap: '4px',
                               padding: '2px 10px',
                               borderRadius: '9999px',
-                              background: '#000',
-                              color: '#fff',
+                              background: 'var(--mr-accent)',
+                              color: 'var(--mr-accent-fg)',
                               fontSize: '11px',
                               fontWeight: 600,
                             }}
@@ -571,11 +571,11 @@ const SubscriptionPlansCard = ({
 
                       {/* 价格区域 */}
                       <div className='py-2'>
-                        <div className='flex items-baseline justify-start'>
-                          <span className='text-xl font-bold text-gray-900'>
+                        <div className='flex items-baseline justify-start' style={{ color: 'var(--mr-text-primary)' }}>
+                          <span className='text-xl font-bold'>
                             {symbol}
                           </span>
-                          <span className='text-3xl font-bold text-gray-900'>
+                          <span className='text-3xl font-bold mr-tabular'>
                             {displayPrice}
                           </span>
                         </div>
@@ -628,8 +628,8 @@ const SubscriptionPlansCard = ({
                                 width: '100%',
                                 padding: '10px',
                                 borderRadius: '9999px',
-                                background: reached ? '#9ca3af' : '#000',
-                                color: '#fff',
+                                background: reached ? 'var(--mr-text-disabled)' : 'var(--mr-accent)',
+                                color: 'var(--mr-accent-fg)',
                                 fontWeight: 600,
                                 fontSize: '14px',
                                 border: 'none',

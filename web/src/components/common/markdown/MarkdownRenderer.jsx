@@ -129,7 +129,7 @@ function SandboxedHtmlPreview({ code }) {
         height: `${iframeHeight}px`,
         border: 'none',
         overflow: 'auto',
-        backgroundColor: '#fff',
+        backgroundColor: 'var(--mr-bg-surface-1)',
         borderRadius: '4px',
       }}
     />
@@ -423,7 +423,7 @@ function _MarkdownContent(props) {
             dir='auto'
             style={{
               lineHeight: '1.6',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'inherit',
             }}
           />
         ),
@@ -472,7 +472,7 @@ function _MarkdownContent(props) {
               fontSize: '24px',
               fontWeight: 'bold',
               margin: '20px 0 12px 0',
-              color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'var(--semi-color-text-0)',
             }}
           />
         ),
@@ -483,7 +483,7 @@ function _MarkdownContent(props) {
               fontSize: '20px',
               fontWeight: 'bold',
               margin: '18px 0 10px 0',
-              color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'var(--semi-color-text-0)',
             }}
           />
         ),
@@ -494,7 +494,7 @@ function _MarkdownContent(props) {
               fontSize: '18px',
               fontWeight: 'bold',
               margin: '16px 0 8px 0',
-              color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'var(--semi-color-text-0)',
             }}
           />
         ),
@@ -505,7 +505,7 @@ function _MarkdownContent(props) {
               fontSize: '16px',
               fontWeight: 'bold',
               margin: '14px 0 6px 0',
-              color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'var(--semi-color-text-0)',
             }}
           />
         ),
@@ -516,7 +516,7 @@ function _MarkdownContent(props) {
               fontSize: '14px',
               fontWeight: 'bold',
               margin: '12px 0 4px 0',
-              color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'var(--semi-color-text-0)',
             }}
           />
         ),
@@ -527,7 +527,7 @@ function _MarkdownContent(props) {
               fontSize: '13px',
               fontWeight: 'bold',
               margin: '10px 0 4px 0',
-              color: isUserMessage ? 'white' : 'var(--semi-color-text-0)',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'var(--semi-color-text-0)',
             }}
           />
         ),
@@ -546,7 +546,7 @@ function _MarkdownContent(props) {
               padding: '8px 16px',
               borderRadius: '0 4px 4px 0',
               fontStyle: 'italic',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'inherit',
             }}
           />
         ),
@@ -556,7 +556,7 @@ function _MarkdownContent(props) {
             style={{
               margin: '8px 0',
               paddingLeft: '20px',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'inherit',
             }}
           />
         ),
@@ -566,7 +566,7 @@ function _MarkdownContent(props) {
             style={{
               margin: '8px 0',
               paddingLeft: '20px',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'inherit',
             }}
           />
         ),
@@ -576,7 +576,7 @@ function _MarkdownContent(props) {
             style={{
               margin: '4px 0',
               lineHeight: '1.6',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'inherit',
             }}
           />
         ),
@@ -609,7 +609,7 @@ function _MarkdownContent(props) {
                 : '1px solid var(--semi-color-border)',
               fontWeight: 'bold',
               textAlign: 'left',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'inherit',
             }}
           />
         ),
@@ -621,7 +621,7 @@ function _MarkdownContent(props) {
               border: isUserMessage
                 ? '1px solid rgba(255, 255, 255, 0.3)'
                 : '1px solid var(--semi-color-border)',
-              color: isUserMessage ? 'white' : 'inherit',
+              color: isUserMessage ? 'var(--mr-text-inverse)' : 'inherit',
             }}
           />
         ),

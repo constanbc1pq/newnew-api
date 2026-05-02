@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Typography } from '@douyinfe/semi-ui';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getFooterHTML, getSystemName } from '../../helpers';
 
 const FooterBar = () => {
+  const { t } = useTranslation();
   const [footer, setFooter] = useState(getFooterHTML());
   const systemName = getSystemName();
   const currentYear = new Date().getFullYear();
@@ -20,14 +22,14 @@ const FooterBar = () => {
         style={{ fontSize: '13px', color: 'var(--semi-color-text-2)', textDecoration: 'none' }}
         className='hover:opacity-70 transition-opacity'
       >
-        文档
+        {t('文档')}
       </Link>
       <Link
         to='/about'
         style={{ fontSize: '13px', color: 'var(--semi-color-text-2)', textDecoration: 'none' }}
         className='hover:opacity-70 transition-opacity'
       >
-        关于
+        {t('关于')}
       </Link>
     </div>
   );
