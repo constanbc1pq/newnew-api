@@ -18,7 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React from 'react';
-import { Card, Avatar, Tag, Divider, Empty } from '@douyinfe/semi-ui';
+import { Card, Tag, Divider, Empty } from '@douyinfe/semi-ui';
 import { Server, Gauge, ExternalLink } from 'lucide-react';
 import {
   IllustrationConstruction,
@@ -38,7 +38,8 @@ const ApiInfoPanel = ({
   return (
     <Card
       {...CARD_PROPS}
-      className='bg-gray-50 border-0 !rounded-2xl'
+      className='!rounded-2xl'
+      style={{ border: '1.5px solid #e5e7eb', background: '#fff' }}
       title={
         <div className={FLEX_CENTER_GAP2}>
           <Server size={16} />
@@ -51,11 +52,9 @@ const ApiInfoPanel = ({
         {apiInfoData.length > 0 ? (
           apiInfoData.map((api) => (
             <React.Fragment key={api.id}>
-              <div className='flex p-2 hover:bg-white rounded-lg transition-colors cursor-pointer'>
-                <div className='flex-shrink-0 mr-3'>
-                  <Avatar size='extra-small' color={api.color}>
-                    {api.route.substring(0, 2)}
-                  </Avatar>
+              <div className='flex p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer'>
+                <div className='flex-shrink-0 mr-3' style={{ width: 28, height: 28, borderRadius: '9999px', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 600, color: '#6b7280', flexShrink: 0 }}>
+                  {api.route.substring(0, 2)}
                 </div>
                 <div className='flex-1'>
                   <div className='flex flex-wrap items-center justify-between mb-1 w-full gap-2'>

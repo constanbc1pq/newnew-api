@@ -8,22 +8,12 @@ License, or (at your option) any later version.
 */
 
 import React, { useState } from 'react';
-import { Card, Button, Tag, Typography, Toast } from '@douyinfe/semi-ui';
+import { Typography, Toast } from '@douyinfe/semi-ui';
 import { useNavigate } from 'react-router-dom';
-import { Wallet, Key, Code2, CheckCircle2, ChevronRight, Copy } from 'lucide-react';
+import { Copy, CheckCircle2 } from 'lucide-react';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
-/**
- * OnboardingCard — shown to users who have never paid/used the platform.
- * Three-step quick-start: recharge → create API key → start calling.
- *
- * isNewUserPromo:  whether the new-user discount is active
- * promoInfo:       { limit_usd, multiplier } for the discount tooltip
- * userQuota:       current quota (0 for brand-new users)
- * hasToken:        whether user already has an API key
- * t:               i18n function
- */
 const OnboardingCard = ({
   isNewUserPromo = false,
   promoInfo = { limit_usd: 10, multiplier: 2.0 },
@@ -38,7 +28,7 @@ const OnboardingCard = ({
   const hasFunds = userQuota > 0;
 
   const handleCopyBaseURL = () => {
-    navigator.clipboard.writeText(baseURL).then(() => {
+    navigator.clipboard.writeText(`${baseURL}/v1`).then(() => {
       setCopied(true);
       Toast.success({ content: t('已复制'), duration: 2 });
       setTimeout(() => setCopied(false), 2000);
@@ -47,144 +37,125 @@ const OnboardingCard = ({
 
   const steps = [
     {
-      key: 'recharge',
-      icon: <Wallet size={20} />,
-      color: hasFunds ? 'green' : 'blue',
+      num: 1,
       done: hasFunds,
       title: t('充值额度'),
       desc: isNewUserPromo
         ? `${t('首充前')} $${promoInfo.limit_usd} ${t('享')} ${promoInfo.multiplier}x ${t('额度')}`
         : t('选择适合自己的充值方案'),
-      action: () => navigate('/console/topup'),
       actionLabel: hasFunds ? t('查看余额') : t('立即充值'),
+      onClick: () => navigate('/console/topup'),
     },
     {
-      key: 'token',
-      icon: <Key size={20} />,
-      color: hasToken ? 'green' : 'blue',
+      num: 2,
       done: hasToken,
       title: t('创建 API Key'),
       desc: t('用于调用 AI 接口，可随时新增或撤销'),
-      action: () => navigate('/console/token'),
       actionLabel: hasToken ? t('管理 Key') : t('创建 Key'),
+      onClick: () => navigate('/console/token'),
     },
     {
-      key: 'code',
-      icon: <Code2 size={20} />,
-      color: 'blue',
+      num: 3,
       done: false,
       title: t('开始调用'),
       desc: (
         <span>
-          {t('兼容 OpenAI SDK，把')}
-          <code
-            className='mx-1 px-1 py-0.5 rounded text-xs cursor-pointer hover:bg-blue-100 transition-colors'
-            style={{
-              background: 'var(--semi-color-fill-1)',
-              fontFamily: 'monospace',
-            }}
-            onClick={handleCopyBaseURL}
-          >
-            base_url
-          </code>
-          {t('改为')}
-          <code
-            className='ml-1 px-1 py-0.5 rounded text-xs cursor-pointer hover:bg-blue-100 transition-colors'
-            style={{
-              background: 'var(--semi-color-fill-1)',
-              fontFamily: 'monospace',
-            }}
-            onClick={handleCopyBaseURL}
-          >
-            {baseURL}/v1
-          </code>
+          {t('兼容 OpenAI SDK，把')} <code style={{ fontFamily: 'monospace', fontSize: '12px', background: '#f3f4f6', padding: '1px 4px', borderRadius: '3px' }}>base_url</code> {t('改为')} <code style={{ fontFamily: 'monospace', fontSize: '12px', background: '#f3f4f6', padding: '1px 4px', borderRadius: '3px' }}>{baseURL}/v1</code>
         </span>
       ),
-      action: handleCopyBaseURL,
       actionLabel: copied ? t('已复制!') : t('复制接入地址'),
-      actionIcon: <Copy size={14} />,
+      onClick: handleCopyBaseURL,
     },
   ];
 
   return (
-    <Card
-      className='!rounded-2xl mb-4 border-0'
+    <div
       style={{
-        background: 'linear-gradient(135deg, rgba(37,99,235,0.06) 0%, rgba(147,51,234,0.05) 100%)',
-        border: '1px solid rgba(37,99,235,0.12)',
+        border: '1.5px solid #e5e7eb',
+        borderRadius: '18px',
+        padding: '20px 24px',
+        marginBottom: '16px',
+        background: '#fff',
       }}
-      bodyStyle={{ padding: '20px 24px' }}
     >
-      <div className='flex items-center justify-between mb-4'>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div>
-          <Title heading={5} style={{ margin: 0 }}>
-            🚀 {t('快速开始')}
-          </Title>
+          <div style={{ fontWeight: 600, fontSize: '15px', color: '#111' }}>{t('快速开始')}</div>
           <Text type='secondary' style={{ fontSize: '13px' }}>
             {t('三步完成接入，5 分钟跑通第一个请求')}
           </Text>
         </div>
         {isNewUserPromo && (
-          <Tag color='green' size='large' shape='circle'>
-            🎉 {t('新人')} {promoInfo.multiplier}x {t('额度')}
-          </Tag>
+          <span style={{
+            padding: '3px 12px',
+            borderRadius: '9999px',
+            background: 'linear-gradient(90deg, #dbeafe 0%, #fce7d6 100%)',
+            fontSize: '12px',
+            fontWeight: 500,
+            color: '#1e3a5f',
+            whiteSpace: 'nowrap',
+          }}>
+            🎁 {t('新人')} {promoInfo.multiplier}x {t('额度')}
+          </span>
         )}
       </div>
 
-      <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
-        {steps.map((step, idx) => (
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+        {steps.map((step) => (
           <div
-            key={step.key}
-            className='flex flex-col justify-between p-4 rounded-xl transition-all'
+            key={step.num}
             style={{
-              background: step.done
-                ? 'rgba(34,197,94,0.06)'
-                : 'var(--semi-color-bg-2)',
-              border: step.done
-                ? '1px solid rgba(34,197,94,0.2)'
-                : '1px solid var(--semi-color-border)',
+              border: step.done ? '1.5px solid #000' : '1.5px solid #e5e7eb',
+              borderRadius: '14px',
+              padding: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+              background: step.done ? '#fafafa' : '#fff',
             }}
           >
-            <div>
-              <div className='flex items-center gap-2 mb-2'>
-                <div
-                  className='flex items-center justify-center w-8 h-8 rounded-full flex-shrink-0'
-                  style={{
-                    background: step.done
-                      ? 'rgba(34,197,94,0.15)'
-                      : 'rgba(37,99,235,0.1)',
-                    color: step.done ? 'rgb(34,197,94)' : 'rgb(37,99,235)',
-                  }}
-                >
-                  {step.done ? <CheckCircle2 size={18} /> : step.icon}
-                </div>
-                <Text strong style={{ fontSize: '14px' }}>
-                  {idx + 1}. {step.title}
-                </Text>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{
+                width: '24px', height: '24px',
+                borderRadius: '9999px',
+                background: step.done ? '#000' : '#f3f4f6',
+                color: step.done ? '#fff' : '#6b7280',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '12px', fontWeight: 600, flexShrink: 0,
+              }}>
+                {step.done ? <CheckCircle2 size={14} /> : step.num}
               </div>
-              <Text
-                type='secondary'
-                style={{ fontSize: '12px', lineHeight: '1.5', display: 'block', marginBottom: '12px' }}
-              >
-                {step.desc}
-              </Text>
+              <span style={{ fontWeight: 600, fontSize: '14px', color: '#111' }}>{step.title}</span>
             </div>
-            <Button
-              size='small'
-              theme={step.done ? 'outline' : 'solid'}
-              type={step.done ? 'tertiary' : 'primary'}
-              icon={step.actionIcon}
-              iconPosition='right'
-              suffix={!step.actionIcon && <ChevronRight size={14} />}
-              onClick={step.action}
-              className='!rounded-lg w-full'
+
+            <Text type='secondary' style={{ fontSize: '12px', lineHeight: 1.5 }}>
+              {step.desc}
+            </Text>
+
+            <button
+              onClick={step.onClick}
+              style={{
+                padding: '7px 12px',
+                borderRadius: '9999px',
+                background: step.done ? '#fff' : '#000',
+                color: step.done ? '#111' : '#fff',
+                border: step.done ? '1.5px solid #d1d5db' : 'none',
+                fontSize: '13px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+              }}
             >
+              {step.num === 3 && <Copy size={12} />}
               {step.actionLabel}
-            </Button>
+            </button>
           </div>
         ))}
       </div>
-    </Card>
+    </div>
   );
 };
 

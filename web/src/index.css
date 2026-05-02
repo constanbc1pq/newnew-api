@@ -18,23 +18,78 @@
   --sidebar-width: 180px;
   --sidebar-width-collapsed: 60px;
   --sidebar-current-width: var(--sidebar-width);
+
+  /* Apple 设计系统字体栈 — SF Pro 优先，跨平台回退 */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC',
+    'Noto Sans SC', 'Inter', 'Segoe UI', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC',
+    'Noto Sans SC', 'Inter', sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Apple Design Tokens */
+  --apple-canvas: #f5f5f7;       /* 页面画布 */
+  --apple-surface: #ffffff;      /* 卡片/面板 */
+  --apple-ink: #1d1d1f;          /* 主文字 */
+  --apple-ink-2: #424245;        /* 次要文字 */
+  --apple-ink-3: #6e6e73;        /* 辅助文字 */
+  --apple-ink-4: #86868b;        /* placeholder */
+  --apple-border: #d2d2d7;       /* 边框 */
+  --apple-border-light: #e8e8ed; /* 浅边框 */
+  --apple-radius-card: 18px;     /* 卡片圆角 */
+  --apple-radius-btn: 9999px;    /* 胶囊按钮 */
+  --apple-radius-sm: 10px;       /* 小组件 */
 }
 
-/* Market Router brand colors - use high specificity to override Semi defaults */
+/* 全站字体 — Apple SF Pro 系统字体栈 */
+body, .semi-typography, .semi-nav-item-inner, button, input, select, textarea {
+  font-family: var(--font-sans) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.003em;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display) !important;
+  letter-spacing: -0.022em;
+}
+
+code, pre, .font-mono {
+  font-family: var(--font-mono) !important;
+}
+
+/* ==================== Apple Light Mode ==================== */
 body,
 body[theme-mode="light"],
 body[theme-mode="dark"] {
-  --semi-color-primary: #7c3aed !important;
-  --semi-color-primary-hover: #6d28d9 !important;
-  --semi-color-primary-active: #5b21b6 !important;
-  --semi-color-primary-disabled: rgba(124, 58, 237, 0.4) !important;
-  --semi-color-primary-light-default: rgba(124, 58, 237, 0.12) !important;
-  --semi-color-primary-light-hover: rgba(124, 58, 237, 0.2) !important;
-  --semi-color-primary-light-active: rgba(124, 58, 237, 0.35) !important;
-  --semi-color-link: #7c3aed !important;
-  --semi-color-link-hover: #6d28d9 !important;
-  --semi-color-link-active: #5b21b6 !important;
-  --semi-color-focus-border: rgba(124, 58, 237, 0.5) !important;
+  /* CTA 保持黑色（B.AI 风格），其余跟 Apple */
+  --semi-color-primary: #000000 !important;
+  --semi-color-primary-hover: #1a1a1a !important;
+  --semi-color-primary-active: #333333 !important;
+  --semi-color-primary-disabled: rgba(0, 0, 0, 0.25) !important;
+  --semi-color-primary-light-default: rgba(0, 0, 0, 0.04) !important;
+  --semi-color-primary-light-hover: rgba(0, 0, 0, 0.07) !important;
+  --semi-color-primary-light-active: rgba(0, 0, 0, 0.10) !important;
+  --semi-color-link: #0066cc !important;
+  --semi-color-link-hover: #0055aa !important;
+  --semi-color-focus-border: rgba(0, 0, 0, 0.25) !important;
+}
+
+body:not([theme-mode="dark"]),
+body[theme-mode="light"] {
+  --semi-color-bg-0: #f5f5f7 !important;   /* Apple canvas */
+  --semi-color-bg-1: #ffffff !important;   /* 卡片白色，从画布浮起 */
+  --semi-color-bg-2: #f5f5f7 !important;
+  --semi-color-bg-3: #e8e8ed !important;
+  --semi-color-fill-0: #f5f5f7 !important;
+  --semi-color-fill-1: #e8e8ed !important;
+  --semi-color-fill-2: #d2d2d7 !important;
+  --semi-color-border: #d2d2d7 !important;
+  --semi-color-text-0: #1d1d1f !important;
+  --semi-color-text-1: #424245 !important;
+  --semi-color-text-2: #6e6e73 !important;
+  --semi-color-text-3: #86868b !important;
+  --semi-color-nav-bg: #f5f5f7 !important;
+  background-color: #f5f5f7 !important;
 }
 
 /* Dark mode enhanced background */
@@ -70,16 +125,32 @@ html.dark .landing {
   --lr-primary-10: rgba(245,240,234,0.08);
 }
 
-/* Global button styles: square corners, border, padding */
+/* ==================== Apple 圆角系统 ==================== */
+/* Semi UI 卡片全部用 Apple 18px 圆角 */
+.semi-card {
+  border-radius: 18px !important;
+  border: 1px solid var(--apple-border-light) !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+/* Tailwind 圆角 class 对齐 Apple */
+.rounded-2xl { border-radius: 18px !important; }
+.\\!rounded-2xl { border-radius: 18px !important; }
+.rounded-xl { border-radius: 14px !important; }
+.\\!rounded-xl { border-radius: 14px !important; }
+
+/* Semi UI 按钮：胶囊形（Apple pill style） */
 .semi-button {
-  padding: 6px 16px !important;
+  padding: 7px 18px !important;
+  border-radius: 9999px !important;
 }
 
 button.semi-button,
 button.semi-button[class*="semi-button"] {
-  border-radius: 0 !important;
-  --semi-border-radius-small: 0;
-  --semi-border-radius-medium: 0;
+  border-radius: 9999px !important;
+  --semi-border-radius-small: 9999px;
+  --semi-border-radius-medium: 9999px;
 }
 
 .semi-button-light {
@@ -305,8 +376,8 @@ code {
 
 /* 分割线样式 */
 .sidebar-divider {
-  margin: 4px 8px;
-  opacity: 0.15;
+  margin: 8px 8px;
+  opacity: 0.35;
 }
 
 /* 分组标签样式 */

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Typography } from '@douyinfe/semi-ui';
+import { Link } from 'react-router-dom';
 import { getFooterHTML, getSystemName } from '../../helpers';
 
 const FooterBar = () => {
@@ -12,6 +13,25 @@ const FooterBar = () => {
     if (html) setFooter(html);
   }, []);
 
+  const footerLinks = (
+    <div className='flex items-center gap-4'>
+      <Link
+        to='/docs'
+        style={{ fontSize: '13px', color: 'var(--semi-color-text-2)', textDecoration: 'none' }}
+        className='hover:opacity-70 transition-opacity'
+      >
+        文档
+      </Link>
+      <Link
+        to='/about'
+        style={{ fontSize: '13px', color: 'var(--semi-color-text-2)', textDecoration: 'none' }}
+        className='hover:opacity-70 transition-opacity'
+      >
+        关于
+      </Link>
+    </div>
+  );
+
   const defaultFooter = useMemo(
     () => (
       <footer className='py-6 px-6 md:px-24 w-full flex items-center justify-center border-t border-semi-color-border'>
@@ -19,6 +39,7 @@ const FooterBar = () => {
           <Typography.Text className='text-sm !text-semi-color-text-2'>
             © {currentYear} {systemName}
           </Typography.Text>
+          {footerLinks}
           <Typography.Text className='text-sm !text-semi-color-text-2'>
             Powered by SuperRouter
           </Typography.Text>

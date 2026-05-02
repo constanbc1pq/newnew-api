@@ -18,7 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React from 'react';
-import { Card, Avatar, Skeleton, Tag } from '@douyinfe/semi-ui';
+import { Skeleton } from '@douyinfe/semi-ui';
 import { VChart } from '@visactor/react-vchart';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -36,12 +36,18 @@ const StatsCards = ({
     <div className='mb-4'>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
         {groupedStatsData.map((group, idx) => (
-          <Card
+          <div
             key={idx}
-            {...CARD_PROPS}
-            className={`${group.color} border-0 !rounded-2xl w-full`}
-            title={group.title}
+            style={{
+              background: '#fff',
+              border: '1.5px solid #e5e7eb',
+              borderRadius: '18px',
+              padding: '16px 20px',
+            }}
           >
+            <div style={{ fontSize: '12px', color: '#9ca3af', fontWeight: 500, marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              {group.title}
+            </div>
             <div className='space-y-4'>
               {group.items.map((item, itemIdx) => (
                 <div
@@ -49,49 +55,48 @@ const StatsCards = ({
                   className='flex items-center justify-between cursor-pointer'
                   onClick={item.onClick}
                 >
-                  <div className='flex items-center'>
-                    <Avatar
-                      className='mr-3'
-                      size='small'
-                      color={item.avatarColor}
-                    >
-                      {item.icon}
-                    </Avatar>
-                    <div>
-                      <div className='text-xs text-gray-500'>{item.title}</div>
-                      <div className='text-lg font-semibold'>
-                        <Skeleton
-                          loading={loading}
-                          active
-                          placeholder={
-                            <Skeleton.Paragraph
-                              active
-                              rows={1}
-                              style={{
-                                width: '65px',
-                                height: '24px',
-                                marginTop: '4px',
-                              }}
-                            />
-                          }
-                        >
-                          {item.value}
-                        </Skeleton>
-                      </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '2px' }}>{item.title}</div>
+                    <div style={{ fontSize: '18px', fontWeight: 600, color: '#111', lineHeight: 1.2 }}>
+                      <Skeleton
+                        loading={loading}
+                        active
+                        placeholder={
+                          <Skeleton.Paragraph
+                            active
+                            rows={1}
+                            style={{
+                              width: '65px',
+                              height: '24px',
+                              marginTop: '4px',
+                            }}
+                          />
+                        }
+                      >
+                        {item.value}
+                      </Skeleton>
                     </div>
                   </div>
                   {item.title === t('当前余额') ? (
-                    <Tag
-                      color='white'
-                      shape='circle'
-                      size='large'
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate('/console/topup');
                       }}
+                      style={{
+                        padding: '5px 14px',
+                        borderRadius: '9999px',
+                        background: '#000',
+                        color: '#fff',
+                        border: 'none',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                      }}
                     >
                       {t('充值')}
-                    </Tag>
+                    </button>
                   ) : (
                     (loading ||
                       (item.trendData && item.trendData.length > 0)) && (
@@ -106,7 +111,7 @@ const StatsCards = ({
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
         ))}
       </div>
     </div>

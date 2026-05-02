@@ -18,7 +18,6 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 import React from 'react';
-import { Button } from '@douyinfe/semi-ui';
 import { RefreshCw, Search } from 'lucide-react';
 
 const DashboardHeader = ({
@@ -29,30 +28,27 @@ const DashboardHeader = ({
   loading,
   t,
 }) => {
-  const ICON_BUTTON_CLASS = 'text-white hover:bg-opacity-80 !rounded-full';
-
   return (
     <div className='flex items-center justify-between mb-4'>
       <h2
-        className='text-2xl font-semibold text-gray-800 transition-opacity duration-1000 ease-in-out'
-        style={{ opacity: greetingVisible ? 1 : 0 }}
+        style={{ fontSize: '20px', fontWeight: 600, color: '#111', opacity: greetingVisible ? 1 : 0, transition: 'opacity 1s ease-in-out', margin: 0 }}
       >
         {getGreeting}
       </h2>
-      <div className='flex gap-3'>
-        <Button
-          type='tertiary'
-          icon={<Search size={16} />}
+      <div className='flex gap-2'>
+        <button
           onClick={showSearchModal}
-          className={`bg-green-500 hover:bg-green-600 ${ICON_BUTTON_CLASS}`}
-        />
-        <Button
-          type='tertiary'
-          icon={<RefreshCw size={16} />}
+          style={{ width: 34, height: 34, borderRadius: '9999px', border: '1.5px solid #e5e7eb', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280' }}
+        >
+          <Search size={15} />
+        </button>
+        <button
           onClick={refresh}
-          loading={loading}
-          className={`bg-blue-500 hover:bg-blue-600 ${ICON_BUTTON_CLASS}`}
-        />
+          disabled={loading}
+          style={{ width: 34, height: 34, borderRadius: '9999px', border: '1.5px solid #e5e7eb', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#6b7280', opacity: loading ? 0.5 : 1 }}
+        >
+          <RefreshCw size={15} style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }} />
+        </button>
       </div>
     </div>
   );
