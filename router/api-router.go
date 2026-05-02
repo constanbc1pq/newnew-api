@@ -46,6 +46,10 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/oauth/:provider", middleware.CriticalRateLimit(), controller.HandleOAuth)
 		apiRouter.GET("/ratio_config", middleware.CriticalRateLimit(), controller.GetRatioConfig)
 
+		// Guest trial — no auth required, IP-rate-limited
+		apiRouter.GET("/guest/status", controller.GuestStatus)
+		apiRouter.POST("/guest/chat", middleware.GlobalAPIRateLimit(), controller.GuestChat)
+
 		apiRouter.POST("/stripe/webhook", controller.StripeWebhook)
 		apiRouter.POST("/creem/webhook", controller.CreemWebhook)
 		apiRouter.POST("/waffo/webhook", controller.WaffoWebhook)

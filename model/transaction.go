@@ -18,7 +18,7 @@ type Transaction struct {
 	Id            int64   `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserId        int     `json:"user_id" gorm:"index;not null"`
 	Type          string  `json:"type" gorm:"type:varchar(20);not null"`
-	Amount        float64 `json:"amount" gorm:"type:decimal(10,4)"`
+	Amount        float64 `json:"amount" gorm:"type:real"`
 	Quota         int64   `json:"quota"`
 	Currency      string  `json:"currency" gorm:"type:varchar(10)"`
 	Provider      string  `json:"provider" gorm:"type:varchar(30)"`

@@ -347,6 +347,23 @@ func genStripeLink(referenceId string, customerId string, email string, amountUS
 		params.Customer = stripe.String(customerId)
 	}
 
+	// WeChat Pay via Stripe Checkout requires client="web" for browser sessions.
+	hasWechat := false
+	for _, m := range params.PaymentMethodTypes {
+		if m != nil && *m == "wechat_pay" {
+			hasWechat = true
+			break
+		}
+	}
+	if hasWechat {
+		if params.PaymentMethodOptions == nil {
+			params.PaymentMethodOptions = &stripe.CheckoutSessionPaymentMethodOptionsParams{}
+		}
+		params.PaymentMethodOptions.WeChatPay = &stripe.CheckoutSessionPaymentMethodOptionsWeChatPayParams{
+			Client: stripe.String("web"),
+		}
+	}
+
 	result, err := session.New(params)
 	if err != nil {
 		return "", err

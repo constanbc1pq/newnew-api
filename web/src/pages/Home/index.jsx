@@ -13,6 +13,8 @@ import SectionHeader from './SectionHeader';
 import ScenarioCard from './ScenarioCard';
 import TerminalBlock from './TerminalBlock';
 import CountUp from './CountUp';
+import DashboardPreview from './DashboardPreview';
+import GuestChat from './GuestChat';
 import {
   SiAlipay, SiWechat, SiStripe, SiBitcoin, SiTether,
   SiPaypal, SiGooglepay, SiApplepay, SiVisa, SiMastercard,
@@ -177,105 +179,52 @@ const Home = () => {
     <div className='landing w-full' style={{ background: 'var(--lr-bg)', color: 'var(--lr-fg)', overflowX: 'clip' }}>
       <NoticeModal visible={noticeVisible} onClose={() => setNoticeVisible(false)} isMobile={isMobile} />
 
-      {/* ===== HERO ===== */}
-      <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)', minHeight: 'min(600px, 70vh)' }}>
+      {/* ===== HERO — chat first ===== */}
+      <section className='w-full relative border-b' style={{ borderColor: 'var(--lr-fg-10)', minHeight: 'min(560px, 70vh)' }}>
         <OrganicBackground />
-        <div className='relative z-10 flex flex-col items-center justify-center px-4 py-20 md:py-28 lg:py-32'>
-            {/* Eyebrow */}
-            <span
-              className='font-heading text-[10px] tracking-[0.35em] mb-10 uppercase'
-              style={{ color: 'var(--lr-fg-40)' }}
-            >
-              Market Router
-            </span>
+        <div className='relative z-10 flex flex-col items-center justify-center px-4 py-16 md:py-24'>
 
-            {/* Main headline — large, black, no color accent */}
-            <h1
-              style={{
-                fontFamily: '"Georgia", "Times New Roman", serif',
-                fontSize: 'clamp(2.6rem, 7vw, 5.5rem)',
-                fontWeight: 300,
-                lineHeight: 1.08,
-                letterSpacing: '-0.02em',
-                textAlign: 'center',
-                color: 'var(--lr-fg)',
-                maxWidth: 780,
-              }}
-            >
-              {t('landing_hero_line1')}<br />
-              {t('landing_hero_line2')}<br />
-              <em style={{ fontStyle: 'italic' }}>{t('landing_hero_line3')}</em>
-            </h1>
+          {/* Eyebrow */}
+          <span className='font-heading text-[10px] tracking-[0.35em] mb-5 uppercase' style={{ color: 'var(--lr-fg-40)' }}>
+            Market Router
+          </span>
 
-            {/* Sub-tagline */}
-            <p
-              className='text-sm md:text-base mt-8 text-center max-w-lg leading-relaxed'
-              style={{ color: 'var(--lr-fg-40)', fontFamily: '"Inter", system-ui, sans-serif' }}
-            >
-              {t('landing_hero_tagline')}
-            </p>
+          {/* Headline — compact above chat */}
+          <h1
+            style={{
+              fontFamily: '"Georgia","Times New Roman",serif',
+              fontSize: 'clamp(1.8rem, 5vw, 3.6rem)',
+              fontWeight: 300,
+              lineHeight: 1.1,
+              letterSpacing: '-0.02em',
+              textAlign: 'center',
+              color: 'var(--lr-fg)',
+              marginBottom: '0.5rem',
+            }}
+          >
+            {t('landing_hero_line1')} {t('landing_hero_line2')} <em style={{ fontStyle: 'italic' }}>{t('landing_hero_line3')}</em>
+          </h1>
 
-            {/* CTAs — black pill primary, ghost secondary */}
-            <div className='flex flex-row items-center gap-3 mt-10'>
-              <Link to='/register'>
-                <button
-                  style={{
-                    background: 'var(--lr-fg)',
-                    color: 'var(--lr-bg)',
-                    border: 'none',
-                    borderRadius: 9999,
-                    padding: isMobile ? '10px 24px' : '12px 32px',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    letterSpacing: '0.01em',
-                    transition: 'opacity 0.15s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                >
-                  {t('landing_cta_start')}
-                </button>
-              </Link>
-              <Link to='/pricing'>
-                <button
-                  style={{
-                    background: 'transparent',
-                    color: 'var(--lr-fg)',
-                    border: '1px solid var(--lr-fg-20)',
-                    borderRadius: 9999,
-                    padding: isMobile ? '10px 24px' : '12px 32px',
-                    fontSize: 14,
-                    fontWeight: 400,
-                    cursor: 'pointer',
-                    letterSpacing: '0.01em',
-                    transition: 'border-color 0.15s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--lr-fg-60)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--lr-fg-20)'}
-                >
-                  {t('landing_cta_pricing')}
-                </button>
-              </Link>
-            </div>
+          <p className='text-sm text-center max-w-md mb-10 leading-relaxed' style={{ color: 'var(--lr-fg-40)' }}>
+            {t('landing_hero_tagline')}
+          </p>
 
-            {/* Payment pills — subtle, small */}
-            <div className='flex flex-wrap items-center justify-center gap-2 mt-8'>
-              {[
-                { icon: <SiVisa size={14} />, label: 'Visa / MC' },
-                { icon: <SiAlipay size={14} />, label: '支付宝' },
-                { icon: <SiWechat size={14} />, label: '微信' },
-                { icon: <SiBitcoin size={14} />, label: 'Crypto' },
-              ].map(({ icon, label }) => (
-                <span
-                  key={label}
-                  className='flex items-center gap-1.5 font-heading text-[10px] tracking-wide px-3 py-1 rounded-full'
-                  style={{ border: '1px solid var(--lr-fg-10)', color: 'var(--lr-fg-40)' }}
-                >
-                  {icon} {label}
-                </span>
-              ))}
-            </div>
+          {/* Guest Chat — the hero */}
+          <div className='w-full' style={{ maxWidth: 720, marginBottom: '1.5rem' }}>
+            <GuestChat />
+          </div>
+
+          {/* Subtle sign-in links */}
+          <div className='flex items-center gap-4 text-xs' style={{ color: 'var(--lr-fg-30)' }}>
+            <span>{t('guest_hint', '无需注册，直接体验')}</span>
+            <span style={{ opacity: 0.3 }}>·</span>
+            <Link to='/register' style={{ color: 'var(--lr-fg-40)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+              {t('landing_cta_start')}
+            </Link>
+            <Link to='/login' style={{ color: 'var(--lr-fg-40)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+              {t('nav_login', '登录')}
+            </Link>
+          </div>
         </div>
         {/* Stats bar */}
         <div className='grid grid-cols-2 md:grid-cols-4 border-t' style={{ borderColor: 'var(--lr-fg-10)' }}>
@@ -292,11 +241,104 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== PROVIDERS ===== */}
+      {/* ===== PRODUCT PREVIEW ===== */}
       <Reveal>
         <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
           <SectionHeader
             number='01'
+            slug='dashboard'
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>const</span>{' console = '}<span style={{ color: 'var(--lr-fg-60)' }}>await</span>{' router.dashboard()'}</>}
+          />
+          <div className='py-10 md:py-14 px-4 md:px-10'>
+            <DashboardPreview />
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ===== COMPARISON ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <SectionHeader
+            number='02'
+            slug='why'
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>router</span>{' vs '}<span style={{ color: 'var(--lr-fg-40)' }}>"direct API"</span></>}
+          />
+          <div className='grid grid-cols-1 md:grid-cols-3 border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+            {[
+              {
+                label: t('landing_compare_direct_label', '直连 OpenAI'),
+                items: [
+                  t('landing_compare_direct_1', '单一提供商，无备份'),
+                  t('landing_compare_direct_2', '宕机无自动切换'),
+                  t('landing_compare_direct_3', '无法访问国内模型'),
+                  t('landing_compare_direct_4', '仅支持信用卡'),
+                ],
+                highlight: false,
+                marker: '✕',
+              },
+              {
+                label: 'Market Router',
+                items: [
+                  t('landing_compare_mr_1', '40+ 提供商自动路由'),
+                  t('landing_compare_mr_2', '毫秒级故障转移'),
+                  t('landing_compare_mr_3', 'DeepSeek / Qwen / Wenxin 直达'),
+                  t('landing_compare_mr_4', '支付宝、微信、加密货币'),
+                ],
+                highlight: true,
+                marker: '✓',
+              },
+              {
+                label: 'OpenRouter',
+                items: [
+                  t('landing_compare_or_1', '路由覆盖欧美为主'),
+                  t('landing_compare_or_2', '无国内支付方式'),
+                  t('landing_compare_or_3', '无 CN 节点加速'),
+                  t('landing_compare_or_4', '无新人首充优惠'),
+                ],
+                highlight: false,
+                marker: '~',
+              },
+            ].map(({ label, items, highlight, marker }, ci) => (
+              <div
+                key={ci}
+                className='px-6 py-8 border-r'
+                style={{
+                  borderColor: 'var(--lr-fg-10)',
+                  background: highlight ? 'var(--lr-fg-10)' : 'transparent',
+                }}
+              >
+                <div className='flex items-center justify-between mb-5'>
+                  <span className='font-heading text-sm font-medium'>{label}</span>
+                  {highlight && (
+                    <span style={{
+                      fontSize: 9, padding: '2px 7px',
+                      border: '1px solid var(--lr-fg-20)',
+                      borderRadius: 4, color: 'var(--lr-fg-40)',
+                      fontFamily: 'monospace', letterSpacing: '0.08em',
+                    }}>
+                      recommended
+                    </span>
+                  )}
+                </div>
+                <ul className='space-y-3'>
+                  {items.map((item, ii) => (
+                    <li key={ii} className='flex items-start gap-2 text-sm' style={{ color: highlight ? 'var(--lr-fg)' : 'var(--lr-fg-40)' }}>
+                      <span style={{ opacity: highlight ? 1 : 0.5, fontWeight: highlight ? 600 : 400, flexShrink: 0 }}>{marker}</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ===== PROVIDERS ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <SectionHeader
+            number='03'
             slug='providers'
             importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>import</span>{' { providers } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-fg-60)' }}>"./ecosystem"</span></>}
           />
@@ -308,7 +350,7 @@ const Home = () => {
       <Reveal>
         <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
           <SectionHeader
-            number='02'
+            number='04'
             slug='use-cases'
             importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>import</span>{' { scenarios } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-fg-60)' }}>"./market-router"</span></>}
             actionLabel='scenarios.list()'
@@ -325,7 +367,7 @@ const Home = () => {
       <Reveal>
         <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
           <SectionHeader
-            number='03'
+            number='05'
             slug='advantages'
             importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>export</span>{' { features }'}</>}
           />
@@ -351,7 +393,7 @@ const Home = () => {
       <Reveal>
         <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
           <SectionHeader
-            number='04'
+            number='06'
             slug='payment'
             importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>import</span>{' { pay } '}<span style={{ color: 'var(--lr-fg-40)' }}>from</span> <span style={{ color: 'var(--lr-fg-60)' }}>"./global-checkout"</span></>}
           />
@@ -516,12 +558,65 @@ const Home = () => {
       <Reveal>
         <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
           <SectionHeader
-            number='05'
+            number='07'
             slug='quickstart'
-            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>await</span>{' router.start()'}</>}
+            importLine={<><span style={{ color: 'var(--lr-fg-60)' }}>await</span>{' router.start()  '}<span style={{ color: 'var(--lr-fg-30)' }}>// 30 seconds</span></>}
           />
-          <div className='py-12 md:py-16 px-4'>
+          {/* 3 steps */}
+          <div className='grid grid-cols-1 md:grid-cols-3 border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+            {[
+              { n: '01', title: t('landing_step1_title'), desc: t('landing_step1_desc') },
+              { n: '02', title: t('landing_step2_title'), desc: t('landing_step2_desc') },
+              { n: '03', title: t('landing_step3_title'), desc: t('landing_step3_desc') },
+            ].map(({ n, title, desc }, i) => (
+              <div key={n} className='px-6 py-8 border-r' style={{ borderColor: 'var(--lr-fg-10)' }}>
+                <span className='font-heading text-[9px] tracking-widest' style={{ color: 'var(--lr-fg-20)' }}>step[{n}]</span>
+                <h3 className='font-heading text-base font-medium mt-3 mb-2'>{title}</h3>
+                <p className='text-sm leading-relaxed' style={{ color: 'var(--lr-fg-40)' }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+          <div className='py-10 md:py-14 px-4'>
             <TerminalBlock />
+          </div>
+        </section>
+      </Reveal>
+
+      {/* ===== PRICING STRIP ===== */}
+      <Reveal>
+        <section className='border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
+          <div className='grid grid-cols-1 md:grid-cols-3'>
+            {[
+              {
+                label: t('landing_pricing_model_label', 'Pricing Model'),
+                value: t('landing_pricing_model_value', 'Pay as you go'),
+                sub: t('landing_pricing_model_sub', 'No monthly fees, no minimums'),
+              },
+              {
+                label: t('landing_pricing_promo_label', 'New Users'),
+                value: t('landing_pricing_promo_value', '2× quota on first $10'),
+                sub: t('landing_pricing_promo_sub', 'Double tokens, no coupon needed'),
+                highlight: true,
+              },
+              {
+                label: t('landing_pricing_rate_label', 'Rate vs direct API'),
+                value: t('landing_pricing_rate_value', 'Save 40–60%'),
+                sub: t('landing_pricing_rate_sub', 'Smart routing cuts your bill'),
+              },
+            ].map(({ label, value, sub, highlight }, i) => (
+              <div
+                key={i}
+                className='px-8 py-10 border-r text-center'
+                style={{
+                  borderColor: 'var(--lr-fg-10)',
+                  background: highlight ? 'var(--lr-fg-10)' : 'transparent',
+                }}
+              >
+                <div style={{ fontSize: 10, color: 'var(--lr-fg-30)', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>{label}</div>
+                <div className='font-heading text-lg md:text-xl font-light mb-2'>{value}</div>
+                <div style={{ fontSize: 12, color: 'var(--lr-fg-40)' }}>{sub}</div>
+              </div>
+            ))}
           </div>
         </section>
       </Reveal>
@@ -529,14 +624,53 @@ const Home = () => {
       {/* ===== CTA ===== */}
       <Reveal>
         <section className='py-20 md:py-28 text-center px-4'>
-          <h2 className='font-heading text-2xl md:text-3xl font-light mb-8'>
-            <span style={{ color: 'var(--lr-fg-60)' }}>router</span>.start()
+          <p className='font-heading text-xs tracking-widest mb-6' style={{ color: 'var(--lr-fg-30)' }}>
+            MARKET ROUTER
+          </p>
+          <h2
+            style={{
+              fontFamily: '"Georgia","Times New Roman",serif',
+              fontSize: 'clamp(1.8rem, 4vw, 3rem)',
+              fontWeight: 300,
+              lineHeight: 1.2,
+              marginBottom: '2rem',
+            }}
+          >
+            {t('landing_cta_final_line1', '准备好了吗？')}<br />
+            <em style={{ fontStyle: 'italic', color: 'var(--lr-fg-60)' }}>{t('landing_cta_final_line2', '一行代码，接通全球 AI。')}</em>
           </h2>
-          <Link to='/register'>
-            <Button theme='solid' type='primary' size='large' className='!rounded-none px-10 py-3'>
-              {t('landing_cta_start')}
-            </Button>
-          </Link>
+          <div className='flex flex-col sm:flex-row items-center justify-center gap-3'>
+            <Link to='/register'>
+              <button
+                style={{
+                  background: 'var(--lr-fg)', color: 'var(--lr-bg)',
+                  border: 'none', borderRadius: 9999,
+                  padding: '13px 36px', fontSize: 14, fontWeight: 500,
+                  cursor: 'pointer', letterSpacing: '0.01em',
+                  transition: 'opacity 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              >
+                {t('landing_cta_start')}
+              </button>
+            </Link>
+            <Link to='/pricing'>
+              <button
+                style={{
+                  background: 'transparent', color: 'var(--lr-fg)',
+                  border: '1px solid var(--lr-fg-20)', borderRadius: 9999,
+                  padding: '13px 36px', fontSize: 14, fontWeight: 400,
+                  cursor: 'pointer', letterSpacing: '0.01em',
+                  transition: 'border-color 0.15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--lr-fg-60)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--lr-fg-20)'}
+              >
+                {t('landing_cta_pricing')}
+              </button>
+            </Link>
+          </div>
         </section>
       </Reveal>
     </div>

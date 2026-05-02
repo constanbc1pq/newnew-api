@@ -184,6 +184,10 @@ var (
 
 var RateLimitKeyExpirationDuration = 20 * time.Minute
 
+// Guest trial settings — configurable via admin panel options
+var GuestTrialMaxMessages = 3   // messages allowed per IP before requiring registration
+var GuestTrialModel = "deepseek-v3" // model used for guest trial
+
 const (
 	UserStatusEnabled  = 1 // don't use 0, 0 is the default value!
 	UserStatusDisabled = 2 // also don't use 0

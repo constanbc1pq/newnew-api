@@ -283,6 +283,7 @@ func migrateDB() error {
 		&Transaction{},
 		&KeyPool{},
 		&KeyPoolEntry{},
+		&GuestUsage{},
 	)
 	if err != nil {
 		return err

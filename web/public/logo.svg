@@ -1,32 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#7c3aed"/>
-      <stop offset="100%" style="stop-color:#2563eb"/>
-    </linearGradient>
-    <linearGradient id="node" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#a78bfa"/>
-      <stop offset="100%" style="stop-color:#60a5fa"/>
-    </linearGradient>
-  </defs>
-  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
-  <!-- Central hub -->
-  <circle cx="256" cy="256" r="48" fill="white" opacity="0.95"/>
-  <!-- Router lines -->
-  <line x1="256" y1="208" x2="160" y2="128" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
-  <line x1="256" y1="208" x2="352" y2="128" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
-  <line x1="256" y1="208" x2="256" y2="108" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
-  <line x1="256" y1="304" x2="140" y2="384" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
-  <line x1="256" y1="304" x2="372" y2="384" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
-  <line x1="256" y1="304" x2="256" y2="404" stroke="white" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
-  <!-- Top nodes (providers) -->
-  <circle cx="160" cy="128" r="24" fill="url(#node)"/>
-  <circle cx="256" cy="108" r="24" fill="url(#node)"/>
-  <circle cx="352" cy="128" r="24" fill="url(#node)"/>
-  <!-- Bottom nodes (users) -->
-  <circle cx="140" cy="384" r="24" fill="white" opacity="0.85"/>
-  <circle cx="256" cy="404" r="24" fill="white" opacity="0.85"/>
-  <circle cx="372" cy="384" r="24" fill="white" opacity="0.85"/>
-  <!-- M letter in center -->
-  <text x="256" y="268" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="48" fill="url(#bg)">M</text>
+  <!-- Background: matte black rounded square, no gradient -->
+  <rect width="512" height="512" rx="96" fill="#0a0a0a"/>
+  <!-- Mark: geometric M built from clean strokes — routing paths converging at center -->
+  <path
+    d="M 124 376 L 124 144 L 256 272 L 388 144 L 388 376"
+    stroke="white"
+    stroke-width="44"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
 </svg>
