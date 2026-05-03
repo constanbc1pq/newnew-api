@@ -29,3 +29,6 @@ data/
 .gomodcache/
 .gocache-temp
 .gopath
+
+# Local docker-compose overrides (use docker-compose.yml.example as template)
+docker-compose.yml
