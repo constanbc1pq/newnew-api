@@ -72,7 +72,7 @@ const KEY_SOURCE_TYPES = [
   { label: 'gjson', value: 'gjson' },
 ];
 
-const CONTEXT_KEY_PRESETS = [
+const getContextKeyPresets = (t) => [
   { key: 'id', label: t('id（用户 ID）') },
   { key: 'token_id', label: 'token_id' },
   { key: 'token_key', label: 'token_key' },
@@ -1292,7 +1292,7 @@ export default function SettingsChannelAffinity(props) {
               {t('常用上下文 Key（用于 context_*）')}：
             </Text>
             <div style={{ marginTop: 6 }}>
-              {(CONTEXT_KEY_PRESETS || []).map((x) => (
+              {(getContextKeyPresets(t) || []).map((x) => (
                 <Tag key={x.key} style={{ marginRight: 6, marginBottom: 6 }}>
                   {x.label}
                 </Tag>

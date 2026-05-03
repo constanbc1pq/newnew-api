@@ -26,7 +26,7 @@ import { UserContext } from "../../../../context/User";
 import { normalizeLanguage } from "../../../../i18n/language";
 
 // Language options with native names
-const languageOptions = [
+const getLanguageOptions = (t) => [
 	{ value: "zh-CN", label: t("简体中文") },
 	{ value: "en", label: "English" },
 	{ value: 'ja', label: t('日本語')},
@@ -155,7 +155,7 @@ const PreferencesSettings = ({ t }) => {
 						onChange={handleLanguagePreferenceChange}
 						style={{ width: 180 }}
 						loading={loading}
-						optionList={languageOptions.map((opt) => ({
+						optionList={getLanguageOptions(t).map((opt) => ({
 							value: opt.value,
 							label: opt.label,
 						}))}
