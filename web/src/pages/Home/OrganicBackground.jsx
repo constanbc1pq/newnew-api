@@ -25,7 +25,7 @@ export default function OrganicBackground() {
           top: '-10%',
           right: '-5%',
           width: '70%',
-          opacity: 0.18,
+          opacity: 'var(--lr-blob-1, 0.18)',
           animation: 'organicDrift1 18s ease-in-out infinite alternate',
         }}
       >
@@ -44,7 +44,7 @@ export default function OrganicBackground() {
           bottom: '-15%',
           left: '-8%',
           width: '55%',
-          opacity: 0.10,
+          opacity: 'var(--lr-blob-2, 0.10)',
           animation: 'organicDrift2 22s ease-in-out infinite alternate',
         }}
       >
@@ -64,7 +64,7 @@ export default function OrganicBackground() {
           bottom: '20%',
           left: 0,
           width: '100%',
-          opacity: 0.06,
+          opacity: 'var(--lr-blob-3, 0.06)',
         }}
       >
         <path

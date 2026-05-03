@@ -26,7 +26,7 @@
     'Noto Sans SC', 'Inter', sans-serif;
   --font-mono: 'SF Mono', 'JetBrains Mono', ui-monospace, monospace;
 
-  /* Apple Design Tokens */
+  /* Apple Design Tokens — 冷灰系 */
   --apple-canvas: #f5f5f7;       /* 页面画布 */
   --apple-surface: #ffffff;      /* 卡片/面板 */
   --apple-ink: #1d1d1f;          /* 主文字 */
@@ -34,7 +34,7 @@
   --apple-ink-3: #6e6e73;        /* 辅助文字 */
   --apple-ink-4: #86868b;        /* placeholder */
   --apple-border: #d2d2d7;       /* 边框 */
-  --apple-border-light: #e8e8ed; /* 浅边框 */
+  --apple-border-light: #e3e3e8; /* 浅边框 */
   --apple-radius-card: 18px;     /* 卡片圆角 */
   --apple-radius-btn: 9999px;    /* 胶囊按钮 */
   --apple-radius-sm: 10px;       /* 小组件 */
@@ -77,13 +77,13 @@ body[theme-mode="dark"] {
 body:not([theme-mode="dark"]),
 body[theme-mode="light"] {
   --semi-color-bg-0: #f5f5f7 !important;   /* Apple canvas */
-  --semi-color-bg-1: #ffffff !important;   /* 卡片白色，从画布浮起 */
-  --semi-color-bg-2: #f5f5f7 !important;
-  --semi-color-bg-3: #e8e8ed !important;
-  --semi-color-fill-0: #f5f5f7 !important;
-  --semi-color-fill-1: #e8e8ed !important;
+  --semi-color-bg-1: #ffffff !important;   /* 卡片白色，从灰画布浮起 */
+  --semi-color-bg-2: #fafafc !important;   /* 二级 surface（极浅冷白） */
+  --semi-color-bg-3: #ececef !important;   /* 三级 surface（深一档冷灰） */
+  --semi-color-fill-0: #f4f4f6 !important; /* Input/Select 槽位 */
+  --semi-color-fill-1: #ebebef !important;
   --semi-color-fill-2: #d2d2d7 !important;
-  --semi-color-border: #d2d2d7 !important;
+  --semi-color-border: #d8d8de !important; /* 边框：略深于 #d2d2d7 增可见性 */
   --semi-color-text-0: #1d1d1f !important;
   --semi-color-text-1: #424245 !important;
   --semi-color-text-2: #6e6e73 !important;
@@ -97,40 +97,103 @@ html.dark body {
   background-color: #09090b;
 }
 
-/* ==================== Landing Page (b.ai inspired) ==================== */
+/* ==================== 全局 lr-* 设计令牌 (Apple 冷灰) ====================
+ * 提到 :root / body[theme-mode] 上，这样 PasswordReset 等没有 .landing 包裹的
+ * 页面也能正确取到 token。
+ *   --lr-bg-page  页面画布 (#f5f5f7)
+ *   --lr-bg       卡片/表单 (#ffffff)  ← 与 page 拉开形成 Apple "卡片浮起"层级
+ */
+:root,
+body:not([theme-mode='dark']),
+body[theme-mode='light'] {
+  --lr-bg-page: #f5f5f7;        /* 页面画布 */
+  --lr-bg: #ffffff;              /* 卡片/表单 */
+  --lr-fg: #1d1d1f;
+  --lr-primary: #1d1d1f;
+  --lr-fg-10: rgba(0,0,0,0.06);
+  --lr-fg-20: rgba(0,0,0,0.12);
+  --lr-fg-30: rgba(0,0,0,0.22);
+  --lr-fg-40: rgba(0,0,0,0.36);
+  --lr-fg-60: rgba(0,0,0,0.55);
+  --lr-primary-5: rgba(0,0,0,0.04);
+  --lr-primary-10: rgba(0,0,0,0.08);
+
+  /* 语义文本梯度（Apple ink 系，cool gray，不带暖调） */
+  --lr-text-primary:   #1d1d1f;
+  --lr-text-secondary: #424245;
+  --lr-text-tertiary:  #6e6e73;
+  --lr-text-eyebrow:   #6e6e73;   /* 中性冷灰，靠 letter-spacing + uppercase 出小标感 */
+  --lr-text-disabled:  #a1a1a6;
+
+  /* OrganicBackground SVG blob 透明度 — light 下压低，避免吞文字 */
+  --lr-blob-1: 0.06;
+  --lr-blob-2: 0.04;
+  --lr-blob-3: 0.04;
+}
+
+body[theme-mode='dark'] {
+  --lr-bg-page: #1d1d1f;        /* Apple 暗灰画布 */
+  --lr-bg: #2c2c2e;              /* Apple dark card */
+  --lr-fg: #f5f5f7;
+  --lr-primary: #f5f5f7;
+  --lr-fg-10: rgba(255,255,255,0.07);
+  --lr-fg-20: rgba(255,255,255,0.13);
+  --lr-fg-30: rgba(255,255,255,0.22);
+  --lr-fg-40: rgba(255,255,255,0.38);
+  --lr-fg-60: rgba(255,255,255,0.58);
+  --lr-primary-5: rgba(255,255,255,0.04);
+  --lr-primary-10: rgba(255,255,255,0.08);
+
+  --lr-text-primary:   #f5f5f7;
+  --lr-text-secondary: #d2d2d7;
+  --lr-text-tertiary:  #98989d;
+  --lr-text-eyebrow:   #98989d;
+  --lr-text-disabled:  #6e6e73;
+
+  --lr-blob-1: 0.16;
+  --lr-blob-2: 0.10;
+  --lr-blob-3: 0.06;
+}
+
+/* Landing 仅作为字体作用域（vars 已提到 root） */
 .landing {
-  --lr-bg: #f7f3ee;          /* warm cream — B.AI's off-white */
-  --lr-fg: #0a0a0a;          /* near-black */
-  --lr-primary: #0a0a0a;     /* black as primary, no purple */
-  --lr-fg-10: rgba(10,10,10,0.07);
-  --lr-fg-20: rgba(10,10,10,0.15);
-  --lr-fg-30: rgba(10,10,10,0.25);
-  --lr-fg-40: rgba(10,10,10,0.40);
-  --lr-fg-60: rgba(10,10,10,0.60);
-  --lr-primary-5: rgba(10,10,10,0.04);
-  --lr-primary-10: rgba(10,10,10,0.08);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-html.dark .landing {
-  --lr-bg: #111110;          /* near-black with warm tint */
-  --lr-fg: #f5f0ea;          /* warm off-white */
-  --lr-primary: #f5f0ea;
-  --lr-fg-10: rgba(245,240,234,0.07);
-  --lr-fg-20: rgba(245,240,234,0.15);
-  --lr-fg-30: rgba(245,240,234,0.25);
-  --lr-fg-40: rgba(245,240,234,0.40);
-  --lr-fg-60: rgba(245,240,234,0.60);
-  --lr-primary-5: rgba(245,240,234,0.04);
-  --lr-primary-10: rgba(245,240,234,0.08);
+/* 兼容旧 html.dark 选择器 — 与 body[theme-mode='dark'] 同步 */
+html.dark {
+  --lr-bg-page: #1d1d1f;
+  --lr-bg: #2c2c2e;
+  --lr-fg: #f5f5f7;
+  --lr-primary: #f5f5f7;
+  --lr-fg-10: rgba(255,255,255,0.07);
+  --lr-fg-20: rgba(255,255,255,0.13);
+  --lr-fg-30: rgba(255,255,255,0.22);
+  --lr-fg-40: rgba(255,255,255,0.38);
+  --lr-fg-60: rgba(255,255,255,0.58);
+  --lr-primary-5: rgba(255,255,255,0.04);
+  --lr-primary-10: rgba(255,255,255,0.08);
+  --lr-text-primary:   #f5f5f7;
+  --lr-text-secondary: #d2d2d7;
+  --lr-text-tertiary:  #98989d;
+  --lr-text-eyebrow:   #98989d;
+  --lr-text-disabled:  #6e6e73;
+  --lr-blob-1: 0.16;
+  --lr-blob-2: 0.10;
+  --lr-blob-3: 0.06;
 }
 
 /* ==================== Apple 圆角系统 ==================== */
-/* Semi UI 卡片全部用 Apple 18px 圆角 */
+/* Semi UI 卡片全部用 18px 圆角 + 柔和阴影，从暖米画布浮起 */
 .semi-card {
   border-radius: 18px !important;
   border: 1px solid var(--apple-border-light) !important;
-  background: #ffffff !important;
+  background: var(--apple-surface) !important;
+  box-shadow: var(--mr-shadow-sm) !important;
+}
+
+/* dark 模式下不需要阴影（暖白阴影在深色画布上反而显脏） */
+body[theme-mode='dark'] .semi-card {
   box-shadow: none !important;
 }
 
@@ -313,6 +376,7 @@ code {
   min-height: 0;
   transition: width 0.3s ease;
   background: var(--semi-color-bg-0);
+  border-right: 1px solid var(--mr-border-default);
 }
 
 .sidebar-nav {

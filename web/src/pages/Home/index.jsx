@@ -176,7 +176,7 @@ const Home = () => {
   }
 
   return (
-    <div className='landing w-full' style={{ background: 'var(--lr-bg)', color: 'var(--lr-fg)', overflowX: 'clip' }}>
+    <div className='landing w-full' style={{ background: 'var(--lr-bg-page)', color: 'var(--lr-fg)', overflowX: 'clip' }}>
       <NoticeModal visible={noticeVisible} onClose={() => setNoticeVisible(false)} isMobile={isMobile} />
 
       {/* ===== HERO — chat first ===== */}
@@ -185,7 +185,7 @@ const Home = () => {
         <div className='relative z-10 flex flex-col items-center justify-center px-4 py-16 md:py-24'>
 
           {/* Eyebrow */}
-          <span className='font-heading text-[10px] tracking-[0.35em] mb-5 uppercase' style={{ color: 'var(--lr-fg-40)' }}>
+          <span className='font-heading text-[10px] tracking-[0.35em] mb-5 uppercase' style={{ color: 'var(--lr-text-eyebrow)' }}>
             Market Router
           </span>
 
@@ -205,7 +205,7 @@ const Home = () => {
             {t('landing_hero_line1')} {t('landing_hero_line2')} <em style={{ fontStyle: 'italic' }}>{t('landing_hero_line3')}</em>
           </h1>
 
-          <p className='text-sm text-center max-w-md mb-10 leading-relaxed' style={{ color: 'var(--lr-fg-40)' }}>
+          <p className='text-sm text-center max-w-md mb-10 leading-relaxed' style={{ color: 'var(--lr-text-secondary)' }}>
             {t('landing_hero_tagline')}
           </p>
 
@@ -215,14 +215,11 @@ const Home = () => {
           </div>
 
           {/* Subtle sign-in links */}
-          <div className='flex items-center gap-4 text-xs' style={{ color: 'var(--lr-fg-30)' }}>
+          <div className='flex items-center gap-4 text-xs' style={{ color: 'var(--lr-text-tertiary)' }}>
             <span>{t('guest_hint', '无需注册，直接体验')}</span>
-            <span style={{ opacity: 0.3 }}>·</span>
-            <Link to='/register' style={{ color: 'var(--lr-fg-40)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
+            <span style={{ opacity: 0.4 }}>·</span>
+            <Link to='/register' style={{ color: 'var(--lr-text-secondary)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
               {t('landing_cta_start')}
-            </Link>
-            <Link to='/login' style={{ color: 'var(--lr-fg-40)', textDecoration: 'underline', textUnderlineOffset: 3 }}>
-              {t('nav_login', '登录')}
             </Link>
           </div>
         </div>
@@ -233,7 +230,7 @@ const Home = () => {
               <span className='font-heading text-xl md:text-2xl font-light'>
                 {prefix}<CountUp end={value} suffix={suffix} />
               </span>
-              <span className='font-heading text-[9px] tracking-widest mt-1' style={{ color: 'var(--lr-fg-40)' }}>
+              <span className='font-heading text-[9px] tracking-widest mt-1' style={{ color: 'var(--lr-text-tertiary)' }}>
                 {t(`landing_stat_${key}`)}
               </span>
             </div>
@@ -624,7 +621,7 @@ const Home = () => {
       {/* ===== CTA ===== */}
       <Reveal>
         <section className='py-20 md:py-28 text-center px-4'>
-          <p className='font-heading text-xs tracking-widest mb-6' style={{ color: 'var(--lr-fg-30)' }}>
+          <p className='font-heading text-xs tracking-widest mb-6' style={{ color: 'var(--lr-text-eyebrow)' }}>
             MARKET ROUTER
           </p>
           <h2

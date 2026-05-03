@@ -63,6 +63,12 @@ i18n
     },
     // Fall back to English for any missing keys in non-zh-CN locales
     fallbackLng: 'en',
+    // 新访客默认英文：跳过 navigator 探测，仅读 localStorage / cookie / 查询串，
+    // 没匹配上时 fallbackLng (en) 生效。已选过语言的用户保留本地选择。
+    detection: {
+      order: ['localStorage', 'cookie', 'querystring'],
+      caches: ['localStorage'],
+    },
     nsSeparator: false,
     interpolation: {
       escapeValue: false,

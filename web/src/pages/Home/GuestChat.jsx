@@ -73,7 +73,7 @@ export default function GuestChat() {
   const showExhausted = status.exhausted || remaining <= 0;
 
   return (
-    <div style={{ width: '100%', maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div className='guest-chat-root' style={{ width: '100%', maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 0, position: 'relative', isolation: 'isolate' }}>
 
       {/* Messages */}
       {messages.length > 0 && (
@@ -141,7 +141,7 @@ export default function GuestChat() {
           <p className='font-heading text-sm mb-1' style={{ color: 'var(--lr-fg)' }}>
             {t('guest_exhausted_title', '免费体验已用完')}
           </p>
-          <p className='text-xs mb-5' style={{ color: 'var(--lr-fg-40)' }}>
+          <p className='text-xs mb-5' style={{ color: 'var(--lr-text-secondary)' }}>
             {t('guest_exhausted_desc', '注册后获得更多额度，首充 $10 享双倍 token')}
           </p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
@@ -177,6 +177,7 @@ export default function GuestChat() {
         }}>
           <textarea
             ref={inputRef}
+            className='guest-chat-textarea'
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
@@ -208,7 +209,7 @@ export default function GuestChat() {
             {error ? (
               <span style={{ fontSize: 12, color: '#e53e3e' }}>{error}</span>
             ) : (
-              <span style={{ fontSize: 11, color: 'var(--lr-fg-30)', fontFamily: 'monospace' }}>
+              <span style={{ fontSize: 11, color: 'var(--lr-text-tertiary)', fontFamily: 'monospace' }}>
                 {remaining > 0
                   ? t('guest_remaining', `还剩 ${remaining} 次免费体验`, { n: remaining })
                   : ''}
@@ -218,8 +219,8 @@ export default function GuestChat() {
               onClick={send}
               disabled={loading || !input.trim()}
               style={{
-                background: loading || !input.trim() ? 'var(--lr-fg-10)' : 'var(--lr-fg)',
-                color: loading || !input.trim() ? 'var(--lr-fg-30)' : 'var(--lr-bg)',
+                background: loading || !input.trim() ? 'var(--lr-fg-20)' : 'var(--lr-fg)',
+                color: loading || !input.trim() ? 'var(--lr-text-tertiary)' : 'var(--lr-bg)',
                 border: 'none',
                 borderRadius: 8,
                 padding: '8px 20px',
@@ -239,6 +240,10 @@ export default function GuestChat() {
         @keyframes pulse {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 1; }
+        }
+        .guest-chat-textarea::placeholder {
+          color: var(--lr-text-tertiary);
+          opacity: 1;
         }
       `}</style>
     </div>

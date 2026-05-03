@@ -51,7 +51,7 @@ export default function TerminalBlock() {
   return (
     <div className='w-full max-w-2xl mx-auto border' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
       <div className='flex items-center justify-between px-4 py-2.5 border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
-        <span className='font-heading text-[9px] tracking-widest' style={{ color: 'var(--lr-fg-20)' }}>
+        <span className='font-heading text-[9px] tracking-widest' style={{ color: 'var(--lr-text-tertiary)' }}>
           // python · works with any OpenAI-compatible SDK
         </span>
         <button
@@ -60,7 +60,7 @@ export default function TerminalBlock() {
             fontSize: 10, padding: '3px 10px',
             border: '1px solid var(--lr-fg-20)',
             borderRadius: 4, background: 'transparent',
-            color: copied ? 'var(--lr-fg)' : 'var(--lr-fg-40)',
+            color: copied ? 'var(--lr-fg)' : 'var(--lr-text-secondary)',
             cursor: 'pointer', transition: 'color 0.15s',
             fontFamily: 'inherit',
           }}
@@ -72,13 +72,13 @@ export default function TerminalBlock() {
         {LINES.map((line, i) => {
           if (line.type === 'blank') return <div key={i} className='h-2' />;
           if (line.type === 'comment') return (
-            <div key={i} style={{ fontFamily: 'monospace', fontSize: 12, lineHeight: '1.8', color: 'var(--lr-fg-30)' }}>{line.text}</div>
+            <div key={i} style={{ fontFamily: 'monospace', fontSize: 12, lineHeight: '1.8', color: 'var(--lr-text-tertiary)' }}>{line.text}</div>
           );
           if (line.type === 'key') return (
             <div key={i} style={{ fontFamily: 'monospace', fontSize: 12, lineHeight: '1.8', color: 'var(--lr-fg)' }}>{line.text}</div>
           );
           return (
-            <div key={i} style={{ fontFamily: 'monospace', fontSize: 12, lineHeight: '1.8', color: 'var(--lr-fg-50)' }}>{line.text}</div>
+            <div key={i} style={{ fontFamily: 'monospace', fontSize: 12, lineHeight: '1.8', color: 'var(--lr-text-secondary)' }}>{line.text}</div>
           );
         })}
       </div>

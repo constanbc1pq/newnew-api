@@ -948,7 +948,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='landing flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg)', minHeight: 'calc(100vh - 64px - 80px)' }}>
+    <div className='landing flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg-page)', minHeight: 'calc(100vh - 64px - 80px)' }}>
       <div className='absolute inset-0 pointer-events-none' style={{
         backgroundImage: `linear-gradient(var(--lr-fg-10) 1px, transparent 1px), linear-gradient(90deg, var(--lr-fg-10) 1px, transparent 1px)`,
         backgroundSize: '48px 48px',

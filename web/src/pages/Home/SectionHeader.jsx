@@ -4,7 +4,7 @@ export default function SectionHeader({ number, slug, importLine, actionLabel, o
       <div className='col-span-1 md:col-span-6 border-b md:border-b-0 md:border-r flex flex-col relative' style={{ borderColor: 'var(--lr-fg-10)' }}>
         <div className='absolute top-0 right-0 w-24 h-24 diagonal-pattern hidden md:block' />
         <div className='h-12 md:h-16 flex items-center px-4 md:px-6 border-b' style={{ borderColor: 'var(--lr-fg-10)' }}>
-          <span className='font-heading text-[10px] tracking-[0.3em]' style={{ color: 'var(--lr-fg-40)' }}>
+          <span className='font-heading text-[10px] tracking-[0.3em]' style={{ color: 'var(--lr-text-eyebrow)' }}>
             {number} // {slug}
           </span>
         </div>

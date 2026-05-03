@@ -4,64 +4,66 @@
 
 :root,
 body[theme-mode='light'] {
-  /* Surface */
+  /* Surface — Apple 冷灰阶层
+   *   page (#f5f5f7) → surface-1 (#ffffff) 形成 4-5% 亮度差 + 阴影 = 卡片浮起
+   */
   --mr-bg-page: #f5f5f7;
   --mr-bg-canvas: #ffffff;
   --mr-bg-surface-1: #ffffff;
-  --mr-bg-surface-2: #fafaf7;
-  --mr-bg-surface-3: #f2efe8;
+  --mr-bg-surface-2: #fafafc;  /* 卡片内嵌槽位（极浅） */
+  --mr-bg-surface-3: #ececef;  /* 更深一阶 */
   --mr-bg-overlay: rgba(0, 0, 0, 0.45);
 
-  /* Text */
-  --mr-text-primary: #111111;
-  --mr-text-secondary: #4a5563;
-  --mr-text-tertiary: #6b7280;
-  --mr-text-disabled: #9ca3af;
+  /* Text — Apple ink 系 */
+  --mr-text-primary: #1d1d1f;
+  --mr-text-secondary: #424245;
+  --mr-text-tertiary: #6e6e73;
+  --mr-text-disabled: #a1a1a6;
   --mr-text-inverse: #ffffff;
 
-  /* Border */
-  --mr-border-subtle: rgba(10, 10, 10, 0.06);
-  --mr-border-default: rgba(10, 10, 10, 0.10);
-  --mr-border-strong: rgba(10, 10, 10, 0.18);
+  /* Border — 中性灰 */
+  --mr-border-subtle: rgba(0, 0, 0, 0.06);
+  --mr-border-default: rgba(0, 0, 0, 0.12);
+  --mr-border-strong: rgba(0, 0, 0, 0.22);
 
   /* Accent (CTA — 黑底白字) */
-  --mr-accent: #0a0a0a;
+  --mr-accent: #1d1d1f;
   --mr-accent-fg: #ffffff;
-  --mr-accent-hover: #1f1f1f;
-  --mr-accent-soft: rgba(10, 10, 10, 0.06);
-  --mr-brand: #3b82f6;
+  --mr-accent-hover: #000000;
+  --mr-accent-soft: rgba(0, 0, 0, 0.05);
+  --mr-brand: #0066cc;          /* Apple link blue */
 
   /* Status */
   --mr-success: #16a34a;
   --mr-warning: #d97706;
   --mr-danger: #dc2626;
-  --mr-info: #2563eb;
+  --mr-info: #0066cc;
   --mr-success-soft: rgba(22, 163, 74, 0.12);
   --mr-warning-soft: rgba(217, 119, 6, 0.12);
   --mr-danger-soft: rgba(220, 38, 38, 0.12);
-  --mr-info-soft: rgba(37, 99, 235, 0.12);
+  --mr-info-soft: rgba(0, 102, 204, 0.12);
 
-  /* Shadow */
-  --mr-shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.04);
-  --mr-shadow-md: 0 4px 12px rgba(10, 10, 10, 0.06);
-  --mr-shadow-focus: 0 0 0 3px rgba(10, 10, 10, 0.10);
+  /* Shadow — Apple 风柔和投影 */
+  --mr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --mr-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --mr-shadow-focus: 0 0 0 3px rgba(0, 102, 204, 0.18);
 }
 
 body[theme-mode='dark'] {
-  /* Surface — 分层灰阶，越上层越亮 */
-  --mr-bg-page: #0e0f11;
-  --mr-bg-canvas: #15171a;
-  --mr-bg-surface-1: #1a1c1f;
-  --mr-bg-surface-2: #212327;
-  --mr-bg-surface-3: #272a2e;
+  /* Surface — Apple 系统暗灰阶（参考 iOS/macOS dark） */
+  --mr-bg-page: #1d1d1f;
+  --mr-bg-canvas: #2c2c2e;
+  --mr-bg-surface-1: #2c2c2e;
+  --mr-bg-surface-2: #3a3a3c;
+  --mr-bg-surface-3: #48484a;
   --mr-bg-overlay: rgba(0, 0, 0, 0.65);
 
   /* Text — 不用纯白，避免眩光 */
-  --mr-text-primary: #f2f3f5;
-  --mr-text-secondary: #a8adb5;
-  --mr-text-tertiary: #7b828c;
-  --mr-text-disabled: #4b5058;
-  --mr-text-inverse: #0e0f11;
+  --mr-text-primary: #f5f5f7;
+  --mr-text-secondary: #c7c7cc;
+  --mr-text-tertiary: #98989d;
+  --mr-text-disabled: #636366;
+  --mr-text-inverse: #1d1d1f;
 
   /* Border — alpha 而非实色，自适应不同 surface */
   --mr-border-subtle: rgba(255, 255, 255, 0.06);
@@ -252,3 +254,35 @@ body[theme-mode='dark'] .semi-navigation-item-selected {
 /* Semi Space 已经处理了间距，但仍兜底相邻按钮（不影响已用 flex-gap 的容器，因为
  * 那种容器里的按钮通常各自有 flex-shrink，margin 会被 gap 吸收）。
  * 仅在非 flex 容器（如 inline 直接相邻）下生效——这里用更具体的规则保险起见。 */
+
+/* ==================== Light 模式按钮对比强化（镜像 dark 的处理） ==================== */
+/* Light 下 Apple 灰画布 + 白卡片，default solid / light / tertiary 按钮容易"白对白"，统一加底色与边框 */
+
+/* 非 primary / 非 danger 的 solid 按钮：白底 + 中性灰边 */
+body:not([theme-mode='dark']) .semi-button-solid:not(.semi-button-primary):not(.semi-button-danger):not(.semi-chat-inputBox-sendButton) {
+  background-color: #ffffff !important;
+  border: 1px solid var(--mr-border-strong) !important;
+  color: var(--mr-text-primary) !important;
+}
+
+body:not([theme-mode='dark']) .semi-button-solid:not(.semi-button-primary):not(.semi-button-danger):not(.semi-chat-inputBox-sendButton):hover {
+  background-color: var(--mr-bg-surface-3) !important;
+}
+
+/* light 按钮（含 secondary）：底色用 surface-3 = #ececef，让"次按钮"在白卡片里看得见 */
+body:not([theme-mode='dark']) .semi-button-light:not(.semi-button-danger) {
+  background-color: var(--mr-bg-surface-3) !important;
+  border: 1px solid var(--mr-border-default) !important;
+  color: var(--mr-text-primary) !important;
+}
+
+body:not([theme-mode='dark']) .semi-button-light:not(.semi-button-danger):hover {
+  background-color: #e3e3e8 !important;
+  border-color: var(--mr-border-strong) !important;
+}
+
+/* tertiary（无底色）按钮：hover 加浅灰背景，区分静态 */
+body:not([theme-mode='dark']) .semi-button-tertiary:hover,
+body:not([theme-mode='dark']) .semi-button-borderless:hover {
+  background-color: var(--mr-accent-soft) !important;
+}

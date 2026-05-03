@@ -70,8 +70,8 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
       style={isConsoleRoute
         ? { background: 'var(--semi-color-bg-0)', borderBottom: '1px solid var(--semi-color-border)' }
         : theme === 'dark'
-          ? { background: 'rgba(20,20,20,0.85)', borderBottom: '1px solid rgba(255,255,255,0.08)' }
-          : { background: 'rgba(247,243,238,0.85)', borderBottom: '1px solid rgba(10,10,10,0.07)' }
+          ? { background: 'rgba(29,29,31,0.85)', borderBottom: '1px solid rgba(255,255,255,0.08)' }
+          : { background: 'rgba(245,245,247,0.85)', borderBottom: '1px solid rgba(0,0,0,0.07)' }
       }
     >
       <NoticeModal
