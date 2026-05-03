@@ -641,7 +641,7 @@ const RegisterForm = () => {
                   >
                     {showPromoField ? <IconChevronDown size="small" /> : <IconChevronRight size="small" />}
                     <IconGift size="small" />
-                    有优惠码？
+                    {t('有优惠码？')}
                   </button>
                   {showPromoField && (
                     <div style={{ marginTop: 8 }}>
@@ -654,7 +654,7 @@ const RegisterForm = () => {
                         style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}
                       />
                       <Text type="tertiary" size="small" style={{ display: 'block', marginTop: 4 }}>
-                        注册后兑换码将自动核销，额度即时到账
+                        {t('注册后兑换码将自动核销，额度即时到账')}
                       </Text>
                     </div>
                   )}
