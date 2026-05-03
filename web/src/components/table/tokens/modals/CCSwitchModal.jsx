@@ -29,7 +29,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { selectFilter } from '../../../../helpers';
 
-const APP_CONFIGS = {
+const getAppConfigs = (t) => ({
   claude: {
     label: 'Claude',
     defaultName: 'My Claude',
@@ -50,7 +50,7 @@ const APP_CONFIGS = {
     defaultName: 'My Gemini',
     modelFields: [{ key: 'model', label: t('主模型') }],
   },
-};
+});
 
 function getServerAddress() {
   try {
@@ -87,6 +87,7 @@ export default function CCSwitchModal({
   modelOptions,
 }) {
   const { t } = useTranslation();
+  const APP_CONFIGS = useMemo(() => getAppConfigs(t), [t]);
   const [app, setApp] = useState('claude');
   const [name, setName] = useState(APP_CONFIGS.claude.defaultName);
   const [models, setModels] = useState({});
@@ -99,7 +100,7 @@ export default function CCSwitchModal({
       setApp('claude');
       setName(APP_CONFIGS.claude.defaultName);
     }
-  }, [visible]);
+  }, [visible, APP_CONFIGS]);
 
   const handleAppChange = (val) => {
     setApp(val);
