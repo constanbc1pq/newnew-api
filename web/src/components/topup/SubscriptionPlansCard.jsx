@@ -89,6 +89,7 @@ const SubscriptionPlansCard = ({
   const [paying, setPaying] = useState(false);
   const [selectedEpayMethod, setSelectedEpayMethod] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   const epayMethods = useMemo(() => getEpayMethods(payMethods), [payMethods]);
 
@@ -478,6 +479,29 @@ const SubscriptionPlansCard = ({
 
           {/* 可购买套餐 - 标准定价卡片 */}
           {plans.length > 0 ? (
+            <>
+            {/* Scenario guide */}
+            <div style={{ marginBottom: 16, padding: '16px 4px 0' }}>
+              <p style={{ fontSize: 13, color: 'var(--mr-text-secondary)', marginBottom: 8 }}>
+                选一个符合你的使用场景：
+              </p>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { label: '🧑‍💻 日常 AI 对话', desc: '按量计费更灵活' },
+                  { label: '⚡ 开发 / 编程', desc: '订阅省 40–60% 成本' },
+                  { label: '🏢 团队 / 企业', desc: '高并发 + 审计日志' },
+                ].map((s, i) => (
+                  <span key={i} style={{
+                    padding: '4px 12px', borderRadius: 9999, fontSize: 12,
+                    border: '1px solid var(--mr-border-default)',
+                    color: 'var(--mr-text-secondary)',
+                    cursor: 'default',
+                  }}>
+                    {s.label}
+                  </span>
+                ))}
+              </div>
+            </div>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 w-full px-1'>
               {plans.map((p, index) => {
                 const plan = p?.plan;
@@ -523,13 +547,21 @@ const SubscriptionPlansCard = ({
                     className='!rounded-xl w-full h-full'
                     style={{
                       border: isPopular ? '2px solid #000' : '1.5px solid #e5e7eb',
+                      transition: 'opacity 0.2s, transform 0.2s',
+                      opacity: hoveredIdx !== null && hoveredIdx !== index ? 0.35 : 1,
+                      transform: hoveredIdx === index ? 'translateY(-2px)' : 'none',
                     }}
                     bodyStyle={{ padding: 0 }}
+                    onMouseEnter={() => setHoveredIdx(index)}
+                    onMouseLeave={() => setHoveredIdx(null)}
                   >
-                    <div className='p-4 h-full flex flex-col'>
+                    <div className='p-4 h-full flex flex-col' style={isPopular ? { background: 'rgba(0,0,0,0.04)', borderRadius: 'inherit' } : {}}>
                       {/* 推荐标签 */}
                       {isPopular && (
                         <div className='mb-2'>
+                          <div style={{ fontSize: 10, fontVariant: 'small-caps', fontWeight: 700, color: '#000', letterSpacing: '0.05em', marginBottom: 4 }}>
+                            ✦ 最受欢迎
+                          </div>
                           <span
                             style={{
                               display: 'inline-flex',
@@ -537,8 +569,8 @@ const SubscriptionPlansCard = ({
                               gap: '4px',
                               padding: '2px 10px',
                               borderRadius: '9999px',
-                              background: 'var(--mr-accent)',
-                              color: 'var(--mr-accent-fg)',
+                              background: '#000',
+                              color: '#fff',
                               fontSize: '11px',
                               fontWeight: 600,
                             }}
@@ -653,6 +685,7 @@ const SubscriptionPlansCard = ({
                 );
               })}
             </div>
+            </>
           ) : (
             <div className='text-center text-gray-400 text-sm py-4'>
               {t('暂无可购买套餐')}
