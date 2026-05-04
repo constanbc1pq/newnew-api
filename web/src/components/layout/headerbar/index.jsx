@@ -27,7 +27,7 @@ import HeaderLogo from './HeaderLogo';
 import Navigation from './Navigation';
 import ActionButtons from './ActionButtons';
 
-const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
+const HeaderBar = ({ onMobileMenuToggle, drawerOpen, hideLogo = false, hideNav = false }) => {
   const {
     userState,
     statusState,
@@ -66,12 +66,14 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
 
   return (
     <header
-      className='text-semi-color-text-0 sticky top-0 z-50 transition-colors duration-300 backdrop-blur-md font-heading'
-      style={isConsoleRoute
-        ? { background: 'var(--semi-color-bg-0)', borderBottom: '1px solid var(--semi-color-border)' }
-        : theme === 'dark'
-          ? { background: 'rgba(29,29,31,0.85)', borderBottom: '1px solid rgba(255,255,255,0.08)' }
-          : { background: 'rgba(245,245,247,0.85)', borderBottom: '1px solid rgba(0,0,0,0.07)' }
+      className='text-semi-color-text-0 transition-colors duration-300 backdrop-blur-md font-heading'
+      style={hideLogo
+        ? { background: 'transparent', border: 'none' }
+        : isConsoleRoute
+          ? { background: 'var(--semi-color-bg-0)', borderBottom: '1px solid var(--semi-color-border)' }
+          : theme === 'dark'
+            ? { background: 'rgba(29,29,31,0.85)', borderBottom: '1px solid rgba(255,255,255,0.08)' }
+            : { background: 'rgba(245,245,247,0.85)', borderBottom: '1px solid rgba(0,0,0,0.07)' }
       }
     >
       <NoticeModal
@@ -84,30 +86,32 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
 
       <div className='w-full px-2'>
         <div className='flex items-center justify-between h-16'>
-          <div className='flex items-center'>
-            <MobileMenuButton
-              isConsoleRoute={isConsoleRoute}
-              isMobile={isMobile}
-              drawerOpen={drawerOpen}
-              collapsed={collapsed}
-              onToggle={handleMobileMenuToggle}
-              t={t}
-            />
+          {!hideLogo && (
+            <div className='flex items-center'>
+              <MobileMenuButton
+                isConsoleRoute={isConsoleRoute}
+                isMobile={isMobile}
+                drawerOpen={drawerOpen}
+                collapsed={collapsed}
+                onToggle={handleMobileMenuToggle}
+                t={t}
+              />
 
-            <HeaderLogo
-              isMobile={isMobile}
-              isConsoleRoute={isConsoleRoute}
-              logo={logo}
-              logoLoaded={logoLoaded}
-              isLoading={isLoading}
-              systemName={systemName}
-              isSelfUseMode={isSelfUseMode}
-              isDemoSiteMode={isDemoSiteMode}
-              t={t}
-            />
-          </div>
+              <HeaderLogo
+                isMobile={isMobile}
+                isConsoleRoute={isConsoleRoute}
+                logo={logo}
+                logoLoaded={logoLoaded}
+                isLoading={isLoading}
+                systemName={systemName}
+                isSelfUseMode={isSelfUseMode}
+                isDemoSiteMode={isDemoSiteMode}
+                t={t}
+              />
+            </div>
+          )}
 
-          {!isConsoleRoute && (
+          {!hideNav && !isConsoleRoute && (
             <Navigation
               mainNavLinks={mainNavLinks}
               isMobile={isMobile}
@@ -116,7 +120,7 @@ const HeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
               pricingRequireAuth={pricingRequireAuth}
             />
           )}
-          {isConsoleRoute && <div className='flex-1' />}
+          {(hideLogo || isConsoleRoute) && <div className='flex-1' />}
 
           <ActionButtons
             isNewYear={isNewYear}

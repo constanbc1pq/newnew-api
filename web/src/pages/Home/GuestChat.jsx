@@ -308,14 +308,12 @@ export default function GuestChat() {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: error ? 'space-between' : 'flex-end',
           padding: '8px 16px 12px',
           borderTop: '1px solid var(--lr-fg-10)',
         }}>
-          {error ? (
+          {error && (
             <span style={{ fontSize: 12, color: '#e53e3e' }}>{error}</span>
-          ) : (
-            <span />
           )}
           <button
             onClick={send}
