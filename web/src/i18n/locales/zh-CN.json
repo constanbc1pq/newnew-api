@@ -57,6 +57,7 @@
     "API 密钥 (生产)": "API 密钥 (生产)",
     "API 密钥（私钥）": "API 密钥（私钥）",
     "API 文档": "API 文档",
+    "docs_intro": "{{systemName}} 提供兼容 OpenAI 格式的 API 接口，接入即可调用 40+ 个 AI 模型提供商。",
     "API 配置": "API 配置",
     "API令牌管理": "API令牌管理",
     "API使用记录": "API使用记录",
