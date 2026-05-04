@@ -3349,7 +3349,7 @@ const EditChannelModal = (props) => {
                               showClear
                               disabled={isIonetLocked}
                               extraText={t(
-                                '对于官方渠道，new-api已经内置地址，除非是第三方代理站点或者Azure的特殊接入地址，否则不需要填写',
+                                '对于官方渠道已内置默认地址，仅第三方代理或 Azure 特殊接入时需要填写',
                               )}
                             />
                           </div>

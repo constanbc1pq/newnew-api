@@ -36,9 +36,9 @@ import en_GB from '@douyinfe/semi-ui/lib/es/locale/source/en_GB';
 
 if (typeof window !== 'undefined') {
   console.log(
-    '%cMarket Router%c Powered by SuperRouter',
-    'color: #7c3aed; font-weight: bold; font-size: 24px;',
-    'color: inherit; font-size: 14px;',
+    '%cMarket Router%c — One key. Every model.',
+    'color: #000; font-weight: bold; font-size: 24px;',
+    'color: #6e6e73; font-size: 14px;',
   );
 }
 

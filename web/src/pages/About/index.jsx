@@ -64,7 +64,7 @@ const About = () => {
       <p>{t('可在设置页面设置关于内容，支持 HTML & Markdown')}</p>
       <p>
         Market Router {t('© {{currentYear}}', { currentYear })}{' '}
-        {t('| Powered by SuperRouter')}
+        {t('| AI API Routing Platform')}
       </p>
     </div>
   );

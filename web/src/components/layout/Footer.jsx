@@ -43,7 +43,7 @@ const FooterBar = () => {
           </Typography.Text>
           {footerLinks}
           <Typography.Text className='text-sm !text-semi-color-text-2'>
-            Powered by SuperRouter
+            AI API Routing Platform
           </Typography.Text>
         </div>
       </footer>
@@ -60,7 +60,7 @@ const FooterBar = () => {
             dangerouslySetInnerHTML={{ __html: footer }}
           />
           <Typography.Text className='text-sm !text-semi-color-text-2'>
-            Powered by SuperRouter
+            AI API Routing Platform
           </Typography.Text>
         </div>
       </footer>
