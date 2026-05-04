@@ -1,3 +1,56 @@
+# Market Router - robots.txt
 # https://www.robotstxt.org/robotstxt.html
+
+# Allow all crawlers by default
 User-agent: *
-Disallow:
+Disallow: /api/
+Disallow: /console/setting
+Allow: /
+
+# === AI Search Crawlers — explicitly welcome ===
+
+# OpenAI / ChatGPT
+User-agent: GPTBot
+Allow: /
+
+# Anthropic / Claude
+User-agent: ClaudeBot
+Allow: /
+User-agent: anthropic-ai
+Allow: /
+User-agent: Claude-Web
+Allow: /
+
+# Google AI (Gemini, AI Overviews)
+User-agent: Google-Extended
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Microsoft Copilot / Bing
+User-agent: bingbot
+Allow: /
+User-agent: BingPreview
+Allow: /
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+# You.com
+User-agent: YouBot
+Allow: /
+
+# Amazon / Diffbot
+User-agent: Amazonbot
+Allow: /
+User-agent: CCBot
+Allow: /
+User-agent: Diffbot
+Allow: /
+
+# LLM-friendly content index
+# /llms.txt - AI-optimized content summary
+# /llms-full.txt - complete API documentation for AI agents
