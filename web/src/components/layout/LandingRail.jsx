@@ -1,10 +1,8 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, LayoutDashboard, BookOpen, Info } from 'lucide-react';
-import { useActualTheme } from '../../context/Theme';
-import HeaderLogo from './headerbar/HeaderLogo';
-import { getLogo, getSystemName } from '../../helpers';
+import { getLogo } from '../../helpers';
 
 const RAIL_W = 64; // px — icon-only rail
 
@@ -29,10 +27,10 @@ const RailItem = ({ to, icon: Icon, label, exact }) => {
         color: isActive ? 'var(--lr-fg)' : 'var(--lr-fg-40)',
       })}
       onMouseEnter={e => {
-        if (!e.currentTarget.dataset.active) e.currentTarget.style.background = 'var(--lr-fg-08)';
+        e.currentTarget.style.background = 'var(--lr-fg-10)';
       }}
       onMouseLeave={e => {
-        if (!e.currentTarget.dataset.active) e.currentTarget.style.background = 'transparent';
+        e.currentTarget.style.background = '';
       }}
     >
       {({ isActive }) => (
@@ -49,10 +47,6 @@ const RailItem = ({ to, icon: Icon, label, exact }) => {
 
 const LandingRail = () => {
   const { t } = useTranslation();
-  const theme = useActualTheme();
-
-  const borderColor = theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
-  const bg = theme === 'dark' ? 'rgba(18,18,20,0.92)' : 'rgba(248,248,250,0.92)';
 
   return (
     <nav
@@ -62,8 +56,8 @@ const LandingRail = () => {
         top: 0,
         bottom: 0,
         width: RAIL_W,
-        background: bg,
-        borderRight: `1px solid ${borderColor}`,
+        background: 'var(--lr-rail-bg)',
+        borderRight: '1px solid var(--lr-rail-border)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -81,10 +75,10 @@ const LandingRail = () => {
           return (
             <div style={{
               width: 28, height: 28, borderRadius: 8,
-              background: theme === 'dark' ? '#fff' : '#111',
+              background: 'var(--lr-logo-sq-bg)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 14, fontWeight: 700,
-              color: theme === 'dark' ? '#111' : '#fff',
+              color: 'var(--lr-logo-sq-text)',
               fontFamily: 'var(--font-heading, system-ui)',
             }}>
               M
