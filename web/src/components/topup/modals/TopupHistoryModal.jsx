@@ -39,22 +39,22 @@ import { isAdmin } from '../../../helpers/utils';
 import { useIsMobile } from '../../../hooks/common/useIsMobile';
 const { Text } = Typography;
 
-// 状态映射配置
-const STATUS_CONFIG = {
-  success: { type: 'success', key: '成功' },
-  pending: { type: 'warning', key: '待支付' },
-  failed: { type: 'danger', key: '失败' },
-  expired: { type: 'danger', key: '已过期' },
-};
+// 状态映射配置（key 走 t() 由调用方注入）
+const getStatusConfig = (t) => ({
+  success: { type: 'success', label: t('成功') },
+  pending: { type: 'warning', label: t('待支付') },
+  failed: { type: 'danger', label: t('失败') },
+  expired: { type: 'danger', label: t('已过期') },
+});
 
-// 支付方式映射
-const PAYMENT_METHOD_MAP = {
+// 支付方式映射（支付宝/微信 走 t() 让 extractor 提取，其他保持品牌名）
+const getPaymentMethodMap = (t) => ({
   stripe: 'Stripe',
   creem: 'Creem',
   waffo: 'Waffo',
-  alipay: '支付宝',
-  wxpay: '微信',
-};
+  alipay: t('支付宝'),
+  wxpay: t('微信'),
+});
 
 const TopupHistoryModal = ({ visible, onCancel, t }) => {
   const [loading, setLoading] = useState(false);
@@ -136,19 +136,21 @@ const TopupHistoryModal = ({ visible, onCancel, t }) => {
 
   // 渲染状态徽章
   const renderStatusBadge = (status) => {
-    const config = STATUS_CONFIG[status] || { type: 'primary', key: status };
+    const cfg = getStatusConfig(t);
+    const config = cfg[status] || { type: 'primary', label: status };
     return (
       <span className='flex items-center gap-2'>
         <Badge dot type={config.type} />
-        <span>{t(config.key)}</span>
+        <span>{config.label}</span>
       </span>
     );
   };
 
   // 渲染支付方式
   const renderPaymentMethod = (pm) => {
-    const displayName = PAYMENT_METHOD_MAP[pm];
-    return <Text>{displayName ? t(displayName) : pm || '-'}</Text>;
+    const map = getPaymentMethodMap(t);
+    const displayName = map[pm];
+    return <Text>{displayName || pm || '-'}</Text>;
   };
 
   const isSubscriptionTopup = (record) => {

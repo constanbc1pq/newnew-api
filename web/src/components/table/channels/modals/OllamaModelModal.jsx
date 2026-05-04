@@ -28,7 +28,6 @@ import {
   Space,
   Input,
   Spin,
-  Popconfirm,
   Tag,
   Empty,
   Row,
@@ -50,6 +49,7 @@ import {
   showError,
   showSuccess,
 } from '../../../../helpers';
+import ConfirmModal from '../../../common/modals/ConfirmModal';
 
 const { Text, Title } = Typography;
 
@@ -172,6 +172,7 @@ const OllamaModelModal = ({
   const [models, setModels] = useState([]);
   const [filteredModels, setFilteredModels] = useState([]);
   const [searchValue, setSearchValue] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [pullModelName, setPullModelName] = useState('');
   const [pullLoading, setPullLoading] = useState(false);
   const [pullProgress, setPullProgress] = useState(null);
@@ -745,23 +746,13 @@ const OllamaModelModal = ({
                         </div>
                       </div>
                       <div className='flex items-center space-x-2 ml-4'>
-                        <Popconfirm
-                          title={t('确认删除模型')}
-                          content={t(
-                            '删除后无法恢复，确定要删除模型 "{{name}}" 吗？',
-                            { name: model.id },
-                          )}
-                          onConfirm={() => deleteModel(model.id)}
-                          okText={t('确认')}
-                          cancelText={t('取消')}
-                        >
-                          <Button
-                            theme='borderless'
-                            type='danger'
-                            size='small'
-                            icon={<IconDelete />}
-                          />
-                        </Popconfirm>
+                        <Button
+                          theme='borderless'
+                          type='danger'
+                          size='small'
+                          icon={<IconDelete />}
+                          onClick={() => setDeleteTarget(model)}
+                        />
                       </div>
                     </div>
                   </List.Item>
@@ -771,6 +762,23 @@ const OllamaModelModal = ({
           </Spin>
         </Card>
       </Space>
+
+      <ConfirmModal
+        visible={deleteTarget != null}
+        type='danger'
+        title={t('确认删除模型')}
+        content={t(
+          '删除后无法恢复，确定要删除模型 "{{name}}" 吗？',
+          { name: deleteTarget?.id },
+        )}
+        okText={t('删除')}
+        onCancel={() => setDeleteTarget(null)}
+        onOk={async () => {
+          const id = deleteTarget?.id;
+          setDeleteTarget(null);
+          if (id != null) await deleteModel(id);
+        }}
+      />
     </Modal>
   );
 };

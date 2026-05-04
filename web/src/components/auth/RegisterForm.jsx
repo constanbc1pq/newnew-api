@@ -50,6 +50,9 @@ import {
   IconUser,
   IconLock,
   IconKey,
+  IconGift,
+  IconChevronDown,
+  IconChevronRight,
 } from '@douyinfe/semi-icons';
 import {
   onGitHubOAuthClicked,
@@ -69,9 +72,9 @@ const RegisterForm = () => {
   let navigate = useNavigate();
   const { t } = useTranslation();
   const githubButtonTextKeyByState = {
-    idle: '使用 GitHub 继续',
-    redirecting: '正在跳转 GitHub...',
-    timeout: '请求超时，请刷新页面后重新发起 GitHub 登录',
+    idle: t('使用 GitHub 继续'),
+    redirecting: t('正在跳转 GitHub...'),
+    timeout: t('请求超时，请刷新页面后重新发起 GitHub 登录'),
   };
   const [inputs, setInputs] = useState({
     username: '',
@@ -80,7 +83,9 @@ const RegisterForm = () => {
     email: '',
     verification_code: '',
     wechat_verification_code: '',
+    promo_code: '',
   });
+  const [showPromoField, setShowPromoField] = useState(false);
   const { username, password, password2 } = inputs;
   const [userState, userDispatch] = useContext(UserContext);
   const [statusState] = useContext(StatusContext);
@@ -184,7 +189,7 @@ const RegisterForm = () => {
 
   const onSubmitWeChatVerificationCode = async () => {
     if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+      showInfo(t('请稍后几秒重试，Turnstile 正在检查用户环境！'));
       return;
     }
     setWechatCodeSubmitLoading(true);
@@ -199,13 +204,13 @@ const RegisterForm = () => {
         setUserData(data);
         updateAPI();
         navigate('/');
-        showSuccess('登录成功！');
+        showSuccess(t('登录成功！'));
         setShowWeChatLoginModal(false);
       } else {
         showError(message);
       }
     } catch (error) {
-      showError('登录失败，请重试');
+      showError(t('登录失败，请重试'));
     } finally {
       setWechatCodeSubmitLoading(false);
     }
@@ -217,16 +222,16 @@ const RegisterForm = () => {
 
   async function handleSubmit(e) {
     if (password.length < 8) {
-      showInfo('密码长度不得小于 8 位！');
+      showInfo(t('密码长度不得小于 8 位！'));
       return;
     }
     if (password !== password2) {
-      showInfo('两次输入的密码不一致');
+      showInfo(t('两次输入的密码不一致'));
       return;
     }
     if (username && password) {
       if (turnstileEnabled && turnstileToken === '') {
-        showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+        showInfo(t('请稍后几秒重试，Turnstile 正在检查用户环境！'));
         return;
       }
       setRegisterLoading(true);
@@ -242,12 +247,12 @@ const RegisterForm = () => {
         const { success, message } = res.data;
         if (success) {
           navigate('/login');
-          showSuccess('注册成功！');
+          showSuccess(t('注册成功！'));
         } else {
           showError(message);
         }
       } catch (error) {
-        showError('注册失败，请重试');
+        showError(t('注册失败，请重试'));
       } finally {
         setRegisterLoading(false);
       }
@@ -257,7 +262,7 @@ const RegisterForm = () => {
   const sendVerificationCode = async () => {
     if (inputs.email === '') return;
     if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+      showInfo(t('请稍后几秒重试，Turnstile 正在检查用户环境！'));
       return;
     }
     setVerificationCodeLoading(true);
@@ -267,13 +272,13 @@ const RegisterForm = () => {
       );
       const { success, message } = res.data;
       if (success) {
-        showSuccess('验证码发送成功，请检查你的邮箱！');
+        showSuccess(t('验证码发送成功，请检查你的邮箱！'));
         setDisableButton(true); // 发送成功后禁用按钮，开始倒计时
       } else {
         showError(message);
       }
     } catch (error) {
-      showError('发送验证码失败，请重试');
+      showError(t('发送验证码失败，请重试'));
     } finally {
       setVerificationCodeLoading(false);
     }
@@ -379,7 +384,7 @@ const RegisterForm = () => {
       if (success) {
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
-        showSuccess('登录成功！');
+        showSuccess(t('登录成功！'));
         setUserData(data);
         updateAPI();
         navigate('/');
@@ -387,7 +392,7 @@ const RegisterForm = () => {
         showError(message);
       }
     } catch (error) {
-      showError('登录失败，请重试');
+      showError(t('登录失败，请重试'));
     }
   };
 
@@ -395,25 +400,18 @@ const RegisterForm = () => {
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
-          <div className='flex items-center justify-center mb-6 gap-2'>
-            <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3} className='!text-gray-800'>
-              {systemName}
-            </Title>
-          </div>
-
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('注 册')}
-              </Title>
+              </span>
             </div>
-            <div className='px-2 py-8'>
+            <div>
               <div className='space-y-3'>
                 {status.wechat_login && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={
                       <Icon svg={<WeChatIcon />} style={{ color: '#07C160' }} />
@@ -428,7 +426,7 @@ const RegisterForm = () => {
                 {status.github_oauth && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={<IconGithubLogo size='large' />}
                     onClick={handleGitHubClick}
@@ -442,7 +440,7 @@ const RegisterForm = () => {
                 {status.discord_oauth && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={
                       <SiDiscord
@@ -463,7 +461,7 @@ const RegisterForm = () => {
                 {status.oidc_enabled && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={<OIDCIcon style={{ color: '#1877F2' }} />}
                     onClick={handleOIDCClick}
@@ -476,7 +474,7 @@ const RegisterForm = () => {
                 {status.linuxdo_oauth && (
                   <Button
                     theme='outline'
-                    className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                    className='w-full h-12 flex items-center justify-center !rounded-none'
                     type='tertiary'
                     icon={
                       <LinuxDoIcon
@@ -499,7 +497,7 @@ const RegisterForm = () => {
                     <Button
                       key={provider.slug}
                       theme='outline'
-                      className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
+                      className='w-full h-12 flex items-center justify-center !rounded-none'
                       type='tertiary'
                       icon={getOAuthProviderIcon(provider.icon || '', 20)}
                       onClick={() => handleCustomOAuthClick(provider)}
@@ -527,7 +525,7 @@ const RegisterForm = () => {
                 <Button
                   theme='solid'
                   type='primary'
-                  className='w-full h-12 flex items-center justify-center bg-black text-white !rounded-full hover:bg-gray-800 transition-colors'
+                  className='w-full h-12 flex items-center justify-center bg-black text-white !rounded-none hover:bg-gray-800 transition-colors'
                   icon={<IconMail size='large' />}
                   onClick={handleEmailRegisterClick}
                   loading={emailRegisterLoading}
@@ -541,14 +539,14 @@ const RegisterForm = () => {
                   {t('已有账户？')}{' '}
                   <Link
                     to='/login'
-                    className='text-blue-600 hover:text-blue-800 font-medium'
+                    className='font-medium'
                   >
                     {t('登录')}
                   </Link>
                 </Text>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -558,20 +556,13 @@ const RegisterForm = () => {
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
-          <div className='flex items-center justify-center mb-6 gap-2'>
-            <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3} className='!text-gray-800'>
-              {systemName}
-            </Title>
-          </div>
-
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('注 册')}
-              </Title>
+              </span>
             </div>
-            <div className='px-2 py-8'>
+            <div>
               <Form className='space-y-3'>
                 <Form.Input
                   field='username'
@@ -637,6 +628,38 @@ const RegisterForm = () => {
                   </>
                 )}
 
+                {/* Optional promo code — collapsed by default */}
+                <div style={{ paddingTop: 8 }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowPromoField(v => !v)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                      color: 'var(--semi-color-text-2)', fontSize: 13, padding: 0,
+                    }}
+                  >
+                    {showPromoField ? <IconChevronDown size="small" /> : <IconChevronRight size="small" />}
+                    <IconGift size="small" />
+                    {t('有优惠码？')}
+                  </button>
+                  {showPromoField && (
+                    <div style={{ marginTop: 8 }}>
+                      <Form.Input
+                        field='promo_code'
+                        placeholder={t('输入兑换码（可选）')}
+                        value={inputs.promo_code}
+                        onChange={(value) => handleChange('promo_code', value.toUpperCase())}
+                        prefix={<IconGift />}
+                        style={{ fontFamily: 'monospace', letterSpacing: '0.05em' }}
+                      />
+                      <Text type="tertiary" size="small" style={{ display: 'block', marginTop: 4 }}>
+                        {t('注册后兑换码将自动核销，额度即时到账')}
+                      </Text>
+                    </div>
+                  )}
+                </div>
+
                 {(hasUserAgreement || hasPrivacyPolicy) && (
                   <div className='pt-4'>
                     <Checkbox
@@ -675,10 +698,11 @@ const RegisterForm = () => {
                   </div>
                 )}
 
-                <div className='space-y-2 pt-2'>
+                <div className='space-y-3 pt-4'>
                   <Button
                     theme='solid'
-                    className='w-full !rounded-full'
+                    className='w-full !rounded-none'
+                    style={{ border: '1px solid var(--lr-fg-10)' }}
                     type='primary'
                     htmlType='submit'
                     onClick={handleSubmit}
@@ -702,7 +726,7 @@ const RegisterForm = () => {
                     <Button
                       theme='outline'
                       type='tertiary'
-                      className='w-full !rounded-full'
+                      className='w-full !rounded-none'
                       onClick={handleOtherRegisterOptionsClick}
                       loading={otherRegisterOptionsLoading}
                     >
@@ -717,14 +741,14 @@ const RegisterForm = () => {
                   {t('已有账户？')}{' '}
                   <Link
                     to='/login'
-                    className='text-blue-600 hover:text-blue-800 font-medium'
+                    className='font-medium'
                   >
                     {t('登录')}
                   </Link>
                 </Text>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -745,7 +769,7 @@ const RegisterForm = () => {
         }}
       >
         <div className='flex flex-col items-center'>
-          <img src={status.wechat_qrcode} alt='微信二维码' className='mb-4' />
+          <img src={status.wechat_qrcode} alt={t('微信二维码')} className='mb-4' />
         </div>
 
         <div className='text-center mb-4'>
@@ -770,17 +794,12 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className='relative overflow-hidden bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-      {/* 背景模糊晕染球 */}
-      <div
-        className='blur-ball blur-ball-indigo'
-        style={{ top: '-80px', right: '-80px', transform: 'none' }}
-      />
-      <div
-        className='blur-ball blur-ball-teal'
-        style={{ top: '50%', left: '-120px' }}
-      />
-      <div className='w-full max-w-sm mt-[60px]'>
+    <div className='landing flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg-page)', minHeight: 'calc(100vh - 64px - 80px)' }}>
+      <div className='absolute inset-0 pointer-events-none' style={{
+        backgroundImage: `linear-gradient(var(--lr-fg-10) 1px, transparent 1px), linear-gradient(90deg, var(--lr-fg-10) 1px, transparent 1px)`,
+        backgroundSize: '48px 48px',
+      }} />
+      <div className='relative z-10 w-full max-w-sm mt-[60px]'>
         {showEmailRegister ||
         !hasOAuthRegisterOptions
           ? renderEmailRegisterForm()

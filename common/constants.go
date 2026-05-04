@@ -12,7 +12,7 @@ import (
 
 var StartTime = time.Now().Unix() // unit: second
 var Version = "v0.0.0"            // this hard coding will be replaced automatically when building, no need to manually change
-var SystemName = "New API"
+var SystemName = "Market Router"
 var Footer = ""
 var Logo = ""
 var TopUpLink = ""
@@ -183,6 +183,10 @@ var (
 )
 
 var RateLimitKeyExpirationDuration = 20 * time.Minute
+
+// Guest trial settings — configurable via admin panel options
+var GuestTrialMaxMessages = 3   // messages allowed per IP before requiring registration
+var GuestTrialModel = "deepseek-v3" // model used for guest trial
 
 const (
 	UserStatusEnabled  = 1 // don't use 0, 0 is the default value!

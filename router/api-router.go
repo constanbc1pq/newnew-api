@@ -46,9 +46,15 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/oauth/:provider", middleware.CriticalRateLimit(), controller.HandleOAuth)
 		apiRouter.GET("/ratio_config", middleware.CriticalRateLimit(), controller.GetRatioConfig)
 
+		// Guest trial — no auth required, IP-rate-limited
+		apiRouter.GET("/guest/status", controller.GuestStatus)
+		apiRouter.POST("/guest/chat", middleware.GlobalAPIRateLimit(), controller.GuestChat)
+
 		apiRouter.POST("/stripe/webhook", controller.StripeWebhook)
 		apiRouter.POST("/creem/webhook", controller.CreemWebhook)
 		apiRouter.POST("/waffo/webhook", controller.WaffoWebhook)
+		apiRouter.POST("/coinbase/webhook", controller.CoinbaseWebhook)
+		apiRouter.POST("/nowpayments/webhook", controller.NowPaymentsWebhook)
 
 		// Universal secure verification routes
 		apiRouter.POST("/verify", middleware.UserAuth(), middleware.CriticalRateLimit(), controller.UniversalVerify)
@@ -84,13 +90,17 @@ func SetApiRouter(router *gin.Engine) {
 				selfRoute.GET("/aff", controller.GetAffCode)
 				selfRoute.GET("/topup/info", controller.GetTopUpInfo)
 				selfRoute.GET("/topup/self", controller.GetUserTopUps)
-				selfRoute.POST("/topup", middleware.CriticalRateLimit(), controller.TopUp)
+				selfRoute.GET("/transactions", controller.GetUserTransactions)
+				selfRoute.POST("/topup", middleware.CriticalRateLimit(), controller.TopUp)    // legacy: redemption via key field
+				selfRoute.POST("/redeem", middleware.CriticalRateLimit(), controller.RedeemCode) // dedicated redeem endpoint
 				selfRoute.POST("/pay", middleware.CriticalRateLimit(), controller.RequestEpay)
 				selfRoute.POST("/amount", controller.RequestAmount)
 				selfRoute.POST("/stripe/pay", middleware.CriticalRateLimit(), controller.RequestStripePay)
 				selfRoute.POST("/stripe/amount", controller.RequestStripeAmount)
 				selfRoute.POST("/creem/pay", middleware.CriticalRateLimit(), controller.RequestCreemPay)
 				selfRoute.POST("/waffo/pay", middleware.CriticalRateLimit(), controller.RequestWaffoPay)
+				selfRoute.POST("/coinbase/pay", middleware.CriticalRateLimit(), controller.RequestCoinbasePay)
+				selfRoute.POST("/nowpayments/pay", middleware.CriticalRateLimit(), controller.RequestNowPaymentsPay)
 				selfRoute.POST("/aff_transfer", controller.TransferAffQuota)
 				selfRoute.PUT("/setting", controller.UpdateUserSetting)
 
@@ -158,6 +168,20 @@ func SetApiRouter(router *gin.Engine) {
 			subscriptionAdminRoute.POST("/users/:id/subscriptions", controller.AdminCreateUserSubscription)
 			subscriptionAdminRoute.POST("/user_subscriptions/:id/invalidate", controller.AdminInvalidateUserSubscription)
 			subscriptionAdminRoute.DELETE("/user_subscriptions/:id", controller.AdminDeleteUserSubscription)
+		}
+
+		// Key pool admin routes
+		keyPoolRoute := apiRouter.Group("/admin/key_pools")
+		keyPoolRoute.Use(middleware.AdminAuth())
+		{
+			keyPoolRoute.GET("/", controller.GetKeyPools)
+			keyPoolRoute.POST("/", controller.CreateKeyPool)
+			keyPoolRoute.PUT("/:id", controller.UpdateKeyPool)
+			keyPoolRoute.DELETE("/:id", controller.DeleteKeyPool)
+			keyPoolRoute.GET("/:id/entries", controller.GetKeyPoolEntries)
+			keyPoolRoute.POST("/:id/entries", controller.AddKeyPoolEntry)
+			keyPoolRoute.PUT("/:id/entries/:entry_id", controller.UpdateKeyPoolEntry)
+			keyPoolRoute.DELETE("/:id/entries/:entry_id", controller.DeleteKeyPoolEntry)
 		}
 
 		// Subscription payment callbacks (no auth)
@@ -372,6 +396,20 @@ func SetApiRouter(router *gin.Engine) {
 			deploymentsRoute.PUT("/:id/name", controller.UpdateDeploymentName)
 			deploymentsRoute.POST("/:id/extend", controller.ExtendDeployment)
 			deploymentsRoute.DELETE("/:id", controller.DeleteDeployment)
+		}
+
+		// Email Campaigns (admin only)
+		campaignRoute := apiRouter.Group("/admin/campaigns")
+		campaignRoute.Use(middleware.AdminAuth())
+		{
+			campaignRoute.GET("/", controller.ListEmailCampaigns)
+			campaignRoute.POST("/", controller.CreateEmailCampaign)
+			campaignRoute.GET("/:id", controller.GetEmailCampaign)
+			campaignRoute.PUT("/:id", controller.UpdateEmailCampaign)
+			campaignRoute.DELETE("/:id", controller.DeleteEmailCampaign)
+			campaignRoute.GET("/:id/recipients", controller.PreviewCampaignRecipients)
+			campaignRoute.POST("/:id/send", controller.TriggerCampaignSend)
+			campaignRoute.POST("/:id/pause", controller.PauseCampaign)
 		}
 	}
 }

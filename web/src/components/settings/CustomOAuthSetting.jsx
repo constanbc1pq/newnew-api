@@ -31,9 +31,9 @@ import {
   Switch,
   Table,
   Tag,
-  Popconfirm,
   Space,
 } from '@douyinfe/semi-ui';
+import ConfirmModal from '../common/modals/ConfirmModal';
 import {
   IconPlus,
   IconEdit,
@@ -184,10 +184,10 @@ const ACCESS_POLICY_TEMPLATES = {
 }`,
 };
 
-const ACCESS_DENIED_TEMPLATES = {
-  level_hint: '需要等级 {{required}}，你当前等级 {{current}}（字段：{{field}}）',
-  org_hint: '仅限指定组织或角色访问。组织={{current.org}}，角色={{current.roles}}',
-};
+const getAccessDeniedTemplates = (t) => ({
+  level_hint: t('需要等级 {{required}}，你当前等级 {{current}}（字段：{{field}}）'),
+  org_hint: t('仅限指定组织或角色访问。组织={{current.org}}，角色={{current.roles}}'),
+});
 
 const CustomOAuthSetting = ({ serverAddress }) => {
   const { t } = useTranslation();
@@ -200,6 +200,7 @@ const CustomOAuthSetting = ({ serverAddress }) => {
   const [baseUrl, setBaseUrl] = useState('');
   const [discoveryLoading, setDiscoveryLoading] = useState(false);
   const [discoveryInfo, setDiscoveryInfo] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [advancedActiveKeys, setAdvancedActiveKeys] = useState([]);
   const formApiRef = React.useRef(null);
 
@@ -522,7 +523,7 @@ const CustomOAuthSetting = ({ serverAddress }) => {
   };
 
   const applyDeniedTemplate = (templateKey) => {
-    const template = ACCESS_DENIED_TEMPLATES[templateKey];
+    const template = getAccessDeniedTemplates(t)[templateKey];
     if (!template) return;
     mergeFormValues({ access_denied_message: template });
     showSuccess(t('已填充提示模板'));
@@ -578,14 +579,14 @@ const CustomOAuthSetting = ({ serverAddress }) => {
           >
             {t('编辑')}
           </Button>
-          <Popconfirm
-            title={t('确定要删除此 OAuth 提供商吗？')}
-            onConfirm={() => handleDelete(record.id)}
+          <Button
+            icon={<IconDelete />}
+            size="small"
+            type="danger"
+            onClick={() => setDeleteTargetId(record.id)}
           >
-            <Button icon={<IconDelete />} size="small" type="danger">
-              {t('删除')}
-            </Button>
-          </Popconfirm>
+            {t('删除')}
+          </Button>
         </Space>
       ),
     },
@@ -1046,6 +1047,20 @@ const CustomOAuthSetting = ({ serverAddress }) => {
           </Form>
         </Modal>
       </Form.Section>
+
+      <ConfirmModal
+        visible={deleteTargetId != null}
+        type='danger'
+        title={t('确定要删除此 OAuth 提供商吗？')}
+        content={t('删除后该 OAuth 配置不再生效，使用该方式登录的用户将无法继续登录。')}
+        okText={t('删除')}
+        onCancel={() => setDeleteTargetId(null)}
+        onOk={async () => {
+          const id = deleteTargetId;
+          setDeleteTargetId(null);
+          if (id != null) await handleDelete(id);
+        }}
+      />
     </Card>
   );
 };

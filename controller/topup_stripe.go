@@ -12,6 +12,7 @@ import (
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/model"
+	svc "github.com/QuantumNous/new-api/service"
 	"github.com/QuantumNous/new-api/setting"
 	"github.com/QuantumNous/new-api/setting/operation_setting"
 	"github.com/QuantumNous/new-api/setting/system_setting"
@@ -52,17 +53,22 @@ func (*StripeAdaptor) RequestAmount(c *gin.Context, req *StripePayRequest) {
 		return
 	}
 	id := c.GetInt("id")
-	group, err := model.GetUserGroup(id, true)
+	user, err := model.GetUserById(id, false)
 	if err != nil {
-		c.JSON(200, gin.H{"message": "error", "data": "获取用户分组失败"})
+		c.JSON(200, gin.H{"message": "error", "data": "获取用户信息失败"})
 		return
 	}
-	payMoney := getStripePayMoney(float64(req.Amount), group)
-	if payMoney <= 0.01 {
+
+	quote := svc.QuoteForUser(id, req.Amount, user.Group)
+	if quote.FinalAmountUSD <= 0.001 {
 		c.JSON(200, gin.H{"message": "error", "data": "充值金额过低"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "success", "data": strconv.FormatFloat(payMoney, 'f', 2, 64)})
+	c.JSON(200, gin.H{
+		"message": "success",
+		"data":    strconv.FormatFloat(quote.FinalAmountUSD, 'f', 4, 64),
+		"quote":   quote,
+	})
 }
 
 func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
@@ -91,12 +97,14 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 
 	id := c.GetInt("id")
 	user, _ := model.GetUserById(id, false)
-	chargedMoney := GetChargedAmount(float64(req.Amount), *user)
+
+	// Use unified pricing: live FX rates + spread + new-user promo
+	quote := svc.QuoteForUser(id, req.Amount, user.Group)
 
 	reference := fmt.Sprintf("new-api-ref-%d-%d-%s", user.Id, time.Now().UnixMilli(), randstr.String(4))
 	referenceId := "ref_" + common.Sha1([]byte(reference))
 
-	payLink, err := genStripeLink(referenceId, user.StripeCustomer, user.Email, req.Amount, req.SuccessURL, req.CancelURL)
+	payLink, err := genStripeLink(referenceId, user.StripeCustomer, user.Email, quote.FinalAmountUSD, req.SuccessURL, req.CancelURL)
 	if err != nil {
 		log.Println("获取Stripe Checkout支付链接失败", err)
 		c.JSON(200, gin.H{"message": "error", "data": "拉起支付失败"})
@@ -105,8 +113,8 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 
 	topUp := &model.TopUp{
 		UserId:        id,
-		Amount:        req.Amount,
-		Money:         chargedMoney,
+		Amount:        quote.QuotaAmount, // quota units (with promo applied)
+		Money:         quote.FinalAmountUSD,
 		TradeNo:       referenceId,
 		PaymentMethod: PaymentMethodStripe,
 		CreateTime:    time.Now().Unix(),
@@ -257,30 +265,28 @@ func sessionExpired(event stripe.Event) {
 }
 
 // genStripeLink generates a Stripe Checkout session URL for payment.
-// It creates a new checkout session with the specified parameters and returns the payment URL.
 //
-// Parameters:
-//   - referenceId: unique reference identifier for the transaction
-//   - customerId: existing Stripe customer ID (empty string if new customer)
-//   - email: customer email address for new customer creation
-//   - amount: quantity of units to purchase
-//   - successURL: custom URL to redirect after successful payment (empty for default)
-//   - cancelURL: custom URL to redirect when payment is canceled (empty for default)
-//
-// Returns the checkout session URL or an error if the session creation fails.
-func genStripeLink(referenceId string, customerId string, email string, amount int64, successURL string, cancelURL string) (string, error) {
+// amountUSD is the final USD amount to charge (after promo, with FX spread already
+// baked in for display). We use price_data so the charge is always exactly right
+// regardless of which Stripe Price object is configured.
+func genStripeLink(referenceId string, customerId string, email string, amountUSD float64, successURL string, cancelURL string) (string, error) {
 	if !strings.HasPrefix(setting.StripeApiSecret, "sk_") && !strings.HasPrefix(setting.StripeApiSecret, "rk_") {
 		return "", fmt.Errorf("无效的Stripe API密钥")
 	}
 
 	stripe.Key = setting.StripeApiSecret
 
-	// Use custom URLs if provided, otherwise use defaults
 	if successURL == "" {
 		successURL = system_setting.ServerAddress + "/console/log"
 	}
 	if cancelURL == "" {
 		cancelURL = system_setting.ServerAddress + "/console/topup"
+	}
+
+	// Convert USD → cents (Stripe uses smallest currency unit)
+	amountCents := int64(amountUSD * 100)
+	if amountCents < 50 { // Stripe minimum: $0.50
+		amountCents = 50
 	}
 
 	params := &stripe.CheckoutSessionParams{
@@ -289,22 +295,73 @@ func genStripeLink(referenceId string, customerId string, email string, amount i
 		CancelURL:         stripe.String(cancelURL),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
-				Price:    stripe.String(setting.StripePriceId),
-				Quantity: stripe.Int64(amount),
+				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+					Currency: stripe.String("usd"),
+					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+						Name: stripe.String("Market Router Credits"),
+					},
+					UnitAmount: stripe.Int64(amountCents),
+				},
+				Quantity: stripe.Int64(1),
 			},
 		},
 		Mode:                stripe.String(string(stripe.CheckoutSessionModePayment)),
 		AllowPromotionCodes: stripe.Bool(setting.StripePromotionCodesEnabled),
 	}
 
-	if "" == customerId {
-		if "" != email {
+	// Build payment method list.
+	// Default: card + link (Stripe Link one-click checkout for returning users)
+	// Configurable via StripePaymentMethods setting (comma-separated).
+	// Supported values: card, link, alipay, wechat_pay, grabpay, fpx, paynow,
+	//   promptpay, ideal, sepa_debit, klarna, afterpay_clearpay, paypal, etc.
+	defaultMethods := []string{"card", "link"}
+	if setting.StripePaymentMethods != "" {
+		rawMethods := strings.Split(setting.StripePaymentMethods, ",")
+		seen := map[string]bool{}
+		var pmTypes []*string
+		for _, m := range rawMethods {
+			m = strings.TrimSpace(m)
+			if m != "" && !seen[m] {
+				seen[m] = true
+				pmTypes = append(pmTypes, stripe.String(m))
+			}
+		}
+		if len(pmTypes) > 0 {
+			params.PaymentMethodTypes = pmTypes
+		}
+	} else {
+		// Default: card + Stripe Link
+		var pmTypes []*string
+		for _, m := range defaultMethods {
+			pmTypes = append(pmTypes, stripe.String(m))
+		}
+		params.PaymentMethodTypes = pmTypes
+	}
+
+	if customerId == "" {
+		if email != "" {
 			params.CustomerEmail = stripe.String(email)
 		}
-
 		params.CustomerCreation = stripe.String(string(stripe.CheckoutSessionCustomerCreationAlways))
 	} else {
 		params.Customer = stripe.String(customerId)
+	}
+
+	// WeChat Pay via Stripe Checkout requires client="web" for browser sessions.
+	hasWechat := false
+	for _, m := range params.PaymentMethodTypes {
+		if m != nil && *m == "wechat_pay" {
+			hasWechat = true
+			break
+		}
+	}
+	if hasWechat {
+		if params.PaymentMethodOptions == nil {
+			params.PaymentMethodOptions = &stripe.CheckoutSessionPaymentMethodOptionsParams{}
+		}
+		params.PaymentMethodOptions.WeChatPay = &stripe.CheckoutSessionPaymentMethodOptionsWeChatPayParams{
+			Client: stripe.String("web"),
+		}
 	}
 
 	result, err := session.New(params)
@@ -315,34 +372,13 @@ func genStripeLink(referenceId string, customerId string, email string, amount i
 	return result.URL, nil
 }
 
+// GetChargedAmount is kept for backward compatibility with existing callers.
 func GetChargedAmount(count float64, user model.User) float64 {
 	topUpGroupRatio := common.GetTopupGroupRatio(user.Group)
 	if topUpGroupRatio == 0 {
 		topUpGroupRatio = 1
 	}
-
 	return count * topUpGroupRatio
-}
-
-func getStripePayMoney(amount float64, group string) float64 {
-	originalAmount := amount
-	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		amount = amount / common.QuotaPerUnit
-	}
-	// Using float64 for monetary calculations is acceptable here due to the small amounts involved
-	topupGroupRatio := common.GetTopupGroupRatio(group)
-	if topupGroupRatio == 0 {
-		topupGroupRatio = 1
-	}
-	// apply optional preset discount by the original request amount (if configured), default 1.0
-	discount := 1.0
-	if ds, ok := operation_setting.GetPaymentSetting().AmountDiscount[int(originalAmount)]; ok {
-		if ds > 0 {
-			discount = ds
-		}
-	}
-	payMoney := amount * setting.StripeUnitPrice * topupGroupRatio * discount
-	return payMoney
 }
 
 func getStripeMinTopup() int64 {

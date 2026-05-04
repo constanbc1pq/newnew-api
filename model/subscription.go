@@ -159,8 +159,10 @@ type SubscriptionPlan struct {
 	Enabled   bool `json:"enabled" gorm:"default:true"`
 	SortOrder int  `json:"sort_order" gorm:"type:int;default:0"`
 
-	StripePriceId  string `json:"stripe_price_id" gorm:"type:varchar(128);default:''"`
-	CreemProductId string `json:"creem_product_id" gorm:"type:varchar(128);default:''"`
+	StripePriceId         string `json:"stripe_price_id" gorm:"type:varchar(128);default:''"`
+	CreemProductId        string `json:"creem_product_id" gorm:"type:varchar(128);default:''"`
+	CoinbaseProductId     string `json:"coinbase_product_id" gorm:"type:varchar(128);default:''"`
+	NowPaymentsProductId  string `json:"nowpayments_product_id" gorm:"type:varchar(128);default:''"`
 
 	// Max purchases per user (0 = unlimited)
 	MaxPurchasePerUser int `json:"max_purchase_per_user" gorm:"type:int;default:0"`
@@ -174,6 +176,9 @@ type SubscriptionPlan struct {
 	// Quota reset period for plan
 	QuotaResetPeriod        string `json:"quota_reset_period" gorm:"type:varchar(16);default:'never'"`
 	QuotaResetCustomSeconds int64  `json:"quota_reset_custom_seconds" gorm:"type:bigint;default:0"`
+
+	// Key pool linked to this plan (0 = no pool; subscribers routed through pool keys)
+	KeyPoolID int `json:"key_pool_id" gorm:"default:0"`
 
 	CreatedAt int64 `json:"created_at" gorm:"bigint"`
 	UpdatedAt int64 `json:"updated_at" gorm:"bigint"`
@@ -664,6 +669,29 @@ func GetAllActiveUserSubscriptions(userId int) ([]SubscriptionSummary, error) {
 		return nil, err
 	}
 	return buildSubscriptionSummaries(subs), nil
+}
+
+// GetActiveSubscriptionKeyPoolID returns the KeyPoolID of the user's first active subscription
+// whose plan has a non-zero KeyPoolID. Returns 0 if no such subscription exists.
+// Used in the relay hot path — single JOIN query, zero extra round trips.
+func GetActiveSubscriptionKeyPoolID(userId int) (int, error) {
+	if userId <= 0 {
+		return 0, nil
+	}
+	now := common.GetTimestamp()
+	var keyPoolID int
+	err := DB.Raw(`
+		SELECT sp.key_pool_id
+		FROM user_subscriptions us
+		JOIN subscription_plans sp ON sp.id = us.plan_id
+		WHERE us.user_id = ? AND us.status = 'active' AND us.end_time > ? AND sp.key_pool_id > 0
+		ORDER BY us.end_time DESC
+		LIMIT 1
+	`, userId, now).Scan(&keyPoolID).Error
+	if err != nil {
+		return 0, err
+	}
+	return keyPoolID, nil
 }
 
 // HasActiveUserSubscription returns whether the user has any active subscription.

@@ -40,6 +40,7 @@ export default function SettingsPaymentGateway(props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [inputs, setInputs] = useState({
+    StripePublicKey: '',
     StripeApiSecret: '',
     StripeWebhookSecret: '',
     StripePriceId: '',
@@ -53,6 +54,7 @@ export default function SettingsPaymentGateway(props) {
   useEffect(() => {
     if (props.options && formApiRef.current) {
       const currentInputs = {
+        StripePublicKey: props.options.StripePublicKey || '',
         StripeApiSecret: props.options.StripeApiSecret || '',
         StripeWebhookSecret: props.options.StripeWebhookSecret || '',
         StripePriceId: props.options.StripePriceId || '',
@@ -89,6 +91,9 @@ export default function SettingsPaymentGateway(props) {
     try {
       const options = [];
 
+      if (inputs.StripePublicKey && inputs.StripePublicKey !== '') {
+        options.push({ key: 'StripePublicKey', value: inputs.StripePublicKey });
+      }
       if (inputs.StripeApiSecret && inputs.StripeApiSecret !== '') {
         options.push({ key: 'StripeApiSecret', value: inputs.StripeApiSecret });
       }
@@ -197,8 +202,15 @@ export default function SettingsPaymentGateway(props) {
           <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 24, xl: 24, xxl: 24 }}>
             <Col xs={24} sm={24} md={8} lg={8} xl={8}>
               <Form.Input
+                field='StripePublicKey'
+                label={t('可发布密钥（公钥）')}
+                placeholder={t('pk_live_xxx 或 pk_test_xxx')}
+              />
+            </Col>
+            <Col xs={24} sm={24} md={8} lg={8} xl={8}>
+              <Form.Input
                 field='StripeApiSecret'
-                label={t('API 密钥')}
+                label={t('API 密钥（私钥）')}
                 placeholder={t(
                   'sk_xxx 或 rk_xxx 的 Stripe 密钥，敏感信息不显示',
                 )}

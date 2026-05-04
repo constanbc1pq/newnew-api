@@ -17,12 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 
-import React, { useContext, useEffect } from 'react';
-import { getRelativeTime } from '../../helpers';
+import React, { useContext, useEffect, useState } from 'react';
+import { getRelativeTime, API } from '../../helpers';
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 
 import DashboardHeader from './DashboardHeader';
+import OnboardingCard from './OnboardingCard';
+import RedeemCodeBox from '../common/RedeemCodeBox';
 import StatsCards from './StatsCards';
 import ChartsPanel from './ChartsPanel';
 import ApiInfoPanel from './ApiInfoPanel';
@@ -56,6 +58,44 @@ const Dashboard = () => {
   // ========== Context ==========
   const [userState, userDispatch] = useContext(UserContext);
   const [statusState, statusDispatch] = useContext(StatusContext);
+
+  // ========== 新人引导 ==========
+  const [onboardingInfo, setOnboardingInfo] = useState({
+    isNewUserPromo: false,
+    promoInfo: { limit_usd: 10, multiplier: 2.0 },
+    hasToken: false,
+  });
+
+  useEffect(() => {
+    const loadOnboardingInfo = async () => {
+      try {
+        const [topupRes, tokenRes] = await Promise.all([
+          API.get('/api/user/topup/info'),
+          API.get('/api/token/?p=0&size=1'),
+        ]);
+        const topupData = topupRes?.data?.data || {};
+        // pageInfo wrapper: { total, items, ... }
+        const tokenData = tokenRes?.data?.data || {};
+        const tokenTotal = tokenData.total ?? (Array.isArray(tokenData) ? tokenData.length : 0);
+        setOnboardingInfo({
+          isNewUserPromo: topupData.is_new_user_promo || false,
+          promoInfo: {
+            limit_usd: topupData.new_user_promo_limit_usd || 10,
+            multiplier: topupData.new_user_promo_multiplier || 2.0,
+          },
+          hasToken: tokenTotal > 0,
+        });
+      } catch (_) {
+        // onboarding info is non-critical, ignore errors
+      }
+    };
+    loadOnboardingInfo();
+  }, []);
+
+  // 新人条件：无余额且无消耗历史
+  const isNewUser =
+    (userState?.user?.quota ?? 0) === 0 &&
+    (userState?.user?.used_quota ?? 0) === 0;
 
   // ========== 主要数据管理 ==========
   const dashboardData = useDashboardData(userState, userDispatch, statusState);
@@ -161,6 +201,29 @@ const Dashboard = () => {
         handleInputChange={dashboardData.handleInputChange}
         t={dashboardData.t}
       />
+
+      {/* 新人三步引导卡 — 仅对零余额零消耗用户展示 */}
+      {isNewUser && (
+        <>
+          <OnboardingCard
+            isNewUserPromo={onboardingInfo.isNewUserPromo}
+            promoInfo={onboardingInfo.promoInfo}
+            userQuota={userState?.user?.quota ?? 0}
+            hasToken={onboardingInfo.hasToken}
+            t={dashboardData.t}
+          />
+          {/* Redeem code entry — shown inline for new users who may have a promo code */}
+          <div style={{
+            margin: '-8px 0 16px',
+            padding: '12px 20px',
+            background: 'var(--semi-color-bg-2)',
+            borderRadius: 12,
+            border: '1px solid var(--semi-color-border)',
+          }}>
+            <RedeemCodeBox compact={false} />
+          </div>
+        </>
+      )}
 
       <StatsCards
         groupedStatsData={groupedStatsData}

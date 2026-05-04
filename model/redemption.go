@@ -27,6 +27,9 @@ type Redemption struct {
 	UsedUserId   int            `json:"used_user_id"`
 	DeletedAt    gorm.DeletedAt `gorm:"index"`
 	ExpiredTime  int64          `json:"expired_time" gorm:"bigint"` // 过期时间，0 表示不过期
+	// TargetUserID > 0 means the code is locked to a specific user (directed voucher).
+	TargetUserID int    `json:"target_user_id" gorm:"default:0;index"`
+	Note         string `json:"note" gorm:"type:varchar(500)"` // admin-visible note / campaign label
 }
 
 func GetAllRedemptions(startIdx int, num int) (redemptions []*Redemption, total int64, err error) {
@@ -140,6 +143,10 @@ func Redeem(key string, userId int) (quota int, err error) {
 		if redemption.ExpiredTime != 0 && redemption.ExpiredTime < common.GetTimestamp() {
 			return errors.New("该兑换码已过期")
 		}
+		// Directed voucher check: only the target user can redeem it.
+		if redemption.TargetUserID > 0 && redemption.TargetUserID != userId {
+			return errors.New("该兑换码不属于此账号")
+		}
 		err = tx.Model(&User{}).Where("id = ?", userId).Update("quota", gorm.Expr("quota + ?", redemption.Quota)).Error
 		if err != nil {
 			return err
@@ -172,7 +179,7 @@ func (redemption *Redemption) SelectUpdate() error {
 // Update Make sure your token's fields is completed, because this will update non-zero values
 func (redemption *Redemption) Update() error {
 	var err error
-	err = DB.Model(redemption).Select("name", "status", "quota", "redeemed_time", "expired_time").Updates(redemption).Error
+	err = DB.Model(redemption).Select("name", "status", "quota", "redeemed_time", "expired_time", "target_user_id", "note").Updates(redemption).Error
 	return err
 }
 

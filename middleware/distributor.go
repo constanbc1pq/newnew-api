@@ -157,6 +157,21 @@ func Distribute() func(c *gin.Context) {
 		}
 		common.SetContextKey(c, constant.ContextKeyRequestStartTime, time.Now())
 		SetupContextForSelectedChannel(c, channel, modelRequest.Model)
+
+		// Key Pool override: if the user's active subscription has a KeyPoolID,
+		// replace the upstream key with the pool's next rotated key.
+		if userIdVal, exists := c.Get(string(constant.ContextKeyUserId)); exists {
+			if userID, ok := userIdVal.(int); ok && userID > 0 {
+				if poolID, err := model.GetActiveSubscriptionKeyPoolID(userID); err == nil && poolID > 0 {
+					if plainKey, entry, err := service.GetNextPoolPlainKey(poolID); err == nil {
+						common.SetContextKey(c, constant.ContextKeyChannelKey, plainKey)
+						// Fire-and-forget call count increment
+						go model.IncrementEntryCallCount(entry.ID)
+					}
+				}
+			}
+		}
+
 		c.Next()
 		if channel != nil && c.Writer != nil && c.Writer.Status() < http.StatusBadRequest {
 			service.RecordChannelAffinity(c, channel.Id)

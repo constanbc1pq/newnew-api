@@ -20,6 +20,7 @@ For commercial licensing, please contact support@quantumnous.com
 import HeaderBar from './headerbar';
 import { Layout } from '@douyinfe/semi-ui';
 import SiderBar from './SiderBar';
+import LandingRail, { RAIL_W } from './LandingRail';
 import App from '../../App';
 import FooterBar from './Footer';
 import { ToastContainer } from 'react-toastify';
@@ -37,7 +38,7 @@ import {
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 import { useLocation } from 'react-router-dom';
-import { normalizeLanguage } from '../../i18n/language';
+import { normalizeLanguage, RTL_LANGS } from '../../i18n/language';
 const { Sider, Content, Header } = Layout;
 
 const PageLayout = () => {
@@ -69,6 +70,7 @@ const PageLayout = () => {
     location.pathname !== '/console/playground';
 
   const isConsoleRoute = location.pathname.startsWith('/console');
+  const isLandingPage = ['/', '/login', '/register'].includes(location.pathname);
   const showSider = isConsoleRoute && (!isMobile || drawerOpen);
 
   useEffect(() => {
@@ -143,6 +145,80 @@ const PageLayout = () => {
     }
   }, [i18n, userState?.user?.setting]);
 
+  // RTL support: set document direction when language changes
+  useEffect(() => {
+    const lang = normalizeLanguage(i18n.language);
+    document.documentElement.dir = RTL_LANGS.has(lang) ? 'rtl' : 'ltr';
+    document.documentElement.lang = lang || 'en';
+  }, [i18n.language]);
+
+  if (isLandingPage) {
+    // Desktop: left rail + no top nav header
+    // Mobile: keep top header bar
+    if (!isMobile) {
+      return (
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+          <LandingRail />
+          {/* Minimal top-right action bar (user/theme/lang) */}
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: RAIL_W,
+              right: 0,
+              height: 56,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              padding: '0 20px',
+              zIndex: 99,
+            }}
+          >
+            <HeaderBar
+              onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
+              drawerOpen={drawerOpen}
+              hideLogo
+              hideNav
+            />
+          </div>
+          <div style={{ marginLeft: RAIL_W, flex: 1, paddingTop: 56 }}>
+            <App />
+            <FooterBar />
+          </div>
+          <ToastContainer />
+        </div>
+      );
+    }
+
+    // Mobile: classic top header
+    return (
+      <div>
+        <Header
+          style={{
+            padding: 0,
+            height: 'auto',
+            lineHeight: 'normal',
+            position: 'fixed',
+            width: '100%',
+            top: 0,
+            zIndex: 100,
+          }}
+          id='main-header'
+        >
+          <HeaderBar
+            onMobileMenuToggle={() => setDrawerOpen((prev) => !prev)}
+            drawerOpen={drawerOpen}
+          />
+        </Header>
+        <div style={{ paddingTop: '64px' }}>
+          <App />
+          <FooterBar />
+        </div>
+        <ToastContainer />
+      </div>
+    );
+  }
+
   return (
     <Layout
       className='app-layout'
@@ -170,7 +246,7 @@ const PageLayout = () => {
       </Header>
       <Layout
         style={{
-          overflow: isMobile ? 'visible' : 'auto',
+          overflow: isMobile ? 'visible' : 'hidden',
           display: 'flex',
           flexDirection: 'column',
         }}

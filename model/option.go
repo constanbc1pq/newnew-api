@@ -80,6 +80,7 @@ func InitOptionMap() {
 	common.OptionMap["USDExchangeRate"] = strconv.FormatFloat(operation_setting.USDExchangeRate, 'f', -1, 64)
 	common.OptionMap["MinTopUp"] = strconv.Itoa(operation_setting.MinTopUp)
 	common.OptionMap["StripeMinTopUp"] = strconv.Itoa(setting.StripeMinTopUp)
+	common.OptionMap["StripePublicKey"] = setting.StripePublicKey
 	common.OptionMap["StripeApiSecret"] = setting.StripeApiSecret
 	common.OptionMap["StripeWebhookSecret"] = setting.StripeWebhookSecret
 	common.OptionMap["StripePriceId"] = setting.StripePriceId
@@ -157,6 +158,9 @@ func InitOptionMap() {
 	common.OptionMap["SelfUseModeEnabled"] = strconv.FormatBool(operation_setting.SelfUseModeEnabled)
 	common.OptionMap["ModelRequestRateLimitEnabled"] = strconv.FormatBool(setting.ModelRequestRateLimitEnabled)
 	common.OptionMap["CheckSensitiveOnPromptEnabled"] = strconv.FormatBool(setting.CheckSensitiveOnPromptEnabled)
+	common.OptionMap["GuestTrialToken"] = ""
+	common.OptionMap["GuestTrialMaxMessages"] = strconv.Itoa(common.GuestTrialMaxMessages)
+	common.OptionMap["GuestTrialModel"] = common.GuestTrialModel
 	common.OptionMap["StopOnSensitiveEnabled"] = strconv.FormatBool(setting.StopOnSensitiveEnabled)
 	common.OptionMap["SensitiveWords"] = setting.SensitiveWordsToString()
 	common.OptionMap["StreamCacheQueueLength"] = strconv.Itoa(setting.StreamCacheQueueLength)
@@ -354,6 +358,8 @@ func updateOptionMap(key string, value string) (err error) {
 		operation_setting.USDExchangeRate, _ = strconv.ParseFloat(value, 64)
 	case "MinTopUp":
 		operation_setting.MinTopUp, _ = strconv.Atoi(value)
+	case "StripePublicKey":
+		setting.StripePublicKey = value
 	case "StripeApiSecret":
 		setting.StripeApiSecret = value
 	case "StripeWebhookSecret":
@@ -454,6 +460,12 @@ func updateOptionMap(key string, value string) (err error) {
 		setting.ModelRequestRateLimitSuccessCount, _ = strconv.Atoi(value)
 	case "ModelRequestRateLimitGroup":
 		err = setting.UpdateModelRequestRateLimitGroupByJSONString(value)
+	case "GuestTrialToken":
+		common.OptionMap["GuestTrialToken"] = value
+	case "GuestTrialMaxMessages":
+		common.GuestTrialMaxMessages, _ = strconv.Atoi(value)
+	case "GuestTrialModel":
+		common.GuestTrialModel = value
 	case "RetryTimes":
 		common.RetryTimes, _ = strconv.Atoi(value)
 	case "DataExportInterval":

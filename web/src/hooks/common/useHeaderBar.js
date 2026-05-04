@@ -71,7 +71,7 @@ export const useHeaderBar = ({ onMobileMenuToggle, drawerOpen }) => {
 
         return modules;
       } catch (error) {
-        console.error('解析顶栏模块配置失败:', error);
+        console.error(t('解析顶栏模块配置失败:'), error);
         return null;
       }
     }

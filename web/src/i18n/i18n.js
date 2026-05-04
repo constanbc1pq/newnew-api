@@ -22,12 +22,20 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 import enTranslation from './locales/en.json';
-import frTranslation from './locales/fr.json';
 import zhCNTranslation from './locales/zh-CN.json';
 import zhTWTranslation from './locales/zh-TW.json';
-import ruTranslation from './locales/ru.json';
 import jaTranslation from './locales/ja.json';
+import frTranslation from './locales/fr.json';
+import ruTranslation from './locales/ru.json';
 import viTranslation from './locales/vi.json';
+import koTranslation from './locales/ko.json';
+import esTranslation from './locales/es.json';
+import deTranslation from './locales/de.json';
+import ptBRTranslation from './locales/pt-BR.json';
+import arTranslation from './locales/ar.json';
+import idTranslation from './locales/id.json';
+import trTranslation from './locales/tr.json';
+import hiTranslation from './locales/hi.json';
 import { supportedLanguages } from './language';
 
 i18n
@@ -37,15 +45,30 @@ i18n
     load: 'currentOnly',
     supportedLngs: supportedLanguages,
     resources: {
-      en: enTranslation,
+      'en':    enTranslation,
       'zh-CN': zhCNTranslation,
       'zh-TW': zhTWTranslation,
-      fr: frTranslation,
-      ru: ruTranslation,
-      ja: jaTranslation,
-      vi: viTranslation,
+      'ja':    jaTranslation,
+      'fr':    frTranslation,
+      'ru':    ruTranslation,
+      'vi':    viTranslation,
+      'ko':    koTranslation,
+      'es':    esTranslation,
+      'de':    deTranslation,
+      'pt-BR': ptBRTranslation,
+      'ar':    arTranslation,
+      'id':    idTranslation,
+      'tr':    trTranslation,
+      'hi':    hiTranslation,
     },
-    fallbackLng: 'zh-CN',
+    // Fall back to English for any missing keys in non-zh-CN locales
+    fallbackLng: 'en',
+    // 新访客默认英文：跳过 navigator 探测，仅读 localStorage / cookie / 查询串，
+    // 没匹配上时 fallbackLng (en) 生效。已选过语言的用户保留本地选择。
+    detection: {
+      order: ['localStorage', 'cookie', 'querystring'],
+      caches: ['localStorage'],
+    },
     nsSeparator: false,
     interpolation: {
       escapeValue: false,

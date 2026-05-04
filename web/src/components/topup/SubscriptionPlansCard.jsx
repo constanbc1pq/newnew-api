@@ -89,6 +89,7 @@ const SubscriptionPlansCard = ({
   const [paying, setPaying] = useState(false);
   const [selectedEpayMethod, setSelectedEpayMethod] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
 
   const epayMethods = useMemo(() => getEpayMethods(payMethods), [payMethods]);
 
@@ -478,6 +479,29 @@ const SubscriptionPlansCard = ({
 
           {/* 可购买套餐 - 标准定价卡片 */}
           {plans.length > 0 ? (
+            <>
+            {/* Scenario guide */}
+            <div style={{ marginBottom: 16, padding: '16px 4px 0' }}>
+              <p style={{ fontSize: 13, color: 'var(--mr-text-secondary)', marginBottom: 8 }}>
+                选一个符合你的使用场景：
+              </p>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { label: '🧑‍💻 日常 AI 对话', desc: '按量计费更灵活' },
+                  { label: '⚡ 开发 / 编程', desc: '订阅省 40–60% 成本' },
+                  { label: '🏢 团队 / 企业', desc: '高并发 + 审计日志' },
+                ].map((s, i) => (
+                  <span key={i} style={{
+                    padding: '4px 12px', borderRadius: 9999, fontSize: 12,
+                    border: '1px solid var(--mr-border-default)',
+                    color: 'var(--mr-text-secondary)',
+                    cursor: 'default',
+                  }}>
+                    {s.label}
+                  </span>
+                ))}
+              </div>
+            </div>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5 w-full px-1'>
               {plans.map((p, index) => {
                 const plan = p?.plan;
@@ -520,19 +544,40 @@ const SubscriptionPlansCard = ({
                 return (
                   <Card
                     key={plan?.id}
-                    className={`!rounded-xl transition-all hover:shadow-lg w-full h-full ${
-                      isPopular ? 'ring-2 ring-purple-500' : ''
-                    }`}
+                    className='!rounded-xl w-full h-full'
+                    style={{
+                      border: isPopular ? '2px solid #000' : '1.5px solid #e5e7eb',
+                      transition: 'opacity 0.2s, transform 0.2s',
+                      opacity: hoveredIdx !== null && hoveredIdx !== index ? 0.35 : 1,
+                      transform: hoveredIdx === index ? 'translateY(-2px)' : 'none',
+                    }}
                     bodyStyle={{ padding: 0 }}
+                    onMouseEnter={() => setHoveredIdx(index)}
+                    onMouseLeave={() => setHoveredIdx(null)}
                   >
-                    <div className='p-4 h-full flex flex-col'>
+                    <div className='p-4 h-full flex flex-col' style={isPopular ? { background: 'rgba(0,0,0,0.04)', borderRadius: 'inherit' } : {}}>
                       {/* 推荐标签 */}
                       {isPopular && (
                         <div className='mb-2'>
-                          <Tag color='purple' shape='circle' size='small'>
-                            <Sparkles size={10} className='mr-1' />
+                          <div style={{ fontSize: 10, fontVariant: 'small-caps', fontWeight: 700, color: '#000', letterSpacing: '0.05em', marginBottom: 4 }}>
+                            ✦ 最受欢迎
+                          </div>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '2px 10px',
+                              borderRadius: '9999px',
+                              background: '#000',
+                              color: '#fff',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                            }}
+                          >
+                            <Sparkles size={10} />
                             {t('推荐')}
-                          </Tag>
+                          </span>
                         </div>
                       )}
                       {/* 套餐名称 */}
@@ -558,11 +603,11 @@ const SubscriptionPlansCard = ({
 
                       {/* 价格区域 */}
                       <div className='py-2'>
-                        <div className='flex items-baseline justify-start'>
-                          <span className='text-xl font-bold text-purple-600'>
+                        <div className='flex items-baseline justify-start' style={{ color: 'var(--mr-text-primary)' }}>
+                          <span className='text-xl font-bold'>
                             {symbol}
                           </span>
-                          <span className='text-3xl font-bold text-purple-600'>
+                          <span className='text-3xl font-bold mr-tabular'>
                             {displayPrice}
                           </span>
                         </div>
@@ -608,17 +653,23 @@ const SubscriptionPlansCard = ({
                             ? t('已达到购买上限') + ` (${count}/${limit})`
                             : '';
                           const buttonEl = (
-                            <Button
-                              theme='outline'
-                              type='primary'
-                              block
+                            <button
                               disabled={reached}
-                              onClick={() => {
-                                if (!reached) openBuy(p);
+                              onClick={() => { if (!reached) openBuy(p); }}
+                              style={{
+                                width: '100%',
+                                padding: '10px',
+                                borderRadius: '9999px',
+                                background: reached ? 'var(--mr-text-disabled)' : 'var(--mr-accent)',
+                                color: 'var(--mr-accent-fg)',
+                                fontWeight: 600,
+                                fontSize: '14px',
+                                border: 'none',
+                                cursor: reached ? 'not-allowed' : 'pointer',
                               }}
                             >
                               {reached ? t('已达上限') : t('立即订阅')}
-                            </Button>
+                            </button>
                           );
                           return reached ? (
                             <Tooltip content={tip} position='top'>
@@ -634,6 +685,7 @@ const SubscriptionPlansCard = ({
                 );
               })}
             </div>
+            </>
           ) : (
             <div className='text-center text-gray-400 text-sm py-4'>
               {t('暂无可购买套餐')}

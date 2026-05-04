@@ -124,28 +124,28 @@ export default function SettingsLog(props) {
           </p>
           <div
             style={{
-              background: '#fff7e6',
-              border: '1px solid #ffd591',
+              background: 'var(--mr-warning-soft)',
+              border: '1px solid var(--mr-warning)',
               padding: '12px',
               borderRadius: '4px',
               marginTop: '12px',
-              color: '#333',
+              color: 'var(--mr-text-secondary)',
             }}
           >
-            <Text strong style={{ color: '#d46b08' }}>
+            <Text strong style={{ color: 'var(--mr-warning)' }}>
               ⚠️ {t('注意')}：
             </Text>
-            <Text style={{ color: '#333' }}>{t('将删除')} </Text>
-            <Text strong style={{ color: '#cf1322' }}>
+            <Text style={{ color: 'var(--mr-text-secondary)' }}>{t('将删除')} </Text>
+            <Text strong style={{ color: 'var(--mr-danger)' }}>
               {targetTime}
             </Text>
             {daysDiff > 0 && (
-              <Text style={{ color: '#8c8c8c' }}>
+              <Text style={{ color: 'var(--mr-text-tertiary)' }}>
                 {' '}
                 ({t('约')} {daysDiff} {t('天前')})
               </Text>
             )}
-            <Text style={{ color: '#333' }}> {t('之前的所有日志')}</Text>
+            <Text style={{ color: 'var(--mr-text-secondary)' }}> {t('之前的所有日志')}</Text>
           </div>
           <p style={{ marginTop: '12px' }}>
             <Text type='danger'>

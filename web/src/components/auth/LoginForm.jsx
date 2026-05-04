@@ -71,9 +71,9 @@ const LoginForm = () => {
   let navigate = useNavigate();
   const { t } = useTranslation();
   const githubButtonTextKeyByState = {
-    idle: '使用 GitHub 继续',
-    redirecting: '正在跳转 GitHub...',
-    timeout: '请求超时，请刷新页面后重新发起 GitHub 登录',
+    idle: t('使用 GitHub 继续'),
+    redirecting: t('正在跳转 GitHub...'),
+    timeout: t('请求超时，请刷新页面后重新发起 GitHub 登录'),
   };
   const [inputs, setInputs] = useState({
     username: '',
@@ -184,7 +184,7 @@ const LoginForm = () => {
 
   const onSubmitWeChatVerificationCode = async () => {
     if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+      showInfo(t('请稍后几秒重试，Turnstile 正在检查用户环境！'));
       return;
     }
     setWechatCodeSubmitLoading(true);
@@ -199,13 +199,13 @@ const LoginForm = () => {
         setUserData(data);
         updateAPI();
         navigate('/');
-        showSuccess('登录成功！');
+        showSuccess(t('登录成功！'));
         setShowWeChatLoginModal(false);
       } else {
         showError(message);
       }
     } catch (error) {
-      showError('登录失败，请重试');
+      showError(t('登录失败，请重试'));
     } finally {
       setWechatCodeSubmitLoading(false);
     }
@@ -221,7 +221,7 @@ const LoginForm = () => {
       return;
     }
     if (turnstileEnabled && turnstileToken === '') {
-      showInfo('请稍后几秒重试，Turnstile 正在检查用户环境！');
+      showInfo(t('请稍后几秒重试，Turnstile 正在检查用户环境！'));
       return;
     }
     setSubmitted(true);
@@ -247,11 +247,11 @@ const LoginForm = () => {
           userDispatch({ type: 'login', payload: data });
           setUserData(data);
           updateAPI();
-          showSuccess('登录成功！');
+          showSuccess(t('登录成功！'));
           if (username === 'root' && password === '123456') {
             Modal.error({
-              title: '您正在使用默认密码！',
-              content: '请立刻修改默认密码！',
+              title: t('您正在使用默认密码！'),
+              content: t('请立刻修改默认密码！'),
               centered: true,
             });
           }
@@ -260,10 +260,10 @@ const LoginForm = () => {
           showError(message);
         }
       } else {
-        showError('请输入用户名和密码！');
+        showError(t('请输入用户名和密码！'));
       }
     } catch (error) {
-      showError('登录失败，请重试');
+      showError(t('登录失败，请重试'));
     } finally {
       setLoginLoading(false);
     }
@@ -297,7 +297,7 @@ const LoginForm = () => {
       if (success) {
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
-        showSuccess('登录成功！');
+        showSuccess(t('登录成功！'));
         setUserData(data);
         updateAPI();
         navigate('/');
@@ -305,7 +305,7 @@ const LoginForm = () => {
         showError(message);
       }
     } catch (error) {
-      showError('登录失败，请重试');
+      showError(t('登录失败，请重试'));
     }
   };
 
@@ -417,11 +417,11 @@ const LoginForm = () => {
       return;
     }
     if (!passkeySupported) {
-      showInfo('当前环境无法使用 Passkey 登录');
+      showInfo(t('当前环境无法使用 Passkey 登录'));
       return;
     }
     if (!window.PublicKeyCredential) {
-      showInfo('当前浏览器不支持 Passkey');
+      showInfo(t('当前浏览器不支持 Passkey'));
       return;
     }
 
@@ -430,7 +430,7 @@ const LoginForm = () => {
       const beginRes = await API.post('/api/user/passkey/login/begin');
       const { success, message, data } = beginRes.data;
       if (!success) {
-        showError(message || '无法发起 Passkey 登录');
+        showError(message || t('无法发起 Passkey 登录'));
         return;
       }
 
@@ -442,7 +442,7 @@ const LoginForm = () => {
       });
       const payload = buildAssertionResult(assertion);
       if (!payload) {
-        showError('Passkey 验证失败，请重试');
+        showError(t('Passkey 验证失败，请重试'));
         return;
       }
 
@@ -455,16 +455,16 @@ const LoginForm = () => {
         userDispatch({ type: 'login', payload: finish.data });
         setUserData(finish.data);
         updateAPI();
-        showSuccess('登录成功！');
+        showSuccess(t('登录成功！'));
         navigate('/console');
       } else {
-        showError(finish.message || 'Passkey 登录失败，请重试');
+        showError(finish.message || t('Passkey 登录失败，请重试'));
       }
     } catch (error) {
       if (error?.name === 'AbortError') {
-        showInfo('已取消 Passkey 登录');
+        showInfo(t('已取消 Passkey 登录'));
       } else {
-        showError('Passkey 登录失败，请重试');
+        showError(t('Passkey 登录失败，请重试'));
       }
     } finally {
       setPasskeyLoading(false);
@@ -490,7 +490,7 @@ const LoginForm = () => {
     userDispatch({ type: 'login', payload: data });
     setUserData(data);
     updateAPI();
-    showSuccess('登录成功！');
+    showSuccess(t('登录成功！'));
     navigate('/console');
   };
 
@@ -511,11 +511,11 @@ const LoginForm = () => {
             </Title>
           </div>
 
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('登 录')}
-              </Title>
+              </span>
             </div>
             <div className='px-2 py-8'>
               <div className='space-y-3'>
@@ -699,10 +699,11 @@ const LoginForm = () => {
               {!status.self_use_mode_enabled && (
                 <div className='mt-6 text-center text-sm'>
                   <Text>
-                    {t('没有账户？')}{' '}
+                    <span style={{ color: 'var(--lr-fg-40)' }}>{t('没有账户？')}</span>{' '}
                     <Link
                       to='/register'
-                      className='text-blue-600 hover:text-blue-800 font-medium'
+                      className='font-medium'
+                      style={{ color: 'var(--lr-primary)' }}
                     >
                       {t('注册')}
                     </Link>
@@ -710,7 +711,7 @@ const LoginForm = () => {
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -720,23 +721,19 @@ const LoginForm = () => {
     return (
       <div className='flex flex-col items-center'>
         <div className='w-full max-w-md'>
-          <div className='flex items-center justify-center mb-6 gap-2'>
-            <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3}>{systemName}</Title>
-          </div>
-
-          <Card className='border-0 !rounded-2xl overflow-hidden'>
-            <div className='flex justify-center pt-6 pb-2'>
-              <Title heading={3} className='text-gray-800 dark:text-gray-200'>
+          <div className='border p-6 md:p-8' style={{ borderColor: 'var(--lr-fg-10)', background: 'var(--lr-bg)' }}>
+            <div className='flex justify-center pt-2 pb-4'>
+              <span className='font-heading text-lg font-light' style={{ color: 'var(--lr-fg)' }}>
                 {t('登 录')}
-              </Title>
+              </span>
             </div>
-            <div className='px-2 py-8'>
+            <div>
               {status.passkey_login && passkeySupported && (
                 <Button
                   theme='outline'
                   type='tertiary'
-                  className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors mb-4'
+                  className='w-full h-12 flex items-center justify-center !rounded-none mb-4'
+                  style={{ borderColor: 'var(--lr-fg-10)' }}
                   icon={<IconKey size='large' />}
                   onClick={handlePasskeyLogin}
                   loading={passkeyLoading}
@@ -802,10 +799,11 @@ const LoginForm = () => {
                   </div>
                 )}
 
-                <div className='space-y-2 pt-2'>
+                <div className='space-y-3 pt-4'>
                   <Button
                     theme='solid'
-                    className='w-full !rounded-full'
+                    className='w-full !rounded-none'
+                    style={{ border: '1px solid var(--lr-fg-10)' }}
                     type='primary'
                     htmlType='submit'
                     onClick={handleSubmit}
@@ -818,9 +816,10 @@ const LoginForm = () => {
                   </Button>
 
                   <Button
-                    theme='borderless'
-                    type='tertiary'
-                    className='w-full !rounded-full'
+                    theme='light'
+                    type='primary'
+                    className='w-full !rounded-none'
+                    style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}
                     onClick={handleResetPasswordClick}
                     loading={resetPasswordLoading}
                   >
@@ -837,9 +836,10 @@ const LoginForm = () => {
 
                   <div className='mt-4 text-center'>
                     <Button
-                      theme='outline'
-                      type='tertiary'
-                      className='w-full !rounded-full'
+                      theme='light'
+                      type='primary'
+                      className='w-full !rounded-none'
+                      style={{ borderColor: 'var(--lr-fg-10)', color: 'var(--lr-fg)' }}
                       onClick={handleOtherLoginOptionsClick}
                       loading={otherLoginOptionsLoading}
                     >
@@ -852,10 +852,11 @@ const LoginForm = () => {
               {!status.self_use_mode_enabled && (
                 <div className='mt-6 text-center text-sm'>
                   <Text>
-                    {t('没有账户？')}{' '}
+                    <span style={{ color: 'var(--lr-fg-40)' }}>{t('没有账户？')}</span>{' '}
                     <Link
                       to='/register'
-                      className='text-blue-600 hover:text-blue-800 font-medium'
+                      className='font-medium'
+                      style={{ color: 'var(--lr-primary)' }}
                     >
                       {t('注册')}
                     </Link>
@@ -863,7 +864,7 @@ const LoginForm = () => {
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         </div>
       </div>
     );
@@ -885,7 +886,7 @@ const LoginForm = () => {
         }}
       >
         <div className='flex flex-col items-center'>
-          <img src={status.wechat_qrcode} alt='微信二维码' className='mb-4' />
+          <img src={status.wechat_qrcode} alt={t('微信二维码')} className='mb-4' />
         </div>
 
         <div className='text-center mb-4'>
@@ -928,7 +929,7 @@ const LoginForm = () => {
                 />
               </svg>
             </div>
-            两步验证
+            {t('两步验证')}
           </div>
         }
         visible={showTwoFA}
@@ -947,17 +948,12 @@ const LoginForm = () => {
   };
 
   return (
-    <div className='relative overflow-hidden bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8'>
-      {/* 背景模糊晕染球 */}
-      <div
-        className='blur-ball blur-ball-indigo'
-        style={{ top: '-80px', right: '-80px', transform: 'none' }}
-      />
-      <div
-        className='blur-ball blur-ball-teal'
-        style={{ top: '50%', left: '-120px' }}
-      />
-      <div className='w-full max-w-sm mt-[60px]'>
+    <div className='landing flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative' style={{ background: 'var(--lr-bg-page)', minHeight: 'calc(100vh - 64px - 80px)' }}>
+      <div className='absolute inset-0 pointer-events-none' style={{
+        backgroundImage: `linear-gradient(var(--lr-fg-10) 1px, transparent 1px), linear-gradient(90deg, var(--lr-fg-10) 1px, transparent 1px)`,
+        backgroundSize: '48px 48px',
+      }} />
+      <div className='relative z-10 w-full max-w-sm mt-[60px]'>
         {showEmailLogin ||
         !hasOAuthLoginOptions
           ? renderEmailLoginForm()

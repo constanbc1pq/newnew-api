@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Background: matte black rounded square, no gradient -->
+  <rect width="512" height="512" rx="96" fill="#0a0a0a"/>
+  <!-- Mark: geometric M built from clean strokes — routing paths converging at center -->
+  <path
+    d="M 124 376 L 124 144 L 256 272 L 388 144 L 388 376"
+    stroke="white"
+    stroke-width="44"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

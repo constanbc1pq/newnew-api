@@ -134,6 +134,17 @@ export default {
       'semi-color-data-19': 'var(--semi-color-data-19)',
     },
     extend: {
+      colors: {
+        'brand': {
+          DEFAULT: '#7c3aed',
+          hover: '#6d28d9',
+          active: '#5b21b6',
+          light: 'rgba(124, 58, 237, 0.08)',
+        },
+      },
+      fontFamily: {
+        mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace'],
+      },
       borderRadius: {
         'semi-border-radius-extra-small':
           'var(--semi-border-radius-extra-small)',

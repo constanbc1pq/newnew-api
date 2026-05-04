@@ -35,6 +35,7 @@ import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 
 import RechargeCard from './RechargeCard';
+import UsageEstimator from './UsageEstimator';
 import InvitationCard from './InvitationCard';
 import TransferModal from './modals/TransferModal';
 import PaymentConfirmModal from './modals/PaymentConfirmModal';
@@ -63,6 +64,9 @@ const TopUp = () => {
   const [enableStripeTopUp, setEnableStripeTopUp] = useState(
     statusState?.status?.enable_stripe_topup || false,
   );
+  const [stripePublicKey, setStripePublicKey] = useState(
+    statusState?.status?.stripe_public_key || '',
+  );
   const [statusLoading, setStatusLoading] = useState(true);
 
   // Creem 相关状态
@@ -75,6 +79,22 @@ const TopUp = () => {
   const [enableWaffoTopUp, setEnableWaffoTopUp] = useState(false);
   const [waffoPayMethods, setWaffoPayMethods] = useState([]);
   const [waffoMinTopUp, setWaffoMinTopUp] = useState(1);
+
+  // Coinbase Commerce 相关状态
+  const [enableCoinbaseTopUp, setEnableCoinbaseTopUp] = useState(false);
+
+  // NowPayments 相关状态
+  const [enableNowPaymentsTopUp, setEnableNowPaymentsTopUp] = useState(false);
+
+  // 新人首充折扣
+  const [isNewUserPromo, setIsNewUserPromo] = useState(false);
+  const [promoInfo, setPromoInfo] = useState({ limit_usd: 10, multiplier: 2.0 });
+
+  // 实时报价（多货币）
+  const [priceQuote, setPriceQuote] = useState(null);
+
+  // 用量估算器选中的场景
+  const [selectedTier, setSelectedTier] = useState(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
@@ -204,7 +224,7 @@ const TopUp = () => {
     }
 
     if (topUpCount < minTopUp) {
-      showError('充值数量不能小于' + minTopUp);
+      showError(t('充值数量不能小于 {{count}}', { count: minTopUp }));
       return;
     }
     setConfirmLoading(true);
@@ -495,6 +515,15 @@ const TopUp = () => {
           setEnableWaffoTopUp(enableWaffoTopUp);
           setWaffoPayMethods(data.waffo_pay_methods || []);
           setWaffoMinTopUp(data.waffo_min_topup || 1);
+          setEnableCoinbaseTopUp(data.enable_coinbase_topup || false);
+          setEnableNowPaymentsTopUp(data.enable_nowpayments_topup || false);
+          setIsNewUserPromo(data.is_new_user_promo || false);
+          if (data.new_user_promo_enabled) {
+            setPromoInfo({
+              limit_usd: data.new_user_promo_limit_usd || 10,
+              multiplier: data.new_user_promo_multiplier || 2.0,
+            });
+          }
           setMinTopUp(minTopUpValue);
           setTopUpCount(minTopUpValue);
 
@@ -577,6 +606,29 @@ const TopUp = () => {
       searchParams.delete('show_history');
       setSearchParams(searchParams, { replace: true });
     }
+    // 支付成功回跳：刷新余额 + 提示用户
+    const payStatus = searchParams.get('pay');
+    if (payStatus === 'success') {
+      getUserQuota().then(() => {
+        Modal.success({
+          title: t('支付成功！'),
+          content: (
+            <div>
+              <p>{t('额度已到账，现在可以创建 API Key 开始调用了。')}</p>
+            </div>
+          ),
+          okText: t('去创建 API Key'),
+          onOk: () => { window.location.href = '/console/token'; },
+          cancelText: t('留在这里'),
+          centered: true,
+        });
+      });
+      searchParams.delete('pay');
+      setSearchParams(searchParams, { replace: true });
+    } else if (payStatus === 'cancel') {
+      searchParams.delete('pay');
+      setSearchParams(searchParams, { replace: true });
+    }
   }, []);
 
   useEffect(() => {
@@ -605,12 +657,29 @@ const TopUp = () => {
       // setTopUpCount(minTopUpValue);
       setTopUpLink(statusState.status.top_up_link || '');
       setPriceRatio(statusState.status.price || 1);
+      if (statusState.status.stripe_public_key) {
+        setStripePublicKey(statusState.status.stripe_public_key);
+      }
 
       setStatusLoading(false);
     }
   }, [statusState?.status]);
 
   const renderAmount = () => {
+    if (priceQuote) {
+      const usd = priceQuote.final_amount_usd;
+      const localPrices = priceQuote.local_prices || {};
+      // Show USD + a couple of relevant local currencies inline
+      const extras = ['CNY', 'AUD', 'THB'].map((cur) => {
+        const val = localPrices[cur];
+        if (!val) return null;
+        const symbols = { CNY: '¥', AUD: 'A$', THB: '฿', EUR: '€', JPY: '¥' };
+        return `${symbols[cur] || cur}${val.toFixed(2)}`;
+      }).filter(Boolean);
+      const extrasStr = extras.length > 0 ? ` (≈ ${extras.join(' / ')})` : '';
+      return `$${usd.toFixed(2)}${extrasStr}`;
+    }
+    if (amount > 0) return `$${amount.toFixed(4)}`;
     return amount + ' ' + t('元');
   };
 
@@ -629,7 +698,7 @@ const TopUp = () => {
           setAmount(parseFloat(data));
         } else {
           setAmount(0);
-          Toast.error({ content: '错误：' + data, id: 'getAmount' });
+          Toast.error({ content: t('错误：') + data, id: 'getAmount' });
         }
       } else {
         showError(res);
@@ -650,12 +719,14 @@ const TopUp = () => {
         amount: parseFloat(value),
       });
       if (res !== undefined) {
-        const { message, data } = res.data;
+        const { message, data, quote } = res.data;
         if (message === 'success') {
           setAmount(parseFloat(data));
+          if (quote) setPriceQuote(quote);
         } else {
           setAmount(0);
-          Toast.error({ content: '错误：' + data, id: 'getAmount' });
+          setPriceQuote(null);
+          Toast.error({ content: t('错误：') + data, id: 'getAmount' });
         }
       } else {
         showError(res);
@@ -664,6 +735,64 @@ const TopUp = () => {
       // amount fetch failed silently
     } finally {
       setAmountLoading(false);
+    }
+  };
+
+  const coinbaseTopUp = async () => {
+    if (!enableCoinbaseTopUp) {
+      showError(t('管理员未开启 Coinbase 充值！'));
+      return;
+    }
+    if (topUpCount < minTopUp) {
+      showError(t('充值数量不能小于') + minTopUp);
+      return;
+    }
+    setPaymentLoading(true);
+    try {
+      const res = await API.post('/api/user/coinbase/pay', {
+        amount: parseInt(topUpCount),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          window.open(data.pay_link, '_blank');
+        } else {
+          showError(typeof data === 'string' ? data : message || t('支付失败'));
+        }
+      }
+    } catch (err) {
+      showError(t('支付请求失败'));
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const nowPaymentsTopUp = async () => {
+    if (!enableNowPaymentsTopUp) {
+      showError(t('管理员未开启 NowPayments 充值！'));
+      return;
+    }
+    if (topUpCount < minTopUp) {
+      showError(t('充值数量不能小于') + minTopUp);
+      return;
+    }
+    setPaymentLoading(true);
+    try {
+      const res = await API.post('/api/user/nowpayments/pay', {
+        amount: parseInt(topUpCount),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          window.open(data.pay_link, '_blank');
+        } else {
+          showError(typeof data === 'string' ? data : message || t('支付失败'));
+        }
+      }
+    } catch (err) {
+      showError(t('支付请求失败'));
+    } finally {
+      setPaymentLoading(false);
     }
   };
 
@@ -779,10 +908,24 @@ const TopUp = () => {
         )}
       </Modal>
 
-      {/* 主布局区域 */}
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+      {/* 用量估算器 */}
+      <UsageEstimator
+        quotaPerUnit={getQuotaPerUnit()}
+        t={t}
+        isNewUserPromo={isNewUserPromo}
+        onSelectTier={({ amount, label, discountRate }) => {
+          setSelectedTier({ label, discountRate });
+          setTopUpCount(amount);
+          setSelectedPreset(null);
+          getStripeAmount(amount);
+        }}
+      />
+
+      {/* 主布局区域 — 单列居中 */}
+      <div className='max-w-2xl mx-auto space-y-6'>
         <RechargeCard
           t={t}
+          stripePublicKey={stripePublicKey}
           enableOnlineTopUp={enableOnlineTopUp}
           enableStripeTopUp={enableStripeTopUp}
           enableCreemTopUp={enableCreemTopUp}
@@ -791,6 +934,13 @@ const TopUp = () => {
           enableWaffoTopUp={enableWaffoTopUp}
           waffoTopUp={waffoTopUp}
           waffoPayMethods={waffoPayMethods}
+          enableCoinbaseTopUp={enableCoinbaseTopUp}
+          coinbaseTopUp={coinbaseTopUp}
+          enableNowPaymentsTopUp={enableNowPaymentsTopUp}
+          nowPaymentsTopUp={nowPaymentsTopUp}
+          isNewUserPromo={isNewUserPromo}
+          promoInfo={promoInfo}
+          priceQuote={priceQuote}
           presetAmounts={presetAmounts}
           selectedPreset={selectedPreset}
           selectPresetAmount={selectPresetAmount}

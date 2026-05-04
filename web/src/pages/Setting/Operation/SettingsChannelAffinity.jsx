@@ -72,8 +72,8 @@ const KEY_SOURCE_TYPES = [
   { label: 'gjson', value: 'gjson' },
 ];
 
-const CONTEXT_KEY_PRESETS = [
-  { key: 'id', label: 'id（用户 ID）' },
+const getContextKeyPresets = (t) => [
+  { key: 'id', label: t('id（用户 ID）') },
   { key: 'token_id', label: 'token_id' },
   { key: 'token_key', label: 'token_key' },
   { key: 'token_group', label: 'token_group' },
@@ -581,8 +581,8 @@ export default function SettingsChannelAffinity(props) {
       title: t('作用域'),
       render: (_, record) => {
         const tags = [];
-        if (record?.include_using_group) tags.push('分组');
-        if (record?.include_rule_name) tags.push('规则');
+        if (record?.include_using_group) tags.push(t('分组'));
+        if (record?.include_rule_name) tags.push(t('规则'));
         if (tags.length === 0) return '-';
         return tags.map((x) => (
           <Tag key={x} style={{ marginRight: 4 }}>
@@ -626,14 +626,14 @@ export default function SettingsChannelAffinity(props) {
 
   const validateKeySources = (keySources) => {
     const xs = (keySources || []).map(normalizeKeySource).filter((x) => x.type);
-    if (xs.length === 0) return { ok: false, message: 'Key 来源不能为空' };
+    if (xs.length === 0) return { ok: false, message: t('Key 来源不能为空') };
     for (const x of xs) {
       if (x.type === 'context_int' || x.type === 'context_string') {
-        if (!x.key) return { ok: false, message: 'Key 不能为空' };
+        if (!x.key) return { ok: false, message: t('Key 不能为空') };
       } else if (x.type === 'gjson') {
-        if (!x.path) return { ok: false, message: 'Path 不能为空' };
+        if (!x.path) return { ok: false, message: t('Path 不能为空') };
       } else {
-        return { ok: false, message: 'Key 来源类型不合法' };
+        return { ok: false, message: t('Key 来源类型不合法') };
       }
     }
     return { ok: true, value: xs };
@@ -706,7 +706,7 @@ export default function SettingsChannelAffinity(props) {
       );
       const paramTemplateValidation = parseOptionalObjectJson(
         paramTemplateDraft,
-        '参数覆盖模板',
+        t('参数覆盖模板'),
       );
       if (!paramTemplateValidation.ok) {
         return showError(t(paramTemplateValidation.message));
@@ -919,7 +919,7 @@ export default function SettingsChannelAffinity(props) {
                   field={KEY_MAX_ENTRIES}
                   label={t('最大条目数')}
                   min={0}
-                  placeholder='例如 100000…'
+                  placeholder={t('例如 100000…')}
                   extraText={
                     <Text type='tertiary' size='small'>
                       {t(
@@ -940,7 +940,7 @@ export default function SettingsChannelAffinity(props) {
                   field={KEY_DEFAULT_TTL}
                   label={t('默认 TTL（秒）')}
                   min={0}
-                  placeholder='例如 3600…'
+                  placeholder={t('例如 3600…')}
                   extraText={
                     <Text type='tertiary' size='small'>
                       {t(
@@ -1072,7 +1072,7 @@ export default function SettingsChannelAffinity(props) {
             field='name'
             label={t('名称')}
             extraText={t('规则名称（可读性更好，也会出现在管理侧日志中）。')}
-            placeholder='例如 prefer-by-conversation-id…'
+            placeholder={t('例如 prefer-by-conversation-id…')}
             rules={[{ required: true }]}
             onChange={(value) =>
               setEditingRule((prev) => ({ ...(prev || {}), name: value }))
@@ -1167,7 +1167,7 @@ export default function SettingsChannelAffinity(props) {
                   <Form.InputNumber
                     field='ttl_seconds'
                     label={t('TTL（秒，0 表示默认）')}
-                    placeholder='例如 600…'
+                    placeholder={t('例如 600…')}
                     min={0}
                     extraText={
                       <Text type='tertiary' size='small'>
@@ -1292,7 +1292,7 @@ export default function SettingsChannelAffinity(props) {
               {t('常用上下文 Key（用于 context_*）')}：
             </Text>
             <div style={{ marginTop: 6 }}>
-              {(CONTEXT_KEY_PRESETS || []).map((x) => (
+              {(getContextKeyPresets(t) || []).map((x) => (
                 <Tag key={x.key} style={{ marginRight: 6, marginBottom: 6 }}>
                   {x.label}
                 </Tag>

@@ -26,8 +26,9 @@ func GetTopUpInfo(c *gin.Context) {
 	// 获取支付方式
 	payMethods := operation_setting.PayMethods
 
-	// 如果启用了 Stripe 支付，添加到支付方法列表
-	if setting.StripeApiSecret != "" && setting.StripeWebhookSecret != "" && setting.StripePriceId != "" {
+	// 如果启用了 Stripe 支付，添加到支付方法列表（one-time topup 不依赖 StripePriceId，只需 API Key + Webhook Secret）
+	enableStripe := setting.StripeApiSecret != "" && setting.StripeWebhookSecret != ""
+	if enableStripe {
 		// 检查是否已经包含 Stripe
 		hasStripe := false
 		for _, method := range payMethods {
@@ -78,24 +79,41 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	enableCoinbase := setting.CoinbaseAPIKey != "" && setting.CoinbaseWebhookSecret != ""
+	enableNowPayments := setting.NowPaymentsAPIKey != "" && setting.NowPaymentsIPNSecret != ""
+
+	promoSetting := operation_setting.GetPaymentSetting()
+	userID := c.GetInt("id")
+	isNewUser := promoSetting.NewUserPromoEnabled && !model.HasCompletedTopup(userID)
+
 	data := gin.H{
-		"enable_online_topup": operation_setting.PayAddress != "" && operation_setting.EpayId != "" && operation_setting.EpayKey != "",
-		"enable_stripe_topup": setting.StripeApiSecret != "" && setting.StripeWebhookSecret != "" && setting.StripePriceId != "",
-		"enable_creem_topup":  setting.CreemApiKey != "" && setting.CreemProducts != "[]",
-		"enable_waffo_topup": enableWaffo,
+		"enable_online_topup":    operation_setting.PayAddress != "" && operation_setting.EpayId != "" && operation_setting.EpayKey != "",
+		"enable_stripe_topup":    enableStripe,
+		"enable_creem_topup":     setting.CreemApiKey != "" && setting.CreemProducts != "[]",
+		"enable_waffo_topup":     enableWaffo,
+		"enable_coinbase_topup":  enableCoinbase,
+		"enable_nowpayments_topup": enableNowPayments,
 		"waffo_pay_methods": func() interface{} {
 			if enableWaffo {
 				return setting.GetWaffoPayMethods()
 			}
 			return nil
 		}(),
-		"creem_products": setting.CreemProducts,
-		"pay_methods":         payMethods,
-		"min_topup":           operation_setting.MinTopUp,
-		"stripe_min_topup":    setting.StripeMinTopUp,
-		"waffo_min_topup":     setting.WaffoMinTopUp,
-		"amount_options":      operation_setting.GetPaymentSetting().AmountOptions,
-		"discount":            operation_setting.GetPaymentSetting().AmountDiscount,
+		"creem_products":       setting.CreemProducts,
+		"pay_methods":          payMethods,
+		"min_topup":            operation_setting.MinTopUp,
+		"stripe_min_topup":     setting.StripeMinTopUp,
+		"waffo_min_topup":      setting.WaffoMinTopUp,
+		"amount_options":       promoSetting.AmountOptions,
+		"discount":             promoSetting.AmountDiscount,
+		// New-user promo fields
+		"new_user_promo_enabled":    promoSetting.NewUserPromoEnabled,
+		"new_user_promo_limit_usd":  promoSetting.NewUserPromoLimitUSD,
+		"new_user_promo_multiplier": promoSetting.NewUserPromoMultiplier,
+		"is_new_user_promo":         isNewUser,
+		// Live FX rates (spread-adjusted) for frontend price display
+		"exchange_rates":    service.GetAllRatesWithSpread(),
+		"pricing_config":    setting.GetPricingConfig(),
 	}
 	common.ApiSuccess(c, data)
 }
@@ -464,3 +482,18 @@ func AdminCompleteTopUp(c *gin.Context) {
 	common.ApiSuccess(c, nil)
 }
 
+
+// GetUserTransactions returns paginated payment transaction history for the authenticated user.
+// GET /api/transactions?page=1&size=20
+func GetUserTransactions(c *gin.Context) {
+	userId := c.GetInt("id")
+	pageInfo := common.GetPageQuery(c)
+	txs, total, err := model.GetUserTransactions(userId, pageInfo)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	pageInfo.SetTotal(int(total))
+	pageInfo.SetItems(txs)
+	common.ApiSuccess(c, pageInfo)
+}

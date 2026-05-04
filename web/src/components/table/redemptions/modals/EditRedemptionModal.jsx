@@ -41,12 +41,15 @@ import {
   Avatar,
   Row,
   Col,
+  Select,
 } from '@douyinfe/semi-ui';
 import {
   IconCreditCard,
   IconSave,
   IconClose,
   IconGift,
+  IconUser,
+  IconFlag,
 } from '@douyinfe/semi-icons';
 
 const { Text, Title } = Typography;
@@ -58,11 +61,33 @@ const EditRedemptionModal = (props) => {
   const isMobile = useIsMobile();
   const formApiRef = useRef(null);
 
+  // User search for directed vouchers
+  const [userSearchResults, setUserSearchResults] = useState([]);
+  const [userSearchLoading, setUserSearchLoading] = useState(false);
+
+  const handleUserSearch = async (keyword) => {
+    if (!keyword || keyword.length < 2) { setUserSearchResults([]); return; }
+    setUserSearchLoading(true);
+    try {
+      const res = await API.get(`/api/user/search?keyword=${encodeURIComponent(keyword)}`);
+      if (res.data.success) {
+        const items = (res.data.data?.items || res.data.data || []).slice(0, 20);
+        setUserSearchResults(items.map(u => ({
+          value: u.id,
+          label: `${u.username} (${u.email || 'no email'}) — ID:${u.id}`,
+        })));
+      }
+    } catch (e) { /* ignore */ }
+    finally { setUserSearchLoading(false); }
+  };
+
   const getInitValues = () => ({
     name: '',
     quota: 100000,
     count: 1,
     expired_time: null,
+    target_user_id: 0,
+    note: '',
   });
 
   const handleCancel = () => {
@@ -106,6 +131,7 @@ const EditRedemptionModal = (props) => {
     localInputs.count = parseInt(localInputs.count) || 0;
     localInputs.quota = parseInt(localInputs.quota) || 0;
     localInputs.name = name;
+    localInputs.target_user_id = parseInt(localInputs.target_user_id) || 0;
     if (!localInputs.expired_time) {
       localInputs.expired_time = 0;
     } else {
@@ -339,6 +365,71 @@ const EditRedemptionModal = (props) => {
                         />
                       </Col>
                     )}
+                  </Row>
+                </Card>
+
+                {/* Directed voucher + note */}
+                <Card className='!rounded-2xl shadow-sm border-0 mt-4'>
+                  <div className='flex items-center mb-2'>
+                    <Avatar size='small' color='orange' className='mr-2 shadow-md'>
+                      <IconUser size={16} />
+                    </Avatar>
+                    <div>
+                      <Text className='text-lg font-medium'>定向 & 备注</Text>
+                      <div className='text-xs text-gray-600'>
+                        绑定特定用户（只有该用户能核销），以及管理员内部备注
+                      </div>
+                    </div>
+                  </div>
+
+                  <Row gutter={12}>
+                    <Col span={24}>
+                      {/* Custom select wrapping Form.Slot for user search */}
+                      <Form.Slot
+                        label={{
+                          text: (
+                            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <IconUser size={12} />
+                              定向用户（可选）
+                            </span>
+                          ),
+                        }}
+                        field='target_user_id'
+                      >
+                        <Select
+                          style={{ width: '100%' }}
+                          placeholder={t('搜索用户名或邮箱（留空 = 任何人可用）')}
+                          filter
+                          remote
+                          onSearch={handleUserSearch}
+                          loading={userSearchLoading}
+                          optionList={userSearchResults}
+                          value={values.target_user_id || undefined}
+                          onChange={(v) =>
+                            formApiRef.current?.setValue('target_user_id', v || 0)
+                          }
+                          allowClear
+                          emptyContent={<div style={{ padding: 8, color: 'var(--semi-color-text-2)' }}>{t('输入关键词搜索')}</div>}
+                        />
+                        <div style={{ fontSize: 12, color: 'var(--semi-color-text-2)', marginTop: 4 }}>
+                          {t('设置后，只有该用户才能使用此兑换码（定向优惠券）')}
+                        </div>
+                      </Form.Slot>
+                    </Col>
+                    <Col span={24}>
+                      <Form.Input
+                        field='note'
+                        label={
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <IconFlag size={12} />
+                            内部备注
+                          </span>
+                        }
+                        placeholder={t('例如：2025年4月 邮件营销活动 / 用户投诉补偿')}
+                        style={{ width: '100%' }}
+                        showClear
+                      />
+                    </Col>
                   </Row>
                 </Card>
               </div>

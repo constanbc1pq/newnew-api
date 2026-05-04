@@ -1,0 +1,288 @@
+/* Market Router 设计令牌
+ * Light/Dark 双主题语义化变量。Semi Design 不能覆盖的硬编码颜色都用这里的变量。
+ */
+
+:root,
+body[theme-mode='light'] {
+  /* Surface — Apple 冷灰阶层
+   *   page (#f5f5f7) → surface-1 (#ffffff) 形成 4-5% 亮度差 + 阴影 = 卡片浮起
+   */
+  --mr-bg-page: #f5f5f7;
+  --mr-bg-canvas: #ffffff;
+  --mr-bg-surface-1: #ffffff;
+  --mr-bg-surface-2: #fafafc;  /* 卡片内嵌槽位（极浅） */
+  --mr-bg-surface-3: #ececef;  /* 更深一阶 */
+  --mr-bg-overlay: rgba(0, 0, 0, 0.45);
+
+  /* Text — Apple ink 系 */
+  --mr-text-primary: #1d1d1f;
+  --mr-text-secondary: #424245;
+  --mr-text-tertiary: #6e6e73;
+  --mr-text-disabled: #a1a1a6;
+  --mr-text-inverse: #ffffff;
+
+  /* Border — 中性灰 */
+  --mr-border-subtle: rgba(0, 0, 0, 0.06);
+  --mr-border-default: rgba(0, 0, 0, 0.12);
+  --mr-border-strong: rgba(0, 0, 0, 0.22);
+
+  /* Accent (CTA — 黑底白字) */
+  --mr-accent: #1d1d1f;
+  --mr-accent-fg: #ffffff;
+  --mr-accent-hover: #000000;
+  --mr-accent-soft: rgba(0, 0, 0, 0.05);
+  --mr-brand: #0066cc;          /* Apple link blue */
+
+  /* Status */
+  --mr-success: #16a34a;
+  --mr-warning: #d97706;
+  --mr-danger: #dc2626;
+  --mr-info: #0066cc;
+  --mr-success-soft: rgba(22, 163, 74, 0.12);
+  --mr-warning-soft: rgba(217, 119, 6, 0.12);
+  --mr-danger-soft: rgba(220, 38, 38, 0.12);
+  --mr-info-soft: rgba(0, 102, 204, 0.12);
+
+  /* Shadow — Apple 风柔和投影 */
+  --mr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --mr-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --mr-shadow-focus: 0 0 0 3px rgba(0, 102, 204, 0.18);
+}
+
+body[theme-mode='dark'] {
+  /* Surface — Apple 系统暗灰阶（参考 iOS/macOS dark） */
+  --mr-bg-page: #1d1d1f;
+  --mr-bg-canvas: #2c2c2e;
+  --mr-bg-surface-1: #2c2c2e;
+  --mr-bg-surface-2: #3a3a3c;
+  --mr-bg-surface-3: #48484a;
+  --mr-bg-overlay: rgba(0, 0, 0, 0.65);
+
+  /* Text — 不用纯白，避免眩光 */
+  --mr-text-primary: #f5f5f7;
+  --mr-text-secondary: #c7c7cc;
+  --mr-text-tertiary: #98989d;
+  --mr-text-disabled: #636366;
+  --mr-text-inverse: #1d1d1f;
+
+  /* Border — alpha 而非实色，自适应不同 surface */
+  --mr-border-subtle: rgba(255, 255, 255, 0.06);
+  --mr-border-default: rgba(255, 255, 255, 0.10);
+  --mr-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Accent — dark 模式反相成近白 */
+  --mr-accent: #f2f3f5;
+  --mr-accent-fg: #0e0f11;
+  --mr-accent-hover: #e5e6e8;
+  --mr-accent-soft: rgba(255, 255, 255, 0.08);
+  --mr-brand: #60a5fa;
+
+  /* Status — 提亮 + 降饱和 */
+  --mr-success: #4ade80;
+  --mr-warning: #fbbf24;
+  --mr-danger: #f87171;
+  --mr-info: #60a5fa;
+  --mr-success-soft: rgba(74, 222, 128, 0.16);
+  --mr-warning-soft: rgba(251, 191, 36, 0.16);
+  --mr-danger-soft: rgba(248, 113, 113, 0.16);
+  --mr-info-soft: rgba(96, 165, 250, 0.16);
+
+  /* Shadow */
+  --mr-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --mr-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --mr-shadow-focus: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+/* 数字字体启用 tabular-nums，保证列对齐 */
+.mr-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Semi Card 跟随主题（覆盖 index.css 的硬编码白底） */
+body[theme-mode='dark'] .semi-card {
+  background: var(--mr-bg-surface-1) !important;
+  border-color: var(--mr-border-default) !important;
+}
+
+/* Semi danger 系列对齐到 --mr-danger，统一项目红色调
+ * Light: #dc2626 / Dark: #f87171
+ */
+:root,
+body[theme-mode='light'] {
+  --semi-color-danger: #dc2626 !important;
+  --semi-color-danger-hover: #b91c1c !important;
+  --semi-color-danger-active: #991b1b !important;
+  --semi-color-danger-disabled: rgba(220, 38, 38, 0.4) !important;
+  --semi-color-danger-light-default: rgba(220, 38, 38, 0.08) !important;
+  --semi-color-danger-light-hover: rgba(220, 38, 38, 0.14) !important;
+  --semi-color-danger-light-active: rgba(220, 38, 38, 0.20) !important;
+}
+
+body[theme-mode='dark'] {
+  --semi-color-danger: #f87171 !important;
+  --semi-color-danger-hover: #fca5a5 !important;
+  --semi-color-danger-active: #ef4444 !important;
+  --semi-color-danger-disabled: rgba(248, 113, 113, 0.4) !important;
+  --semi-color-danger-light-default: rgba(248, 113, 113, 0.12) !important;
+  --semi-color-danger-light-hover: rgba(248, 113, 113, 0.20) !important;
+  --semi-color-danger-light-active: rgba(248, 113, 113, 0.28) !important;
+}
+
+/* Danger solid 按钮：显式锁定红底白字（防止 Semi 内部从其他变量取色导致不红） */
+.semi-button-danger.semi-button-solid {
+  background-color: var(--mr-danger) !important;
+  border-color: var(--mr-danger) !important;
+  color: #ffffff !important;
+}
+.semi-button-danger.semi-button-solid:hover {
+  background-color: var(--semi-color-danger-hover) !important;
+  border-color: var(--semi-color-danger-hover) !important;
+  color: #ffffff !important;
+}
+.semi-button-danger.semi-button-solid:active {
+  background-color: var(--semi-color-danger-active) !important;
+  border-color: var(--semi-color-danger-active) !important;
+}
+.semi-button-danger.semi-button-solid * {
+  color: #ffffff !important;
+}
+
+/* Danger 浅色 / 边框态也跟随 */
+.semi-button-danger.semi-button-light {
+  background-color: var(--semi-color-danger-light-default) !important;
+  color: var(--mr-danger) !important;
+}
+.semi-button-danger.semi-button-light:hover {
+  background-color: var(--semi-color-danger-light-hover) !important;
+}
+
+/* Dark 下让 Semi 的 primary 系列翻转成近白，使所有"选中态"文字/图标可见
+ * index.css 把 light/dark 一起钉死成黑色，这里只在 dark 下覆盖。
+ */
+body[theme-mode='dark'] {
+  --semi-color-primary: #f2f3f5 !important;
+  --semi-color-primary-hover: #e5e6e8 !important;
+  --semi-color-primary-active: #d4d5d7 !important;
+  --semi-color-primary-disabled: rgba(255, 255, 255, 0.25) !important;
+  --semi-color-primary-light-default: rgba(255, 255, 255, 0.06) !important;
+  --semi-color-primary-light-hover: rgba(255, 255, 255, 0.10) !important;
+  --semi-color-primary-light-active: rgba(255, 255, 255, 0.14) !important;
+  --semi-color-link: #60a5fa !important;
+  --semi-color-link-hover: #93c5fd !important;
+  --semi-color-focus-border: rgba(255, 255, 255, 0.30) !important;
+}
+
+/* Primary solid 按钮：dark 下显式声明底色为近白 + 文字翻深色（防止 Semi 内部用别的变量
+ * 导致底色没翻转，造成"暗底+暗字"看不见）
+ * 例外：聊天发送按钮自带 Tailwind !bg-purple-500，文字保持白色 */
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton) {
+  background-color: var(--mr-accent) !important;
+  color: var(--mr-accent-fg) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton):hover {
+  background-color: var(--mr-accent-hover) !important;
+  color: var(--mr-accent-fg) !important;
+}
+
+body[theme-mode='dark'] .semi-button-primary.semi-button-solid:not(.semi-chat-inputBox-sendButton) * {
+  color: var(--mr-accent-fg) !important;
+}
+
+body[theme-mode='dark'] .semi-chat-inputBox-sendButton,
+body[theme-mode='dark'] .semi-chat-inputBox-sendButton * {
+  color: #ffffff !important;
+}
+
+body[theme-mode='dark'] .semi-button-solid:not(.semi-chat-inputBox-sendButton):not(.semi-button-primary) {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Sidebar 选中项的 hover/active 背景色，dark 下让 Semi 默认值更显眼 */
+body[theme-mode='dark'] .semi-navigation-item-selected {
+  background-color: var(--mr-bg-surface-2) !important;
+}
+
+/* ==================== Input 左侧内边距（Semi 默认偏紧） ==================== */
+.semi-input-wrapper .semi-input,
+.semi-input-wrapper .semi-input-default,
+.semi-input-wrapper .semi-input-large,
+.semi-input-wrapper .semi-input-small {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* prefix 后面的 input 不再叠加 padding（避免和前缀拉太开） */
+.semi-input-wrapper .semi-input-prefix + .semi-input,
+.semi-input-wrapper .semi-input-prefix-text + .semi-input {
+  padding-left: 8px !important;
+}
+
+.semi-select-selection,
+.semi-select-selection-text {
+  padding-left: 12px !important;
+}
+
+.semi-input-textarea-wrapper .semi-input-textarea {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* TagInput 内部已选中 tag 区，左侧也加点呼吸 */
+.semi-tagInput .semi-tagInput-content {
+  padding-left: 8px !important;
+}
+
+/* ==================== 按钮组间距 ==================== */
+/* Modal / SideSheet footer：内部 wrapper 无 class，强制 inline-flex + gap */
+.semi-modal-footer > div,
+.semi-sidesheet-footer > div {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Popconfirm footer 同样规则（保留的轻量 Popconfirm 也享用） */
+.semi-popconfirm-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Semi Space 已经处理了间距，但仍兜底相邻按钮（不影响已用 flex-gap 的容器，因为
+ * 那种容器里的按钮通常各自有 flex-shrink，margin 会被 gap 吸收）。
+ * 仅在非 flex 容器（如 inline 直接相邻）下生效——这里用更具体的规则保险起见。 */
+
+/* ==================== Light 模式按钮对比强化（镜像 dark 的处理） ==================== */
+/* Light 下 Apple 灰画布 + 白卡片，default solid / light / tertiary 按钮容易"白对白"，统一加底色与边框 */
+
+/* 非 primary / 非 danger 的 solid 按钮：白底 + 中性灰边 */
+body:not([theme-mode='dark']) .semi-button-solid:not(.semi-button-primary):not(.semi-button-danger):not(.semi-chat-inputBox-sendButton) {
+  background-color: #ffffff !important;
+  border: 1px solid var(--mr-border-strong) !important;
+  color: var(--mr-text-primary) !important;
+}
+
+body:not([theme-mode='dark']) .semi-button-solid:not(.semi-button-primary):not(.semi-button-danger):not(.semi-chat-inputBox-sendButton):hover {
+  background-color: var(--mr-bg-surface-3) !important;
+}
+
+/* light 按钮（含 secondary）：底色用 surface-3 = #ececef，让"次按钮"在白卡片里看得见 */
+body:not([theme-mode='dark']) .semi-button-light:not(.semi-button-danger) {
+  background-color: var(--mr-bg-surface-3) !important;
+  border: 1px solid var(--mr-border-default) !important;
+  color: var(--mr-text-primary) !important;
+}
+
+body:not([theme-mode='dark']) .semi-button-light:not(.semi-button-danger):hover {
+  background-color: #e3e3e8 !important;
+  border-color: var(--mr-border-strong) !important;
+}
+
+/* tertiary（无底色）按钮：hover 加浅灰背景，区分静态 */
+body:not([theme-mode='dark']) .semi-button-tertiary:hover,
+body:not([theme-mode='dark']) .semi-button-borderless:hover {
+  background-color: var(--mr-accent-soft) !important;
+}

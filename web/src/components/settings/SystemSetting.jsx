@@ -751,7 +751,7 @@ const SystemSetting = () => {
                     >
                       new-api-worker
                     </a>{' '}
-                    {t('或其兼容new-api-worker格式的其他版本')}
+                    {t('或其他兼容格式的 Worker 版本')}
                   </Text>
                   <Row
                     gutter={{ xs: 8, sm: 16, md: 24, lg: 24, xl: 24, xxl: 24 }}
@@ -760,14 +760,14 @@ const SystemSetting = () => {
                       <Form.Input
                         field='WorkerUrl'
                         label={t('Worker地址')}
-                        placeholder='例如：https://workername.yourdomain.workers.dev'
+                        placeholder={t('例如：https://workername.yourdomain.workers.dev')}
                       />
                     </Col>
                     <Col xs={24} sm={24} md={12} lg={12} xl={12}>
                       <Form.Input
                         field='WorkerValidKey'
                         label={t('Worker密钥')}
-                        placeholder='敏感信息不会发送到前端显示'
+                        placeholder={t('敏感信息不会发送到前端显示')}
                         type='password'
                       />
                     </Col>
@@ -1209,7 +1209,7 @@ const SystemSetting = () => {
                         label={t('允许的 Origins')}
                         placeholder={t('填写带https的域名，逗号分隔')}
                         extraText={t(
-                          '为空则默认使用服务器地址，多个 Origin 用逗号分隔，例如 https://newapi.pro,https://newapi.com ,注意不能携带[]，需使用https',
+                          '为空则默认使用服务器地址，多个 Origin 用逗号分隔，例如 https://marketrouter.ai,https://yoursite.com ,注意不能携带[]，需使用https',
                         )}
                       />
                     </Col>
@@ -1322,7 +1322,7 @@ const SystemSetting = () => {
                         field='SMTPToken'
                         label={t('SMTP 访问凭证')}
                         type='password'
-                        placeholder='敏感信息不会发送到前端显示'
+                        placeholder={t('敏感信息不会发送到前端显示')}
                       />
                     </Col>
                     <Col xs={24} sm={24} md={8} lg={8} xl={8}>
@@ -1525,7 +1525,7 @@ const SystemSetting = () => {
                       <Form.Input
                         field='LinuxDOMinimumTrustLevel'
                         label='LinuxDO Minimum Trust Level'
-                        placeholder='允许注册的最低信任等级'
+                        placeholder={t('允许注册的最低信任等级')}
                       />
                     </Col>
                   </Row>

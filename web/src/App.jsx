@@ -45,6 +45,9 @@ import ModelPage from './pages/Model';
 import ModelDeploymentPage from './pages/ModelDeployment';
 import Playground from './pages/Playground';
 import Subscription from './pages/Subscription';
+import KeyPool from './pages/KeyPool';
+import EmailCampaigns from './pages/EmailCampaigns';
+import Billing from './pages/Billing';
 import OAuth2Callback from './components/auth/OAuth2Callback';
 import PersonalSetting from './components/settings/PersonalSetting';
 import Setup from './pages/Setup';
@@ -53,6 +56,7 @@ import SetupCheck from './components/layout/SetupCheck';
 const Home = lazy(() => import('./pages/Home'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const About = lazy(() => import('./pages/About'));
+const Docs = lazy(() => import('./pages/Docs'));
 const UserAgreement = lazy(() => import('./pages/UserAgreement'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 
@@ -129,6 +133,30 @@ function App() {
             <AdminRoute>
               <Subscription />
             </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/key-pools'
+          element={
+            <AdminRoute>
+              <KeyPool />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/campaigns'
+          element={
+            <AdminRoute>
+              <EmailCampaigns />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path='/console/billing'
+          element={
+            <PrivateRoute>
+              <Billing />
+            </PrivateRoute>
           }
         />
         <Route
@@ -339,6 +367,14 @@ function App() {
           element={
             <Suspense fallback={<Loading></Loading>} key={location.pathname}>
               <About />
+            </Suspense>
+          }
+        />
+        <Route
+          path='/docs'
+          element={
+            <Suspense fallback={<Loading></Loading>} key={location.pathname}>
+              <Docs />
             </Suspense>
           }
         />

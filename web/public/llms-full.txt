@@ -1,0 +1,374 @@
+# Market Router — Complete API Reference for AI Agents
+
+> OpenAI-compatible AI API routing platform. One key, 40+ providers, smart cost optimization.
+
+---
+
+## What is Market Router?
+
+Market Router is an AI API relay service that sits between your application and AI model providers. You send requests using the standard OpenAI API format, and Market Router:
+
+1. Authenticates your API key
+2. Routes to the optimal provider (by cost, latency, or availability)
+3. Returns the response in standard OpenAI format
+4. Deducts credits from your balance
+
+**Target users**: Developers, AI Agent builders, Vibe Coders, teams using Cursor/Cline/Claude Code/Continue/n8n/LangChain/AutoGen, and anyone wanting to reduce AI API costs or access CN-region models without a VPN.
+
+---
+
+## Base URL
+
+```
+https://marketrouter.ai/v1
+```
+
+All endpoints are OpenAI API-compatible. Simply replace `https://api.openai.com` with `https://marketrouter.ai` in any existing integration.
+
+---
+
+## Authentication
+
+```http
+Authorization: Bearer YOUR_API_KEY
+```
+
+Get your API key: Log in → Console → API page → Create API Key.
+
+API keys start with `sk-mr-`.
+
+---
+
+## Endpoints
+
+### Chat Completions
+```
+POST /v1/chat/completions
+```
+
+Fully compatible with OpenAI's chat completions API. Supports:
+- `model` — any model from the supported list
+- `messages` — system / user / assistant / tool roles
+- `stream` — true/false for streaming (SSE)
+- `temperature`, `max_tokens`, `top_p`, `frequency_penalty`, `presence_penalty`
+- `tools` / `tool_choice` — function calling
+- `response_format` — JSON mode (`{"type":"json_object"}`)
+- `reasoning_effort` — for reasoning models (o1, o3, deepseek-r1)
+
+**Example:**
+```bash
+curl https://marketrouter.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-mr-YOUR_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello, what can you do?"}],
+    "stream": false
+  }'
+```
+
+### Streaming
+```bash
+curl https://marketrouter.ai/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-mr-YOUR_KEY" \
+  -d '{
+    "model": "claude-3-5-sonnet-20241022",
+    "stream": true,
+    "messages": [{"role": "user", "content": "Write a haiku about APIs"}]
+  }'
+```
+
+### List Models
+```
+GET /v1/models
+```
+Returns all available models with their IDs, provider, and pricing.
+
+```bash
+curl https://marketrouter.ai/v1/models \
+  -H "Authorization: Bearer sk-mr-YOUR_KEY"
+```
+
+### Embeddings
+```
+POST /v1/embeddings
+```
+Compatible with OpenAI embeddings API. Supports text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002.
+
+### Image Generation
+```
+POST /v1/images/generations
+```
+Supports DALL-E 3, Stable Diffusion, Flux, and Midjourney-compatible models.
+
+### Audio / Speech
+```
+POST /v1/audio/transcriptions
+POST /v1/audio/speech
+```
+Whisper-compatible transcription and TTS endpoints.
+
+---
+
+## Supported Models
+
+### OpenAI
+| Model ID | Context | Best For |
+|---|---|---|
+| gpt-4o | 128k | General purpose, vision |
+| gpt-4o-mini | 128k | Fast, cost-efficient |
+| o1 | 200k | Complex reasoning |
+| o3 | 200k | Advanced reasoning |
+| o4-mini | 128k | Fast reasoning |
+| gpt-4-turbo | 128k | Legacy |
+| gpt-3.5-turbo | 16k | Ultra low cost |
+
+### Anthropic (Claude)
+| Model ID | Context | Best For |
+|---|---|---|
+| claude-opus-4-5 | 200k | Most intelligent |
+| claude-sonnet-4-5 | 200k | Balanced |
+| claude-3-5-sonnet-20241022 | 200k | Coding, analysis |
+| claude-3-5-haiku-20241022 | 200k | Fast, cheap |
+| claude-3-7-sonnet-20250219 | 200k | Extended thinking |
+
+### Google (Gemini)
+| Model ID | Context | Best For |
+|---|---|---|
+| gemini-2.5-pro | 1M | Long context, multimodal |
+| gemini-2.0-flash | 1M | Fast, affordable |
+| gemini-1.5-pro | 2M | Ultra long context |
+| gemini-1.5-flash | 1M | Speed |
+
+### DeepSeek
+| Model ID | Context | Best For |
+|---|---|---|
+| deepseek-v3 | 64k | General, very cheap |
+| deepseek-r1 | 64k | Reasoning (like o1) |
+| deepseek-r1-distill-qwen-32b | 32k | Budget reasoning |
+
+### Alibaba (Qwen)
+| Model ID | Context | Best For |
+|---|---|---|
+| qwen-max | 32k | Chinese + English |
+| qwen-plus | 128k | Balanced |
+| qwen-turbo | 1M | Ultra fast |
+| qwen3-235b-a22b | 128k | Most capable |
+
+### Baidu (Wenxin / ERNIE)
+| Model ID | Context | Best For |
+|---|---|---|
+| ernie-4.0-turbo-8k | 8k | Chinese tasks |
+| ernie-speed-128k | 128k | Fast Chinese |
+
+### Other Providers
+- **xAI**: grok-3, grok-3-mini
+- **Mistral**: mistral-large, mistral-small, codestral
+- **Cohere**: command-r-plus, command-r
+- **Perplexity**: llama-3.1-sonar-large (with web search)
+- **Meta**: llama-3.3-70b, llama-3.1-405b
+- **01.AI**: yi-large, yi-medium
+- **MiniMax**: abab6.5s-chat
+- **Moonshot (Kimi)**: moonshot-v1-128k
+- **Zhipu (GLM)**: glm-4, glm-4v
+- **+ more**: Call `/v1/models` for the complete live list
+
+---
+
+## SDK Integration Examples
+
+### Python (openai library)
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://marketrouter.ai/v1",
+    api_key="sk-mr-YOUR_KEY"
+)
+
+# Basic completion
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Explain quantum computing in 2 sentences"}]
+)
+print(response.choices[0].message.content)
+
+# Streaming
+stream = client.chat.completions.create(
+    model="claude-3-5-sonnet-20241022",
+    messages=[{"role": "user", "content": "Write a Python web scraper"}],
+    stream=True
+)
+for chunk in stream:
+    print(chunk.choices[0].delta.content or "", end="")
+
+# Function calling
+tools = [{
+    "type": "function",
+    "function": {
+        "name": "get_weather",
+        "description": "Get weather for a city",
+        "parameters": {
+            "type": "object",
+            "properties": {"city": {"type": "string"}},
+            "required": ["city"]
+        }
+    }
+}]
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "What's the weather in Shanghai?"}],
+    tools=tools,
+    tool_choice="auto"
+)
+```
+
+### Node.js / TypeScript
+```typescript
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'https://marketrouter.ai/v1',
+  apiKey: 'sk-mr-YOUR_KEY',
+});
+
+const response = await client.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [{ role: 'user', content: 'Hello' }],
+});
+console.log(response.choices[0].message.content);
+```
+
+### LangChain (Python)
+```python
+from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    model="gpt-4o",
+    openai_api_base="https://marketrouter.ai/v1",
+    openai_api_key="sk-mr-YOUR_KEY"
+)
+result = llm.invoke("Summarize the history of AI")
+print(result.content)
+```
+
+### LangChain (JS)
+```javascript
+import { ChatOpenAI } from "@langchain/openai";
+
+const llm = new ChatOpenAI({
+  modelName: "gpt-4o",
+  configuration: {
+    baseURL: "https://marketrouter.ai/v1",
+    apiKey: "sk-mr-YOUR_KEY",
+  },
+});
+```
+
+---
+
+## AI Tool Configuration
+
+### Cursor
+```
+Settings → Models → Add Model
+OpenAI API Key: sk-mr-YOUR_KEY
+OpenAI Base URL: https://marketrouter.ai/v1
+```
+
+### Cline (VS Code)
+```
+API Provider: OpenAI Compatible
+Base URL: https://marketrouter.ai/v1
+API Key: sk-mr-YOUR_KEY
+Model: gpt-4o (or any supported model)
+```
+
+### Claude Code (CLI)
+```bash
+export ANTHROPIC_API_KEY=sk-mr-YOUR_KEY
+export ANTHROPIC_BASE_URL=https://marketrouter.ai/v1
+# or via claude config
+claude config set api_key sk-mr-YOUR_KEY
+claude config set api_url https://marketrouter.ai/v1
+```
+
+### Continue (VS Code)
+```json
+{
+  "models": [{
+    "provider": "openai",
+    "model": "gpt-4o",
+    "apiBase": "https://marketrouter.ai/v1",
+    "apiKey": "sk-mr-YOUR_KEY"
+  }]
+}
+```
+
+### n8n
+```
+Credential Type: OpenAI API
+API Key: sk-mr-YOUR_KEY
+Base URL: https://marketrouter.ai/v1
+```
+
+### OpenWebUI / LibreChat / LobeChat
+```
+OpenAI Base URL: https://marketrouter.ai/v1
+API Key: sk-mr-YOUR_KEY
+```
+
+---
+
+## Pricing & Credits
+
+- **Credits**: 1 credit = $0.01 USD
+- **Top-up methods**: Stripe (card), Alipay, WeChat Pay, USDT/crypto
+- **First top-up bonus**: Top up $10+, get extra $10 credits free
+- **Monthly plans**: Save 15–20% vs pay-as-you-go
+- **Model pricing**: Varies by provider; DeepSeek-V3 is typically 90%+ cheaper than GPT-4o for comparable tasks
+
+---
+
+## Why Use Market Router Instead of Direct APIs?
+
+| Feature | Market Router | Direct APIs |
+|---|---|---|
+| Single key for all models | ✅ | ❌ (one key per provider) |
+| CN region access (no VPN) | ✅ | ❌ |
+| Automatic failover | ✅ | ❌ |
+| Cost optimization routing | ✅ | ❌ |
+| Alipay / WeChat payment | ✅ | ❌ |
+| Usage analytics dashboard | ✅ | Limited |
+| First-time top-up bonus | ✅ | ❌ |
+
+---
+
+## FAQ
+
+**Q: Is it really OpenAI-compatible?**
+A: Yes. Any app using the official OpenAI SDK works with zero code changes — just swap the base URL and key.
+
+**Q: Does it support vision / multimodal?**
+A: Yes. GPT-4o, Claude 3.5, and Gemini 2.0 Flash all support image inputs via the standard OpenAI vision format.
+
+**Q: What about rate limits?**
+A: Limits depend on your credit balance and subscription plan. Higher tiers get higher RPM.
+
+**Q: Can I use it for AI agents / autonomous tasks?**
+A: Yes — this is a primary use case. Works with AutoGen, CrewAI, LangGraph, and any agentic framework.
+
+**Q: Is there a free trial?**
+A: New users get 3 free guest chat messages on the homepage. Create an account for full API access.
+
+---
+
+## Links
+
+- Homepage: https://marketrouter.ai
+- Console: https://marketrouter.ai/console
+- API Docs: https://marketrouter.ai/docs
+- Top Up: https://marketrouter.ai/console/topup
+- API Key Management: https://marketrouter.ai/console/token
+- Model List (live): https://marketrouter.ai/v1/models

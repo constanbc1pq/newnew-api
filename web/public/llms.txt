@@ -1,0 +1,75 @@
+# Market Router
+
+> One API key. 40+ AI model providers. Cost-optimized routing for AI Agents, Vibe Coding, and workflow automation.
+
+Market Router is an OpenAI-compatible AI API relay and routing platform. Developers use a single API key to access models from OpenAI, Anthropic (Claude), Google (Gemini), DeepSeek, Qwen, Wenxin, and 35+ other providers — with automatic failover, cost optimization, and CN-region acceleration.
+
+## What It Does
+
+- **One key, all models**: Replace `api.openai.com` with Market Router's endpoint and instantly access GPT-4o, Claude 3.5, Gemini 2.0, DeepSeek-V3, and more
+- **Smart routing**: Automatically routes to the lowest-latency, lowest-cost provider for each request
+- **OpenAI-compatible**: Works with any tool that supports OpenAI SDK — Cursor, Cline, Claude Code, Continue, n8n, LangChain, etc.
+- **CN-region access**: Direct acceleration for Chinese users — no VPN needed for DeepSeek, Qwen, Wenxin
+- **Pay-as-you-go**: Top up with Stripe, Alipay, WeChat Pay, or crypto
+
+## Quick Start for AI Tools
+
+```
+Base URL: https://marketrouter.ai/v1
+API Key:  Get from console → API page
+Format:   OpenAI-compatible (Bearer token)
+```
+
+### Cursor
+Settings → Models → OpenAI Base URL → `https://marketrouter.ai/v1`
+
+### Claude Code / Cline
+```json
+{
+  "apiProvider": "openai",
+  "openAiBaseUrl": "https://marketrouter.ai/v1",
+  "openAiApiKey": "YOUR_KEY"
+}
+```
+
+### Python
+```python
+from openai import OpenAI
+client = OpenAI(base_url="https://marketrouter.ai/v1", api_key="YOUR_KEY")
+```
+
+### curl
+```bash
+curl https://marketrouter.ai/v1/chat/completions \
+  -H "Authorization: Bearer YOUR_KEY" \
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}'
+```
+
+## Supported Models (selected)
+
+| Provider | Models |
+|---|---|
+| OpenAI | gpt-4o, gpt-4o-mini, o1, o3, o4-mini |
+| Anthropic | claude-3-5-sonnet, claude-3-7-sonnet, claude-opus-4 |
+| Google | gemini-2.0-flash, gemini-2.5-pro |
+| DeepSeek | deepseek-v3, deepseek-r1 |
+| Alibaba | qwen-max, qwen-turbo |
+| Baidu | ernie-4.0 |
+| + 35 more | /v1/models for full list |
+
+## Key Pages
+
+- [API Documentation](/docs) — full OpenAI-compatible API reference
+- [Console / Dashboard](/console) — usage stats, balance, API keys
+- [Top Up](/console/topup) — add credits (Stripe / Alipay / WeChat / Crypto)
+- [Subscription](/console/subscription) — monthly plans with bonus credits
+- [About](/about) — company info
+
+## Pricing
+
+Credits-based system (1 credit ≈ $0.01 USD). First-time top-up bonus available.
+View real-time model pricing at `/pricing` after login.
+
+## Contact & Support
+
+Support via in-console ticket system.

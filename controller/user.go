@@ -169,6 +169,8 @@ func Register(c *gin.Context) {
 	}
 	affCode := user.AffCode // this code is the inviter's code, not the user's own code
 	inviterId, _ := model.GetUserIdByAffCode(affCode)
+	// PromoCode is an optional redemption code provided at sign-up.
+	promoCode := user.PromoCode
 	cleanUser := model.User{
 		Username:    user.Username,
 		Password:    user.Password,
@@ -219,9 +221,17 @@ func Register(c *gin.Context) {
 		}
 	}
 
+	// Apply promo code if provided at registration (best-effort, silent on code errors)
+	promoResult := ""
+	if promoCode != "" {
+		if quota, err := model.Redeem(promoCode, insertedUser.Id); err == nil {
+			promoResult = fmt.Sprintf("兑换码已核销，获得 %d quota", quota)
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "",
+		"message": promoResult,
 	})
 	return
 }
@@ -968,6 +978,40 @@ func EmailBind(c *gin.Context) {
 
 type topUpRequest struct {
 	Key string `json:"key"`
+}
+
+// RedeemCode is the dedicated user-facing endpoint for redeeming a voucher code.
+// POST /api/user/self/redeem  { "code": "XXXXXXXX" }
+func RedeemCode(c *gin.Context) {
+	id := c.GetInt("id")
+	lock := getTopUpLock(id)
+	if !lock.TryLock() {
+		common.ApiErrorI18n(c, i18n.MsgUserTopUpProcessing)
+		return
+	}
+	defer lock.Unlock()
+
+	var req struct {
+		Code string `json:"code" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	quota, err := model.Redeem(req.Code, id)
+	if err != nil {
+		if errors.Is(err, model.ErrRedeemFailed) {
+			common.ApiErrorI18n(c, i18n.MsgRedeemFailed)
+			return
+		}
+		common.ApiError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "兑换成功",
+		"data":    quota,
+	})
 }
 
 var topUpLocks sync.Map

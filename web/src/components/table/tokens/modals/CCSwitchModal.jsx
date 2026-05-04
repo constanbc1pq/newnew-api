@@ -29,28 +29,28 @@ import {
 import { useTranslation } from 'react-i18next';
 import { selectFilter } from '../../../../helpers';
 
-const APP_CONFIGS = {
+const getAppConfigs = (t) => ({
   claude: {
     label: 'Claude',
     defaultName: 'My Claude',
     modelFields: [
-      { key: 'model', label: '主模型' },
-      { key: 'haikuModel', label: 'Haiku 模型' },
-      { key: 'sonnetModel', label: 'Sonnet 模型' },
-      { key: 'opusModel', label: 'Opus 模型' },
+      { key: 'model', label: t('主模型') },
+      { key: 'haikuModel', label: t('Haiku 模型') },
+      { key: 'sonnetModel', label: t('Sonnet 模型') },
+      { key: 'opusModel', label: t('Opus 模型') },
     ],
   },
   codex: {
     label: 'Codex',
     defaultName: 'My Codex',
-    modelFields: [{ key: 'model', label: '主模型' }],
+    modelFields: [{ key: 'model', label: t('主模型') }],
   },
   gemini: {
     label: 'Gemini',
     defaultName: 'My Gemini',
-    modelFields: [{ key: 'model', label: '主模型' }],
+    modelFields: [{ key: 'model', label: t('主模型') }],
   },
-};
+});
 
 function getServerAddress() {
   try {
@@ -87,6 +87,7 @@ export default function CCSwitchModal({
   modelOptions,
 }) {
   const { t } = useTranslation();
+  const APP_CONFIGS = useMemo(() => getAppConfigs(t), [t]);
   const [app, setApp] = useState('claude');
   const [name, setName] = useState(APP_CONFIGS.claude.defaultName);
   const [models, setModels] = useState({});
@@ -99,7 +100,7 @@ export default function CCSwitchModal({
       setApp('claude');
       setName(APP_CONFIGS.claude.defaultName);
     }
-  }, [visible]);
+  }, [visible, APP_CONFIGS]);
 
   const handleAppChange = (val) => {
     setApp(val);
